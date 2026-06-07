@@ -1,0 +1,23 @@
+services:
+  php-fpm:
+    build:
+      target: dev
+    volumes:
+      - .:/app
+      - ./docker/php/conf.d/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini:ro
+
+  database:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "${DB_PORT}:5432"
+    volumes:
+      - database_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+volumes:
+  database_data:

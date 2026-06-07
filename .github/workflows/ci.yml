@@ -1,0 +1,81 @@
+name: CI Symfony Template
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  dependencies:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, intl, pdo_pgsql, zip
+          coverage: none
+
+      - name: Cache Vendor
+        id: cache-vendor
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-vendor-${{ hashFiles('**/composer.lock') }}
+
+      - name: Composer Install
+        if: steps.cache-vendor.outputs.cache-hit != 'true'
+        run: |
+          cp .env.dist .env 
+          composer install --no-progress --prefer-dist --optimize-autoloader
+
+  linter:
+    needs: dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+
+      - name: Restore Vendor
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-vendor-${{ hashFiles('**/composer.lock') }}
+          fail-on-cache-miss: true #
+
+      - name: Run Linters
+        run: |
+          php bin/console lint:yaml config
+          php bin/console lint:twig templates
+
+  tests:
+    needs: dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+
+      - name: Restore Vendor
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-vendor-${{ hashFiles('**/composer.lock') }}
+          fail-on-cache-miss: true
+
+      - name: Run Tests
+        run: vendor/bin/phpunit
+
+  docker-image:
+    needs: [linter, tests]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Production Image
+        run: docker build --target prod -t symfony-app:latest .
