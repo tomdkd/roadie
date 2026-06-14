@@ -13,8 +13,7 @@ down: ## Stop all containers and remove orphans
 	docker compose down --remove-orphans
 
 install: ## Install the application (Backend + Frontend)
-	@if [ ! -f .env ]; then cp .env.dist .env; fi
-	@cp .env ./back/.env
+	@if [ ! -f ./back/.env ]; then cp ./back/.env.dist ./back/.env; fi
 	docker compose build
 	docker compose up -d
 	docker compose exec $(BACK_SERVICE) composer install

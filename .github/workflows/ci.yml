@@ -36,7 +36,7 @@ jobs:
       - name: Composer Install
         if: steps.cache-vendor.outputs.cache-hit != 'true'
         run: |
-          cp ../.env.dist .env
+          cp .env.dist .env
           composer install --no-progress --prefer-dist --optimize-autoloader
 
   back-tests:
@@ -61,7 +61,6 @@ jobs:
 
       - name: Run Linters & Tests
         run: |
-          cp ../.env.dist .env
           php bin/console lint:yaml config
           php bin/console lint:twig templates
           vendor/bin/phpunit
@@ -72,7 +71,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Build Back Production Image
-        run: docker build -f back/Dockerfile --target prod -t roadie-back:latest .
+        run: docker build -f back/Dockerfile --target prod -t roadie-back:latest ./back
 
 
   # ==========================================
