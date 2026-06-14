@@ -2,12 +2,15 @@ name: CI Roadie Monorepo
 
 on:
   push:
-    branches: [ main, develop ]
+    branches:
+      - '**'
   pull_request:
+    branches:
+      - '**'
 
 jobs:
   # ==========================================
-  # 🐘 PIPELINE BACKEND (Symfony)
+  # PIPELINE BACKEND (Symfony)
   # ==========================================
   back-dependencies:
     runs-on: ubuntu-latest
@@ -72,7 +75,7 @@ jobs:
 
 
   # ==========================================
-  # ⚛️ PIPELINE FRONTEND (React / Vite)
+  # PIPELINE FRONTEND (React / Vite)
   # ==========================================
   front-dependencies:
     runs-on: ubuntu-latest
