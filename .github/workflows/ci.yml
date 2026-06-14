@@ -36,7 +36,7 @@ jobs:
       - name: Composer Install
         if: steps.cache-vendor.outputs.cache-hit != 'true'
         run: |
-          cp .env.dist .env 
+          cp ../.env.dist .env
           composer install --no-progress --prefer-dist --optimize-autoloader
 
   back-tests:
