@@ -1,10 +1,12 @@
 services:
   php-fpm:
     build:
-      context: .
+      context: ./back
       target: base
+    env_file:
+      - .env
     networks:
-      - app-network
+      - roadie-net
 
   nginx:
     image: nginx:alpine
@@ -13,10 +15,24 @@ services:
     depends_on:
       - php-fpm
     volumes:
-      - .:/app:ro
-      - ./docker/nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./back:/app:ro
+      - ./back/docker/nginx/conf.d:/etc/nginx/conf.d:ro
     networks:
-      - app-network
+      - roadie-net
+
+  frontend:
+    image: node:26-alpine
+    working_dir: /app
+    env_file:
+      - .env
+    volumes:
+      - ./front:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    networks:
+      - roadie-net
 
 networks:
-  app-network:
+  roadie-net:
+    name: roadie-net
