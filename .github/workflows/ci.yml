@@ -61,6 +61,7 @@ jobs:
 
       - name: Run Linters & Tests
         run: |
+          cp ../.env.dist .env
           php bin/console lint:yaml config
           php bin/console lint:twig templates
           vendor/bin/phpunit
