@@ -72,7 +72,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Build Back Production Image
-        run: docker build -f back/Dockerfile --target prod -t roadie-back:latest ./back
+        run: docker build -f back/Dockerfile --target prod -t roadie-back:latest .
 
 
   # ==========================================

@@ -17,15 +17,16 @@ RUN install-php-extensions xdebug
 # --- STAGE 3: Build prod ---
 FROM base AS build
 ENV APP_ENV=prod
-COPY composer.json composer.lock ./
+COPY ./back/composer.json ./back/composer.lock ./
 RUN composer install --no-dev --no-scripts --no-autoloader
-COPY . .
+COPY ./back/* .
 RUN composer install --no-dev --optimize-autoloader
 
 # --- STAGE 4: Prod ---
 FROM base AS prod
 ENV APP_ENV=prod
 COPY --from=build /app /app
-COPY docker/php/conf.d/prod.ini $PHP_INI_DIR/conf.d/app.ini
+COPY .env.dist .env
+COPY ./back/docker/php/conf.d/prod.ini $PHP_INI_DIR/conf.d/app.ini
 RUN chown -R www-data:www-data /app/var
 USER www-data
