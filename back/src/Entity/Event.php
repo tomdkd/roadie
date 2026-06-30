@@ -21,6 +21,9 @@ class Event
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $status = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $title = null;
+
     /**
      * @var Collection<int, Context>
      */
@@ -61,6 +64,18 @@ class Event
     public function setStatus(?string $status): static
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    public function getTitle(): ?string
+    {
+        return $this->title;
+    }
+
+    public function setTitle(string $title): static
+    {
+        $this->title = $title;
 
         return $this;
     }
