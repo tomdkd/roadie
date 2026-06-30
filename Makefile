@@ -32,3 +32,6 @@ test: ## Run the test suite
 
 console: ## Execute a command in the Symfony console. Usage: make console cmd="your:command"
 	docker compose exec $(BACK_SERVICE) php bin/console $(cmd)
+
+entity: ## Generate a new entity. Usage: make entity name=YourEntity
+	docker compose exec $(BACK_SERVICE) php bin/console make:entity $(name)
