@@ -59,4 +59,46 @@ class AuthController extends AbstractController
             'role' => 'Band Administrator',
         ]);
     }
+
+    #[Route('/me', name: 'me_update', methods: ['PUT', 'POST'])]
+    public function updateMe(Request $request, UserRepository $userRepository, \Doctrine\ORM\EntityManagerInterface $em): JsonResponse
+    {
+        $user = $userRepository->findOneBy([]) ?? null;
+
+        if (!$user) {
+            return $this->json(['message' => 'User not found'], 404);
+        }
+
+        $payload = json_decode($request->getContent(), true) ?? [];
+
+        if (isset($payload['firstName'])) {
+            $user->setFirstname((string) $payload['firstName']);
+        }
+        if (isset($payload['lastName'])) {
+            $user->setLastname((string) $payload['lastName']);
+        }
+        if (isset($payload['email'])) {
+            $user->setEmail((string) $payload['email']);
+        }
+        if (isset($payload['phone'])) {
+            $user->setPhoneNumber((string) $payload['phone']);
+        }
+        if (isset($payload['location'])) {
+            $user->setAddress((string) $payload['location']);
+        }
+
+        $em->flush();
+
+        return $this->json([
+            'message' => 'Profile updated successfully',
+            'user' => [
+                'firstName' => $user->getFirstname(),
+                'lastName' => $user->getLastname(),
+                'email' => $user->getEmail(),
+                'phone' => $user->getPhoneNumber(),
+                'location' => $user->getAddress(),
+                'role' => 'Band Administrator',
+            ]
+        ]);
+    }
 }
