@@ -15,6 +15,7 @@ import {
   Check,
   RefreshCw
 } from 'lucide-react'
+import { getSettings } from '../lib/api'
 
 const tabItems = [
   { label: 'Band & Projects', key: 'profile', icon: FolderHeart },
@@ -130,28 +131,23 @@ export default function Settings() {
   const fetchSettings = async () => {
     setLoading(true)
     try {
-      const response = await fetch('/api/settings')
-      if (response.ok) {
-        const data = await response.json()
-        
-        if (data.projects) setProjectsList(data.projects)
-        if (data.members) setBandMembers(data.members)
-        if (data.users) setUsers(data.users)
-        
-        if (data.integrations) {
-          setSpotifySecret(data.integrations.spotifySecret || '')
-          setMusicBrainzId(data.integrations.musicBrainzId || '')
-          setDeezerKey(data.integrations.deezerKey || '')
+      const data = await getSettings()
+
+      if (data.projects) setProjectsList(data.projects)
+      if (data.members) setBandMembers(data.members)
+      if (data.users) setUsers(data.users)
+
+      if (data.integrations) {
+        setSpotifySecret(data.integrations.spotifySecret || '')
+        setMusicBrainzId(data.integrations.musicBrainzId || '')
+        setDeezerKey(data.integrations.deezerKey || '')
+      }
+
+      if (data.preferences) {
+        if (data.preferences.theme) setTheme(data.preferences.theme)
+        if (data.preferences.notificationSettings) {
+          setNotificationSettings(data.preferences.notificationSettings)
         }
-        
-        if (data.preferences) {
-          if (data.preferences.theme) setTheme(data.preferences.theme)
-          if (data.preferences.notificationSettings) {
-            setNotificationSettings(data.preferences.notificationSettings)
-          }
-        }
-      } else {
-        toast.error('Échec de la récupération des paramètres')
       }
     } catch (err) {
       console.error(err)

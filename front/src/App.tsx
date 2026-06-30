@@ -9,7 +9,9 @@ import Register from './pages/Register'
 import MapPage from './pages/Map'
 import Me from './pages/Me'
 import Settings from './pages/Settings'
-import { getStoredToken, setStoredToken } from './lib/api'
+import NotFound from './pages/NotFound'
+import { clearStoredToken, getStoredToken, logout as logoutRequest, setStoredToken } from './lib/api'
+import { AuthContext } from './lib/auth'
 
 function App() {
   const [token, setToken] = useState(getStoredToken())
@@ -20,7 +22,14 @@ function App() {
     setToken(nextToken)
   }
 
+  const handleLogout = () => {
+    logoutRequest()
+    clearStoredToken()
+    setToken('')
+  }
+
   return (
+    <AuthContext.Provider value={{ logout: handleLogout }}>
     <BrowserRouter>
       <Toaster position="top-right" reverseOrder={false} />
 
@@ -65,9 +74,10 @@ function App() {
           element={isAuthenticated ? <Me /> : <Navigate to="/login" replace />}
         />
 
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
+    </AuthContext.Provider>
   )
 }
 

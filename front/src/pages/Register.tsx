@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import toast, { Toaster } from 'react-hot-toast'
 import { Mail, Lock, Phone, MapPin, RefreshCw, ChevronLeft } from 'lucide-react'
+import { register } from '../lib/api'
 import './Login.css'
 
 export default function Register() {
@@ -19,33 +20,22 @@ export default function Register() {
     setLoading(true)
 
     try {
-      const response = await fetch('/api/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          firstName,
-          lastName,
-          email,
-          password,
-          phone,
-          location,
-        }),
+      await register({
+        firstName,
+        lastName,
+        email,
+        password,
+        phone,
+        location,
       })
 
-      if (response.ok) {
-        toast.success('Compte créé avec succès ! Tu peux te connecter.')
-        // Rediriger vers la connexion après 1,5 secondes
-        setTimeout(() => {
-          navigate('/login')
-        }, 1500)
-      } else {
-        const errData = await response.json().catch(() => ({}))
-        toast.error(errData.message || 'Erreur lors de la création du compte')
-      }
-    } catch {
-      toast.error('Erreur réseau lors de la création du compte')
+      toast.success('Compte créé avec succès ! Tu peux te connecter.')
+      // Rediriger vers la connexion après 1,5 secondes
+      setTimeout(() => {
+        navigate('/login')
+      }, 1500)
+    } catch (err: any) {
+      toast.error(err?.message || 'Erreur lors de la création du compte')
     } finally {
       setLoading(false)
     }

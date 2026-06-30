@@ -45,6 +45,14 @@ class AuthController extends AbstractController
         ]);
     }
 
+    #[Route('/logout', name: 'logout', methods: ['POST'])]
+    public function logout(): JsonResponse
+    {
+        // Authentification stateless : la déconnexion se fait côté client en
+        // supprimant le token. Cet endpoint confirme simplement l'opération.
+        return $this->json(['message' => 'Déconnexion réussie']);
+    }
+
     #[Route('/register', name: 'register', methods: ['POST'])]
     public function register(Request $request, UserRepository $userRepository, \Doctrine\ORM\EntityManagerInterface $em): JsonResponse
     {

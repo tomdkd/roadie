@@ -18,6 +18,10 @@ export function setStoredToken(token: string): void {
   localStorage.setItem(TOKEN_STORAGE_KEY, token)
 }
 
+export function clearStoredToken(): void {
+  localStorage.removeItem(TOKEN_STORAGE_KEY)
+}
+
 async function apiRequest(path: string, options: RequestInit = {}): Promise<any> {
   const token = getStoredToken()
   const headers: Record<string, string> = {
@@ -50,8 +54,59 @@ export function login(username: string, password: string): Promise<any> {
   })
 }
 
+export function register(payload: {
+  firstName: string
+  lastName: string
+  email: string
+  password: string
+  phone?: string
+  location?: string
+}): Promise<any> {
+  return apiRequest('/register', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export function logout(): Promise<any> {
+  return apiRequest('/logout', { method: 'POST' }).catch(() => null)
+}
+
+export function getMe(): Promise<any> {
+  return apiRequest('/me')
+}
+
+export function updateMe(payload: {
+  firstName?: string
+  lastName?: string
+  email?: string
+  phone?: string
+  location?: string
+}): Promise<any> {
+  return apiRequest('/me', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export function getSettings(): Promise<any> {
+  return apiRequest('/settings')
+}
+
 export function getNotifications(): Promise<any> {
   return apiRequest('/notifications')
+}
+
+export function markNotificationRead(id: number): Promise<any> {
+  return apiRequest(`/notifications/${id}/read`, { method: 'PATCH' })
+}
+
+export function markAllNotificationsRead(): Promise<any> {
+  return apiRequest('/notifications/read-all', { method: 'POST' })
+}
+
+export function deleteNotification(id: number): Promise<any> {
+  return apiRequest(`/notifications/${id}`, { method: 'DELETE' })
 }
 
 export function getDashboard(): Promise<any> {

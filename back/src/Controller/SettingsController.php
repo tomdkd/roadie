@@ -43,9 +43,9 @@ class SettingsController extends AbstractController
             ],
             'users' => $usersList,
             'integrations' => [
-                'spotifySecret' => 'sp_sec_8f3a19c8b7d2f1a3c89f24e5b',
+                'spotifySecret' => $this->maskSecret('sp_sec_8f3a19c8b7d2f1a3c89f24e5b'),
                 'musicBrainzId' => 'mbid-7b1a94f8-32c0-4b11-b1e2-9d83aef7c401',
-                'deezerKey' => 'dz_key_92bd84fa10c9e782',
+                'deezerKey' => $this->maskSecret('dz_key_92bd84fa10c9e782'),
             ],
             'preferences' => [
                 'theme' => 'system',
@@ -56,5 +56,21 @@ class SettingsController extends AbstractController
                 ],
             ],
         ]);
+    }
+
+    /**
+     * Masque une clé secrète en ne conservant que le préfixe et les 4 derniers
+     * caractères afin de ne jamais exposer le secret complet côté client.
+     */
+    private function maskSecret(string $secret): string
+    {
+        if (strlen($secret) <= 8) {
+            return str_repeat('•', strlen($secret));
+        }
+
+        $visibleStart = substr($secret, 0, 7);
+        $visibleEnd = substr($secret, -4);
+
+        return $visibleStart . str_repeat('•', 8) . $visibleEnd;
     }
 }

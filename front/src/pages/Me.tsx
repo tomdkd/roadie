@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { AppShell } from '../components/AppShell'
 import toast, { Toaster } from 'react-hot-toast'
 import { User, Mail, Phone, MapPin, Shield, Edit2, Check, X, RefreshCw } from 'lucide-react'
+import { getMe, updateMe } from '../lib/api'
 
 interface UserProfile {
   firstName: string
@@ -29,19 +30,14 @@ export default function Me() {
   const fetchProfile = async () => {
     setLoading(true)
     try {
-      const response = await fetch('/api/me')
-      if (response.ok) {
-        const data = await response.json()
-        setProfile(data)
-        // Remplir le formulaire
-        setFirstName(data.firstName || '')
-        setLastName(data.lastName || '')
-        setEmail(data.email || '')
-        setPhone(data.phone || '')
-        setLocation(data.location || '')
-      } else {
-        toast.error('Failed to load profile details')
-      }
+      const data = await getMe()
+      setProfile(data)
+      // Remplir le formulaire
+      setFirstName(data.firstName || '')
+      setLastName(data.lastName || '')
+      setEmail(data.email || '')
+      setPhone(data.phone || '')
+      setLocation(data.location || '')
     } catch (err) {
       console.error(err)
       toast.error('Network error while fetching profile')
@@ -59,32 +55,19 @@ export default function Me() {
     e.preventDefault()
     setSaving(true)
     try {
-      const response = await fetch('/api/me', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          firstName,
-          lastName,
-          email,
-          phone,
-          location,
-        }),
+      const data = await updateMe({
+        firstName,
+        lastName,
+        email,
+        phone,
+        location,
       })
-
-      if (response.ok) {
-        const data = await response.json()
-        setProfile(data.user)
-        setIsEditing(false)
-        toast.success('Your profile was successfully updated!')
-      } else {
-        const errData = await response.json().catch(() => ({}))
-        toast.error(errData.message || 'Failed to update profile')
-      }
-    } catch (err) {
+      setProfile(data.user)
+      setIsEditing(false)
+      toast.success('Your profile was successfully updated!')
+    } catch (err: any) {
       console.error(err)
-      toast.error('Network error during save operation')
+      toast.error(err?.message || 'Failed to update profile')
     } finally {
       setSaving(false)
     }

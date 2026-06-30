@@ -1,8 +1,10 @@
 import type { ReactNode } from 'react'
 import { useEffect, useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
-import { Bell, FolderOpen, LayoutDashboard, Map, Settings, User } from 'lucide-react'
-import { getNotifications } from '../lib/api'
+import toast from 'react-hot-toast'
+import { Bell, CheckCheck, FolderOpen, LayoutDashboard, LogOut, Map, Settings, User } from 'lucide-react'
+import { getNotifications, markAllNotificationsRead, markNotificationRead } from '../lib/api'
+import { useAuth } from '../lib/auth'
 
 const sidebarItems = [
   { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
@@ -11,7 +13,15 @@ const sidebarItems = [
   { label: 'Settings', icon: Settings, path: '/settings' },
 ]
 
-const fallbackNotifications = [
+type NotificationItem = {
+  id?: number
+  title: string
+  description: string
+  time: string
+  unread: boolean
+}
+
+const fallbackNotifications: NotificationItem[] = [
   {
     title: 'New Mix Available',
     description: 'Pierre uploaded Youth_Collapse_Track_01_v2.wav to the cloud repository',
@@ -37,8 +47,9 @@ type AppShellProps = {
 }
 
 export function AppShell({ children }: AppShellProps) {
+  const { logout } = useAuth()
   const [isNotifOpen, setIsNotifOpen] = useState(false)
-  const [notifications, setNotifications] = useState(fallbackNotifications)
+  const [notifications, setNotifications] = useState<NotificationItem[]>(fallbackNotifications)
 
   useEffect(() => {
     let mounted = true
@@ -62,9 +73,46 @@ export function AppShell({ children }: AppShellProps) {
 
   const hasUnread = notifications.some((item) => item.unread)
 
+  const handleNotificationClick = (notification: NotificationItem) => {
+    if (!notification.unread) {
+      return
+    }
+
+    setNotifications((items) =>
+      items.map((item) => (item === notification ? { ...item, unread: false } : item)),
+    )
+
+    if (typeof notification.id === 'number') {
+      markNotificationRead(notification.id).catch(() => {})
+    }
+  }
+
+  const handleMarkAllRead = () => {
+    if (!hasUnread) {
+      return
+    }
+
+    setNotifications((items) => items.map((item) => ({ ...item, unread: false })))
+    markAllNotificationsRead().catch(() => {})
+  }
+
+  const handleLogout = () => {
+    toast.success('Déconnexion réussie. À bientôt !')
+    logout()
+  }
+
   return (
     <div style={{ display: 'flex', width: '100%', minHeight: '100vh' }}>
-      <aside style={{ width: 88, background: '#0f172a', color: '#fff', padding: '20px 12px' }}>
+      <aside
+        style={{
+          width: 88,
+          background: '#0f172a',
+          color: '#fff',
+          padding: '20px 12px',
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
         <div style={{ textAlign: 'center', fontWeight: 800, marginBottom: 20 }}>R</div>
         <nav style={{ display: 'grid', gap: 8 }}>
           {sidebarItems.map((item) => {
@@ -89,6 +137,27 @@ export function AppShell({ children }: AppShellProps) {
             )
           })}
         </nav>
+
+        <button
+          type="button"
+          onClick={handleLogout}
+          title="Déconnexion"
+          style={{
+            width: 56,
+            height: 56,
+            display: 'grid',
+            placeItems: 'center',
+            borderRadius: 12,
+            margin: '0 auto',
+            marginTop: 'auto',
+            color: '#fca5a5',
+            background: 'transparent',
+            border: 'none',
+            cursor: 'pointer',
+          }}
+        >
+          <LogOut size={20} />
+        </button>
       </aside>
 
       <main style={{ flex: 1, minWidth: 0 }}>
@@ -148,16 +217,48 @@ export function AppShell({ children }: AppShellProps) {
                 flexDirection: 'column',
               }}
             >
-              <div style={{ padding: 16, borderBottom: '1px solid #e2e8f0', fontWeight: 700 }}>Notifications</div>
+              <div
+                style={{
+                  padding: 16,
+                  borderBottom: '1px solid #e2e8f0',
+                  fontWeight: 700,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}
+              >
+                <span>Notifications</span>
+                {hasUnread && (
+                  <button
+                    type="button"
+                    onClick={handleMarkAllRead}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 4,
+                      background: 'transparent',
+                      border: 'none',
+                      color: '#2563eb',
+                      fontSize: 12,
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <CheckCheck size={14} /> Tout marquer
+                  </button>
+                )}
+              </div>
               <div style={{ overflowY: 'auto', display: 'grid', gap: 8, padding: 12 }}>
-                {notifications.map((notification) => (
+                {notifications.map((notification, index) => (
                   <div
-                    key={notification.title}
+                    key={notification.id ?? `${notification.title}-${index}`}
+                    onClick={() => handleNotificationClick(notification)}
                     style={{
                       padding: 12,
                       borderRadius: 10,
                       background: notification.unread ? '#f0f9ff' : '#fff',
                       border: notification.unread ? '1px solid #dbeafe' : '1px solid #e2e8f0',
+                      cursor: notification.unread ? 'pointer' : 'default',
                     }}
                   >
                     <div style={{ fontWeight: 700, fontSize: 14 }}>{notification.title}</div>
