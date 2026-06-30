@@ -2,9 +2,12 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use App\Repository\UserRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/api/settings', name: 'api_settings_')]
@@ -17,16 +20,7 @@ class SettingsController extends AbstractController
         $usersList = [];
 
         foreach ($allUsers as $u) {
-            $usersList[] = [
-                'id' => 'u' . $u->getId(),
-                'firstName' => $u->getFirstname(),
-                'lastName' => $u->getLastname(),
-                'email' => $u->getEmail(),
-                'project' => 'Stuck In Yesterday',
-                'role' => 'Admin',
-                'address' => $u->getAddress(),
-                'phone' => $u->getPhoneNumber(),
-            ];
+            $usersList[] = $this->serializeUser($u);
         }
 
         return $this->json([
@@ -72,5 +66,122 @@ class SettingsController extends AbstractController
         $visibleEnd = substr($secret, -4);
 
         return $visibleStart . str_repeat('•', 8) . $visibleEnd;
+    }
+
+    #[Route('/users', name: 'users_create', methods: ['POST'])]
+    public function createUser(Request $request, UserRepository $userRepository, EntityManagerInterface $em): JsonResponse
+    {
+        $payload = json_decode($request->getContent(), true) ?? [];
+        $email = trim((string) ($payload['email'] ?? ''));
+        $firstName = trim((string) ($payload['firstName'] ?? ''));
+        $lastName = trim((string) ($payload['lastName'] ?? ''));
+        $password = (string) ($payload['password'] ?? '');
+        $phone = trim((string) ($payload['phone'] ?? ''));
+        $address = trim((string) ($payload['address'] ?? ''));
+
+        if (empty($email) || empty($firstName) || empty($lastName) || empty($password)) {
+            return $this->json(['message' => 'Prénom, nom, email et mot de passe sont obligatoires'], 400);
+        }
+
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return $this->json(['message' => 'Adresse email invalide'], 400);
+        }
+
+        if ($userRepository->findOneBy(['email' => $email])) {
+            return $this->json(['message' => 'Cette adresse email est déjà utilisée'], 409);
+        }
+
+        $user = new User();
+        $user->setEmail($email);
+        $user->setFirstname($firstName);
+        $user->setLastname($lastName);
+        $user->setPhoneNumber($phone !== '' ? $phone : null);
+        $user->setAddress($address !== '' ? $address : null);
+        $user->setPassword(password_hash($password, PASSWORD_BCRYPT));
+        $user->setEmailVerified(true);
+        $user->setLastLogin(new \DateTime());
+
+        $em->persist($user);
+        $em->flush();
+
+        return $this->json([
+            'message' => 'Utilisateur ajouté avec succès',
+            'user' => $this->serializeUser($user),
+        ], 201);
+    }
+
+    #[Route('/users/{id}', name: 'users_update', methods: ['PUT', 'PATCH'])]
+    public function updateUser(int $id, Request $request, UserRepository $userRepository, EntityManagerInterface $em): JsonResponse
+    {
+        $user = $userRepository->find($id);
+        if (!$user) {
+            return $this->json(['message' => 'Utilisateur introuvable'], 404);
+        }
+
+        $payload = json_decode($request->getContent(), true) ?? [];
+
+        if (isset($payload['firstName']) && trim((string) $payload['firstName']) !== '') {
+            $user->setFirstname(trim((string) $payload['firstName']));
+        }
+        if (isset($payload['lastName']) && trim((string) $payload['lastName']) !== '') {
+            $user->setLastname(trim((string) $payload['lastName']));
+        }
+        if (isset($payload['email'])) {
+            $email = trim((string) $payload['email']);
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                return $this->json(['message' => 'Adresse email invalide'], 400);
+            }
+            $existing = $userRepository->findOneBy(['email' => $email]);
+            if ($existing && $existing->getId() !== $user->getId()) {
+                return $this->json(['message' => 'Cette adresse email est déjà utilisée'], 409);
+            }
+            $user->setEmail($email);
+        }
+        if (array_key_exists('phone', $payload)) {
+            $phone = trim((string) $payload['phone']);
+            $user->setPhoneNumber($phone !== '' ? $phone : null);
+        }
+        if (array_key_exists('address', $payload)) {
+            $address = trim((string) $payload['address']);
+            $user->setAddress($address !== '' ? $address : null);
+        }
+
+        $em->flush();
+
+        return $this->json([
+            'message' => 'Utilisateur mis à jour',
+            'user' => $this->serializeUser($user),
+        ]);
+    }
+
+    #[Route('/users/{id}', name: 'users_delete', methods: ['DELETE'])]
+    public function deleteUser(int $id, UserRepository $userRepository, EntityManagerInterface $em): JsonResponse
+    {
+        $user = $userRepository->find($id);
+        if (!$user) {
+            return $this->json(['message' => 'Utilisateur introuvable'], 404);
+        }
+
+        $em->remove($user);
+        $em->flush();
+
+        return $this->json(['message' => 'Utilisateur supprimé', 'id' => $id]);
+    }
+
+    /**
+     * Normalise un utilisateur pour la réponse JSON côté paramètres.
+     */
+    private function serializeUser(User $user): array
+    {
+        return [
+            'id' => $user->getId(),
+            'firstName' => $user->getFirstname(),
+            'lastName' => $user->getLastname(),
+            'email' => $user->getEmail(),
+            'project' => 'Stuck In Yesterday',
+            'role' => 'Admin',
+            'address' => $user->getAddress() ?? '',
+            'phone' => $user->getPhoneNumber() ?? '',
+        ];
     }
 }

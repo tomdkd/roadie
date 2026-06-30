@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, type FormEvent } from 'react'
 import { AppShell } from '../components/AppShell'
 import toast, { Toaster } from 'react-hot-toast'
 import { 
@@ -15,7 +15,7 @@ import {
   Check,
   RefreshCw
 } from 'lucide-react'
-import { getSettings } from '../lib/api'
+import { getSettings, createSettingsUser, updateSettingsUser, deleteSettingsUser } from '../lib/api'
 
 const tabItems = [
   { label: 'Band & Projects', key: 'profile', icon: FolderHeart },
@@ -31,7 +31,7 @@ interface BandMember {
 }
 
 interface UserAccount {
-  id: string
+  id: number
   firstName: string
   lastName: string
   email: string
@@ -39,6 +39,24 @@ interface UserAccount {
   role: string
   address: string
   phone: string
+}
+
+interface UserFormState {
+  firstName: string
+  lastName: string
+  email: string
+  password: string
+  phone: string
+  address: string
+}
+
+const emptyUserForm: UserFormState = {
+  firstName: '',
+  lastName: '',
+  email: '',
+  password: '',
+  phone: '',
+  address: '',
 }
 
 const ToggleSwitch = ({ id, label, checked, onChange }: { id: string; label: string; checked: boolean; onChange: () => void }) => (
@@ -122,9 +140,16 @@ export default function Settings() {
     weeklyDigest: true,
   })
 
-  const [selectedUsers, setSelectedUsers] = useState<string[]>([])
+  const [selectedUsers, setSelectedUsers] = useState<number[]>([])
   const [activeUserProfile, setActiveUserProfile] = useState<UserAccount | null>(null)
-  
+
+  // Gestion des formulaires d'ajout / d'édition d'utilisateur
+  const [userFormMode, setUserFormMode] = useState<'create' | 'edit' | null>(null)
+  const [userForm, setUserForm] = useState<UserFormState>(emptyUserForm)
+  const [editingUserId, setEditingUserId] = useState<number | null>(null)
+  const [submittingUser, setSubmittingUser] = useState(false)
+  const [deletingUserId, setDeletingUserId] = useState<number | null>(null)
+
   const isAllSelected = selectedUsers.length === users.length && users.length > 0
 
   // Charger les paramètres depuis l'API Symfony
@@ -161,7 +186,7 @@ export default function Settings() {
     fetchSettings()
   }, [])
 
-  const toggleUserSelection = (userId: string) => {
+  const toggleUserSelection = (userId: number) => {
     setSelectedUsers((current) =>
       current.includes(userId) ? current.filter((id) => id !== userId) : [...current, userId]
     )
@@ -169,6 +194,101 @@ export default function Settings() {
 
   const toggleAllUsers = () => {
     setSelectedUsers((current) => (current.length === users.length ? [] : users.map((u) => u.id)))
+  }
+
+  // Ouvre le formulaire en mode création
+  const openCreateUser = () => {
+    setUserForm(emptyUserForm)
+    setEditingUserId(null)
+    setUserFormMode('create')
+  }
+
+  // Ouvre le formulaire pré-rempli en mode édition
+  const openEditUser = (user: UserAccount) => {
+    setUserForm({
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      password: '',
+      phone: user.phone || '',
+      address: user.address || '',
+    })
+    setEditingUserId(user.id)
+    setUserFormMode('edit')
+  }
+
+  const closeUserForm = () => {
+    setUserFormMode(null)
+    setEditingUserId(null)
+    setUserForm(emptyUserForm)
+  }
+
+  const updateUserFormField = (field: keyof UserFormState, value: string) => {
+    setUserForm((current) => ({ ...current, [field]: value }))
+  }
+
+  // Soumission du formulaire (création ou mise à jour)
+  const handleSubmitUser = async (e: FormEvent) => {
+    e.preventDefault()
+
+    if (!userForm.firstName.trim() || !userForm.lastName.trim() || !userForm.email.trim()) {
+      toast.error('Prénom, nom et email sont obligatoires')
+      return
+    }
+    if (userFormMode === 'create' && !userForm.password.trim()) {
+      toast.error('Un mot de passe initial est requis pour créer un compte')
+      return
+    }
+
+    setSubmittingUser(true)
+    try {
+      if (userFormMode === 'create') {
+        const data = await createSettingsUser({
+          firstName: userForm.firstName.trim(),
+          lastName: userForm.lastName.trim(),
+          email: userForm.email.trim(),
+          password: userForm.password,
+          phone: userForm.phone.trim(),
+          address: userForm.address.trim(),
+        })
+        setUsers((current) => [...current, data.user])
+        toast.success('Utilisateur ajouté avec succès !')
+      } else if (userFormMode === 'edit' && editingUserId !== null) {
+        const data = await updateSettingsUser(editingUserId, {
+          firstName: userForm.firstName.trim(),
+          lastName: userForm.lastName.trim(),
+          email: userForm.email.trim(),
+          phone: userForm.phone.trim(),
+          address: userForm.address.trim(),
+        })
+        setUsers((current) => current.map((u) => (u.id === editingUserId ? data.user : u)))
+        toast.success('Utilisateur mis à jour !')
+      }
+      closeUserForm()
+    } catch (err: any) {
+      toast.error(err?.message || "Échec de l'opération sur l'utilisateur")
+    } finally {
+      setSubmittingUser(false)
+    }
+  }
+
+  // Suppression réelle d'un utilisateur
+  const handleDeleteUser = async (user: UserAccount) => {
+    if (!window.confirm(`Supprimer définitivement ${user.firstName} ${user.lastName} ?`)) {
+      return
+    }
+
+    setDeletingUserId(user.id)
+    try {
+      await deleteSettingsUser(user.id)
+      setUsers((current) => current.filter((u) => u.id !== user.id))
+      setSelectedUsers((current) => current.filter((id) => id !== user.id))
+      toast.success('Utilisateur supprimé')
+    } catch (err: any) {
+      toast.error(err?.message || 'Échec de la suppression')
+    } finally {
+      setDeletingUserId(null)
+    }
   }
 
   // Soumettre les modifications globales de configurations
@@ -353,7 +473,7 @@ export default function Settings() {
                       </div>
                       <button
                         type="button"
-                        onClick={() => toast.success("Module d'invitation de membre actif !")}
+                        onClick={openCreateUser}
                         style={{
                           display: 'inline-flex',
                           alignItems: 'center',
@@ -398,6 +518,22 @@ export default function Settings() {
                           <span>Permissions</span>
                           <span style={{ textAlign: 'right' }}>Actions</span>
                         </div>
+
+                        {users.length === 0 && (
+                          <div
+                            style={{
+                              padding: '32px',
+                              textAlign: 'center',
+                              color: '#94a3b8',
+                              fontSize: '14px',
+                              borderRadius: '12px',
+                              backgroundColor: '#f8fafc',
+                              border: '1px dashed #cbd5e1',
+                            }}
+                          >
+                            Aucun utilisateur enregistré. Clique sur « Ajouter un utilisateur » pour commencer.
+                          </div>
+                        )}
 
                         {users.map((user) => {
                           const isSelected = selectedUsers.includes(user.id)
@@ -468,17 +604,18 @@ export default function Settings() {
                                 </button>
                                 <button
                                   type="button"
-                                  onClick={() => toast.success(`Édition de l'utilisateur ${user.firstName}`)}
+                                  onClick={() => openEditUser(user)}
                                   style={{ border: 'none', background: 'transparent', color: '#64748b', cursor: 'pointer', padding: '6px', borderRadius: '6px' }}
                                 >
                                   <Pencil size={16} />
                                 </button>
                                 <button
                                   type="button"
-                                  onClick={() => toast.error(`Permissions insuffisantes pour révoquer cet utilisateur`)}
-                                  style={{ border: 'none', background: 'transparent', color: '#ef4444', cursor: 'pointer', padding: '6px', borderRadius: '6px' }}
+                                  onClick={() => handleDeleteUser(user)}
+                                  disabled={deletingUserId === user.id}
+                                  style={{ border: 'none', background: 'transparent', color: '#ef4444', cursor: deletingUserId === user.id ? 'wait' : 'pointer', padding: '6px', borderRadius: '6px', opacity: deletingUserId === user.id ? 0.5 : 1 }}
                                 >
-                                  <Trash2 size={16} />
+                                  {deletingUserId === user.id ? <RefreshCw size={16} className="animate-spin" /> : <Trash2 size={16} />}
                                 </button>
                               </div>
                             </div>
@@ -880,6 +1017,160 @@ export default function Settings() {
                 </button>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* Modal de formulaire d'ajout / édition d'utilisateur */}
+        {userFormMode && (
+          <div
+            style={{
+              position: 'fixed',
+              inset: 0,
+              backgroundColor: 'rgba(15, 23, 42, 0.4)',
+              backdropFilter: 'blur(4px)',
+              zIndex: 210,
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              padding: '24px',
+            }}
+          >
+            <form
+              onSubmit={handleSubmitUser}
+              style={{
+                width: '100%',
+                maxWidth: '480px',
+                backgroundColor: '#ffffff',
+                borderRadius: '16px',
+                padding: '24px',
+                position: 'relative',
+                border: '1px solid #e2e8f0',
+                boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)',
+                maxHeight: '90vh',
+                overflowY: 'auto',
+              }}
+            >
+              <button
+                type="button"
+                onClick={closeUserForm}
+                style={{ position: 'absolute', top: 16, right: 16, border: 'none', background: 'transparent', color: '#64748b', cursor: 'pointer', padding: '6px' }}
+              >
+                <X size={18} />
+              </button>
+
+              <h3 style={{ margin: '0 0 4px', fontSize: '20px', fontWeight: 700, color: '#0f172a' }}>
+                {userFormMode === 'create' ? 'Ajouter un utilisateur' : "Modifier l'utilisateur"}
+              </h3>
+              <p style={{ margin: '0 0 20px', color: '#64748b', fontSize: '13px' }}>
+                {userFormMode === 'create'
+                  ? 'Crée un nouvel accès administrateur persistant en base de données.'
+                  : 'Mets à jour les informations du compte sélectionné.'}
+              </p>
+
+              <div style={{ display: 'grid', gap: '14px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                  <div style={{ display: 'grid', gap: '6px' }}>
+                    <label style={{ fontSize: '13px', fontWeight: 600, color: '#334155' }}>Prénom *</label>
+                    <input
+                      type="text"
+                      value={userForm.firstName}
+                      onChange={(e) => updateUserFormField('firstName', e.target.value)}
+                      style={{ width: '100%', borderRadius: '8px', border: '1px solid #cbd5e1', padding: '10px 12px', fontSize: '14px', boxSizing: 'border-box' }}
+                    />
+                  </div>
+                  <div style={{ display: 'grid', gap: '6px' }}>
+                    <label style={{ fontSize: '13px', fontWeight: 600, color: '#334155' }}>Nom *</label>
+                    <input
+                      type="text"
+                      value={userForm.lastName}
+                      onChange={(e) => updateUserFormField('lastName', e.target.value)}
+                      style={{ width: '100%', borderRadius: '8px', border: '1px solid #cbd5e1', padding: '10px 12px', fontSize: '14px', boxSizing: 'border-box' }}
+                    />
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gap: '6px' }}>
+                  <label style={{ fontSize: '13px', fontWeight: 600, color: '#334155' }}>Adresse email *</label>
+                  <input
+                    type="email"
+                    value={userForm.email}
+                    onChange={(e) => updateUserFormField('email', e.target.value)}
+                    style={{ width: '100%', borderRadius: '8px', border: '1px solid #cbd5e1', padding: '10px 12px', fontSize: '14px', boxSizing: 'border-box' }}
+                  />
+                </div>
+
+                {userFormMode === 'create' && (
+                  <div style={{ display: 'grid', gap: '6px' }}>
+                    <label style={{ fontSize: '13px', fontWeight: 600, color: '#334155' }}>Mot de passe initial *</label>
+                    <input
+                      type="password"
+                      value={userForm.password}
+                      onChange={(e) => updateUserFormField('password', e.target.value)}
+                      placeholder="Minimum 6 caractères"
+                      style={{ width: '100%', borderRadius: '8px', border: '1px solid #cbd5e1', padding: '10px 12px', fontSize: '14px', boxSizing: 'border-box' }}
+                    />
+                  </div>
+                )}
+
+                <div style={{ display: 'grid', gap: '6px' }}>
+                  <label style={{ fontSize: '13px', fontWeight: 600, color: '#334155' }}>Téléphone</label>
+                  <input
+                    type="tel"
+                    value={userForm.phone}
+                    onChange={(e) => updateUserFormField('phone', e.target.value)}
+                    style={{ width: '100%', borderRadius: '8px', border: '1px solid #cbd5e1', padding: '10px 12px', fontSize: '14px', boxSizing: 'border-box' }}
+                  />
+                </div>
+
+                <div style={{ display: 'grid', gap: '6px' }}>
+                  <label style={{ fontSize: '13px', fontWeight: 600, color: '#334155' }}>Adresse postale</label>
+                  <input
+                    type="text"
+                    value={userForm.address}
+                    onChange={(e) => updateUserFormField('address', e.target.value)}
+                    style={{ width: '100%', borderRadius: '8px', border: '1px solid #cbd5e1', padding: '10px 12px', fontSize: '14px', boxSizing: 'border-box' }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '24px' }}>
+                <button
+                  type="button"
+                  onClick={closeUserForm}
+                  style={{ padding: '10px 18px', borderRadius: '8px', border: '1px solid #cbd5e1', background: '#ffffff', color: '#334155', cursor: 'pointer', fontWeight: 600, fontSize: '13px' }}
+                >
+                  Annuler
+                </button>
+                <button
+                  type="submit"
+                  disabled={submittingUser}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '10px 18px',
+                    borderRadius: '8px',
+                    border: 'none',
+                    background: '#3b82f6',
+                    color: '#ffffff',
+                    cursor: submittingUser ? 'wait' : 'pointer',
+                    fontWeight: 700,
+                    fontSize: '13px',
+                    opacity: submittingUser ? 0.7 : 1,
+                  }}
+                >
+                  {submittingUser ? (
+                    <>
+                      <RefreshCw size={15} className="animate-spin" /> Enregistrement...
+                    </>
+                  ) : (
+                    <>
+                      <Check size={15} /> {userFormMode === 'create' ? 'Créer le compte' : 'Enregistrer'}
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
           </div>
         )}
       </div>

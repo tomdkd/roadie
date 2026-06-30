@@ -93,6 +93,40 @@ export function getSettings(): Promise<any> {
   return apiRequest('/settings')
 }
 
+export function createSettingsUser(payload: {
+  firstName: string
+  lastName: string
+  email: string
+  password: string
+  phone?: string
+  address?: string
+}): Promise<any> {
+  return apiRequest('/settings/users', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export function updateSettingsUser(
+  id: number,
+  payload: {
+    firstName?: string
+    lastName?: string
+    email?: string
+    phone?: string
+    address?: string
+  },
+): Promise<any> {
+  return apiRequest(`/settings/users/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(payload),
+  })
+}
+
+export function deleteSettingsUser(id: number): Promise<any> {
+  return apiRequest(`/settings/users/${id}`, { method: 'DELETE' })
+}
+
 export function getNotifications(): Promise<any> {
   return apiRequest('/notifications')
 }
