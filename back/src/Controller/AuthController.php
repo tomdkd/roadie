@@ -45,6 +45,54 @@ class AuthController extends AbstractController
         ]);
     }
 
+    #[Route('/register', name: 'register', methods: ['POST'])]
+    public function register(Request $request, UserRepository $userRepository, \Doctrine\ORM\EntityManagerInterface $em): JsonResponse
+    {
+        $payload = json_decode($request->getContent(), true) ?? [];
+        $email = trim((string) ($payload['email'] ?? ''));
+        $password = (string) ($payload['password'] ?? '');
+        $firstName = trim((string) ($payload['firstName'] ?? ''));
+        $lastName = trim((string) ($payload['lastName'] ?? ''));
+        $phone = trim((string) ($payload['phone'] ?? ''));
+        $location = trim((string) ($payload['location'] ?? ''));
+
+        if (empty($email) || empty($password) || empty($firstName) || empty($lastName)) {
+            return $this->json(['message' => 'Veuillez remplir tous les champs obligatoires (Prénom, Nom, Email, Mot de passe)'], 400);
+        }
+
+        $existing = $userRepository->findOneBy(['email' => $email]);
+        if ($existing) {
+            return $this->json(['message' => 'Cette adresse email est déjà associée à un compte administrateur'], 400);
+        }
+
+        $user = new \App\Entity\User();
+        $user->setEmail($email);
+        $user->setFirstname($firstName);
+        $user->setLastname($lastName);
+        $user->setPhoneNumber($phone);
+        $user->setAddress($location);
+        
+        // Hachage du mot de passe sécurisé en BDD
+        $hashed = password_hash($password, PASSWORD_BCRYPT);
+        $user->setPassword($hashed);
+        
+        // Champs obligatoires de l'entité d'origine
+        $user->setEmailVerified(true);
+        $user->setLastLogin(new \DateTime());
+
+        $em->persist($user);
+        $em->flush();
+
+        return $this->json([
+            'message' => 'Utilisateur créé de manière persistante avec succès',
+            'user' => [
+                'email' => $user->getEmail(),
+                'firstName' => $user->getFirstname(),
+                'lastName' => $user->getLastname(),
+            ]
+        ], 201);
+    }
+
     #[Route('/me', name: 'me', methods: ['GET'])]
     public function me(UserRepository $userRepository): JsonResponse
     {

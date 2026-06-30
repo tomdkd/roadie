@@ -45,6 +45,17 @@ export default function Login({ onLoginSuccess }: LoginProps) {
           <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
         </label>
         <button type="submit" disabled={loading}>{loading ? 'Connexion...' : 'Se connecter'}</button>
+        
+        <div style={{ marginTop: '16px', textAlign: 'center', fontSize: '13px', color: '#64748b' }}>
+          Pas encore de compte ?{' '}
+          <span 
+            onClick={() => navigate('/register')} 
+            style={{ color: '#3b82f6', fontWeight: 600, cursor: 'pointer' }}
+          >
+            S'inscrire
+          </span>
+        </div>
+
         <small>Compte de démonstration: admin / admin</small>
       </form>
     </div>

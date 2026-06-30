@@ -5,6 +5,7 @@ import './App.css'
 import Dashboard from './pages/Dashboard'
 import Files from './pages/Files'
 import Login from './pages/Login'
+import Register from './pages/Register'
 import MapPage from './pages/Map'
 import Me from './pages/Me'
 import Settings from './pages/Settings'
@@ -32,6 +33,11 @@ function App() {
         <Route
           path="/login"
           element={<Login onLoginSuccess={handleLoginSuccess} />}
+        />
+
+        <Route
+          path="/register"
+          element={<Register />}
         />
 
         <Route
