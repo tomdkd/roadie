@@ -15,7 +15,18 @@ import {
   Check,
   RefreshCw
 } from 'lucide-react'
-import { getSettings, createSettingsUser, updateSettingsUser, deleteSettingsUser } from '../lib/api'
+import {
+  getSettings,
+  createSettingsUser,
+  updateSettingsUser,
+  deleteSettingsUser,
+  createProject,
+  updateProject,
+  deleteProject,
+  createMember,
+  updateMember,
+  deleteMember,
+} from '../lib/api'
 
 const tabItems = [
   { label: 'Band & Projects', key: 'profile', icon: FolderHeart },
@@ -26,8 +37,49 @@ const tabItems = [
 ]
 
 interface BandMember {
+  id: number
   name: string
   role: string
+  projectId?: number | null
+  projectName?: string | null
+}
+
+interface ProjectItem {
+  id: number
+  value: string
+  label: string
+  style?: string
+  location?: string
+  bio?: string
+  musicBrainzArtistId?: string
+}
+
+interface ProjectFormState {
+  name: string
+  style: string
+  location: string
+  bio: string
+  musicBrainzArtistId: string
+}
+
+const emptyProjectForm: ProjectFormState = {
+  name: '',
+  style: '',
+  location: '',
+  bio: '',
+  musicBrainzArtistId: '',
+}
+
+interface MemberFormState {
+  name: string
+  role: string
+  projectId: number | null
+}
+
+const emptyMemberForm: MemberFormState = {
+  name: '',
+  role: '',
+  projectId: null,
 }
 
 interface UserAccount {
@@ -124,8 +176,8 @@ export default function Settings() {
   const [saving, setSaving] = useState(false)
 
   // Modèles de données dynamiques chargés depuis Symfony
-  const [project, setProject] = useState('stuck')
-  const [projectsList, setProjectsList] = useState<{ value: string; label: string }[]>([])
+  const [project, setProject] = useState('')
+  const [projectsList, setProjectsList] = useState<ProjectItem[]>([])
   const [bandMembers, setBandMembers] = useState<BandMember[]>([])
   const [users, setUsers] = useState<UserAccount[]>([])
   
@@ -150,6 +202,18 @@ export default function Settings() {
   const [submittingUser, setSubmittingUser] = useState(false)
   const [deletingUserId, setDeletingUserId] = useState<number | null>(null)
 
+  // Gestion des formulaires projet (groupe)
+  const [projectFormMode, setProjectFormMode] = useState<'create' | 'edit' | null>(null)
+  const [projectForm, setProjectForm] = useState<ProjectFormState>(emptyProjectForm)
+  const [editingProjectId, setEditingProjectId] = useState<number | null>(null)
+  const [submittingProject, setSubmittingProject] = useState(false)
+
+  // Gestion des formulaires membre (lineup)
+  const [memberFormMode, setMemberFormMode] = useState<'create' | 'edit' | null>(null)
+  const [memberForm, setMemberForm] = useState<MemberFormState>(emptyMemberForm)
+  const [editingMemberId, setEditingMemberId] = useState<number | null>(null)
+  const [submittingMember, setSubmittingMember] = useState(false)
+
   const isAllSelected = selectedUsers.length === users.length && users.length > 0
 
   // Charger les paramètres depuis l'API Symfony
@@ -158,7 +222,15 @@ export default function Settings() {
     try {
       const data = await getSettings()
 
-      if (data.projects) setProjectsList(data.projects)
+      if (data.projects) {
+        setProjectsList(data.projects)
+        setProject((current) => {
+          if (current && data.projects.some((p: ProjectItem) => p.value === current)) {
+            return current
+          }
+          return data.projects.length > 0 ? data.projects[0].value : ''
+        })
+      }
       if (data.members) setBandMembers(data.members)
       if (data.users) setUsers(data.users)
 
@@ -291,6 +363,186 @@ export default function Settings() {
     }
   }
 
+  // === Projets (groupes) ===
+  const openCreateProject = () => {
+    setProjectForm(emptyProjectForm)
+    setEditingProjectId(null)
+    setProjectFormMode('create')
+  }
+
+  const openEditProject = (item: ProjectItem) => {
+    setProjectForm({
+      name: item.label,
+      style: item.style || '',
+      location: item.location || '',
+      bio: item.bio || '',
+      musicBrainzArtistId: item.musicBrainzArtistId || '',
+    })
+    setEditingProjectId(item.id)
+    setProjectFormMode('edit')
+  }
+
+  const closeProjectForm = () => {
+    setProjectFormMode(null)
+    setEditingProjectId(null)
+    setProjectForm(emptyProjectForm)
+  }
+
+  const updateProjectFormField = (field: keyof ProjectFormState, value: string) => {
+    setProjectForm((current) => ({ ...current, [field]: value }))
+  }
+
+  const handleSubmitProject = async (e: FormEvent) => {
+    e.preventDefault()
+
+    if (!projectForm.name.trim() || !projectForm.style.trim() || !projectForm.location.trim()) {
+      toast.error('Nom, style et localisation sont obligatoires')
+      return
+    }
+
+    setSubmittingProject(true)
+    try {
+      if (projectFormMode === 'create') {
+        const data = await createProject({
+          name: projectForm.name.trim(),
+          style: projectForm.style.trim(),
+          location: projectForm.location.trim(),
+          bio: projectForm.bio.trim(),
+          musicBrainzArtistId: projectForm.musicBrainzArtistId.trim(),
+        })
+        setProjectsList((current) => [...current, data.project])
+        setProject(data.project.value)
+        toast.success('Projet créé avec succès !')
+      } else if (projectFormMode === 'edit' && editingProjectId !== null) {
+        const data = await updateProject(editingProjectId, {
+          name: projectForm.name.trim(),
+          style: projectForm.style.trim(),
+          location: projectForm.location.trim(),
+          bio: projectForm.bio.trim(),
+          musicBrainzArtistId: projectForm.musicBrainzArtistId.trim(),
+        })
+        setProjectsList((current) => current.map((p) => (p.id === editingProjectId ? data.project : p)))
+        toast.success('Projet mis à jour !')
+      }
+      closeProjectForm()
+    } catch (err: any) {
+      toast.error(err?.message || "Échec de l'opération sur le projet")
+    } finally {
+      setSubmittingProject(false)
+    }
+  }
+
+  const handleDeleteProject = async (item: ProjectItem) => {
+    if (!window.confirm(`Supprimer le projet « ${item.label} » et tout son lineup ?`)) {
+      return
+    }
+
+    try {
+      await deleteProject(item.id)
+      setProjectsList((current) => current.filter((p) => p.id !== item.id))
+      setBandMembers((current) => current.filter((m) => m.projectId !== item.id))
+      setProject((current) => {
+        if (current !== item.value) {
+          return current
+        }
+        const remaining = projectsList.filter((p) => p.id !== item.id)
+        return remaining.length > 0 ? remaining[0].value : ''
+      })
+      toast.success('Projet supprimé')
+    } catch (err: any) {
+      toast.error(err?.message || 'Échec de la suppression du projet')
+    }
+  }
+
+  // === Membres (lineup) ===
+  const selectedProjectId = projectsList.find((p) => p.value === project)?.id ?? null
+  const visibleMembers = bandMembers.filter((m) => m.projectId === selectedProjectId)
+
+  const openCreateMember = () => {
+    if (!selectedProjectId) {
+      toast.error("Crée d'abord un projet pour y ajouter des musiciens")
+      return
+    }
+    setMemberForm({ ...emptyMemberForm, projectId: selectedProjectId })
+    setEditingMemberId(null)
+    setMemberFormMode('create')
+  }
+
+  const openEditMember = (member: BandMember) => {
+    setMemberForm({
+      name: member.name,
+      role: member.role,
+      projectId: member.projectId ?? selectedProjectId ?? null,
+    })
+    setEditingMemberId(member.id)
+    setMemberFormMode('edit')
+  }
+
+  const closeMemberForm = () => {
+    setMemberFormMode(null)
+    setEditingMemberId(null)
+    setMemberForm(emptyMemberForm)
+  }
+
+  const updateMemberFormField = (field: keyof MemberFormState, value: string | number | null) => {
+    setMemberForm((current) => ({ ...current, [field]: value }))
+  }
+
+  const handleSubmitMember = async (e: FormEvent) => {
+    e.preventDefault()
+
+    if (!memberForm.name.trim() || !memberForm.role.trim()) {
+      toast.error('Le nom et le rôle du musicien sont obligatoires')
+      return
+    }
+
+    const targetProjectId = memberForm.projectId ?? selectedProjectId
+    if (!targetProjectId) {
+      toast.error('Aucun projet sélectionné')
+      return
+    }
+
+    setSubmittingMember(true)
+    try {
+      if (memberFormMode === 'create') {
+        const data = await createMember({
+          name: memberForm.name.trim(),
+          role: memberForm.role.trim(),
+          projectId: targetProjectId,
+        })
+        setBandMembers((current) => [...current, data.member])
+        toast.success('Musicien ajouté au lineup !')
+      } else if (memberFormMode === 'edit' && editingMemberId !== null) {
+        const data = await updateMember(editingMemberId, {
+          name: memberForm.name.trim(),
+          role: memberForm.role.trim(),
+          projectId: targetProjectId,
+        })
+        setBandMembers((current) => current.map((m) => (m.id === editingMemberId ? data.member : m)))
+        toast.success('Musicien mis à jour !')
+      }
+      closeMemberForm()
+    } catch (err: any) {
+      toast.error(err?.message || "Échec de l'opération sur le musicien")
+    } finally {
+      setSubmittingMember(false)
+    }
+  }
+
+  const handleDeleteMember = async (member: BandMember) => {
+    if (!window.confirm(`Retirer ${member.name} du lineup ?`)) {
+      return
+    }
+
+    try {
+      await deleteMember(member.id)
+      setBandMembers((current) => current.filter((m) => m.id !== member.id))
+      toast.success('Musicien retiré du lineup')
+    } catch (err: any) {
+      toast.error(err?.message || 'Échec de la suppression du musicien')
+    }
+  }
+
   // Soumettre les modifications globales de configurations
   const handleSaveSettings = async () => {
     setSaving(true)
@@ -395,7 +647,7 @@ export default function Settings() {
                     <div>
                       <h2 style={{ margin: 0, fontSize: '18px', fontWeight: 700, color: '#0f172a' }}>Band & Projets</h2>
                       <p style={{ margin: '8px 0 0', color: '#64748b', fontSize: '14px' }}>
-                        Configure ton groupe actif et accède à la liste des musiciens de ton effectif.
+                        Gère les projets actifs de ton groupe et l’effectif associé au lineup.
                       </p>
                     </div>
 
@@ -424,37 +676,121 @@ export default function Settings() {
                         </select>
                       </div>
 
-                      <div style={{ display: 'grid', gap: '14px' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div style={{ display: 'grid', gap: '12px', padding: '16px', borderRadius: '12px', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                          <div>
+                            <p style={{ margin: 0, fontWeight: 700, fontSize: '14px', color: '#334155' }}>Projets du groupe</p>
+                            <p style={{ margin: '4px 0 0', color: '#64748b', fontSize: '13px' }}>
+                              Ajoute, modifie ou retire les projets disponibles dans l’application.
+                            </p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={openCreateProject}
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '8px',
+                              borderRadius: '8px',
+                              border: 'none',
+                              padding: '10px 14px',
+                              backgroundColor: '#3b82f6',
+                              color: '#ffffff',
+                              cursor: 'pointer',
+                              fontWeight: 600,
+                              fontSize: '13px',
+                            }}
+                          >
+                            <FolderHeart size={14} /> Ajouter un projet
+                          </button>
+                        </div>
+
+                        <div style={{ display: 'grid', gap: '10px' }}>
+                          {projectsList.map((projectItem) => (
+                            <div key={projectItem.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px', padding: '12px 14px', borderRadius: '12px', backgroundColor: '#ffffff', border: '1px solid #e2e8f0' }}>
+                              <div>
+                                <p style={{ margin: 0, fontWeight: 700, fontSize: '14px', color: '#0f172a' }}>{projectItem.label}</p>
+                                <p style={{ margin: '2px 0 0', color: '#64748b', fontSize: '13px' }}>
+                                  {projectItem.style || 'Style à définir'} · {projectItem.location || 'Localisation à définir'}
+                                </p>
+                              </div>
+                              <div style={{ display: 'flex', gap: '8px' }}>
+                                <button type="button" onClick={() => openEditProject(projectItem)} style={{ border: '1px solid #cbd5e1', backgroundColor: '#ffffff', borderRadius: '8px', padding: '8px', cursor: 'pointer' }} aria-label={`Éditer ${projectItem.label}`}>
+                                  <Pencil size={14} color="#334155" />
+                                </button>
+                                <button type="button" onClick={() => handleDeleteProject(projectItem)} style={{ border: '1px solid #fecaca', backgroundColor: '#fff1f2', borderRadius: '8px', padding: '8px', cursor: 'pointer' }} aria-label={`Supprimer ${projectItem.label}`}>
+                                  <Trash2 size={14} color="#dc2626" />
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'grid', gap: '12px', padding: '16px', borderRadius: '12px', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
                           <div>
                             <p style={{ margin: 0, fontWeight: 700, fontSize: '14px', color: '#334155' }}>Lineup & Roster</p>
                             <p style={{ margin: '4px 0 0', color: '#64748b', fontSize: '13px' }}>
                               Composition actuelle des musiciens affiliés au groupe sélectionné.
                             </p>
                           </div>
+                          <button
+                            type="button"
+                            onClick={openCreateMember}
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '8px',
+                              borderRadius: '8px',
+                              border: 'none',
+                              padding: '10px 14px',
+                              backgroundColor: '#10b981',
+                              color: '#ffffff',
+                              cursor: 'pointer',
+                              fontWeight: 600,
+                              fontSize: '13px',
+                            }}
+                          >
+                            <UserPlus size={14} /> Ajouter un musicien
+                          </button>
                         </div>
 
                         <div style={{ display: 'grid', gap: '10px' }}>
-                          {bandMembers.map((member) => (
-                            <div
-                              key={member.name}
-                              style={{
-                                display: 'flex',
-                                justifyContent: 'space-between',
-                                alignItems: 'center',
-                                gap: '16px',
-                                padding: '12px 16px',
-                                borderRadius: '12px',
-                                backgroundColor: '#f8fafc',
-                                border: '1px solid #e2e8f0',
-                              }}
-                            >
-                              <div>
-                                <p style={{ margin: 0, fontWeight: 700, fontSize: '14px', color: '#0f172a' }}>{member.name}</p>
-                                <p style={{ margin: '2px 0 0', color: '#64748b', fontSize: '13px' }}>{member.role}</p>
-                              </div>
+                          {visibleMembers.length === 0 ? (
+                            <div style={{ padding: '12px 14px', borderRadius: '12px', backgroundColor: '#ffffff', border: '1px dashed #cbd5e1', color: '#64748b', fontSize: '13px' }}>
+                              Aucun musicien enregistré pour ce projet pour le moment.
                             </div>
-                          ))}
+                          ) : (
+                            visibleMembers.map((member) => (
+                              <div
+                                key={member.id}
+                                style={{
+                                  display: 'flex',
+                                  justifyContent: 'space-between',
+                                  alignItems: 'center',
+                                  gap: '16px',
+                                  padding: '12px 16px',
+                                  borderRadius: '12px',
+                                  backgroundColor: '#ffffff',
+                                  border: '1px solid #e2e8f0',
+                                }}
+                              >
+                                <div>
+                                  <p style={{ margin: 0, fontWeight: 700, fontSize: '14px', color: '#0f172a' }}>{member.name}</p>
+                                  <p style={{ margin: '2px 0 0', color: '#64748b', fontSize: '13px' }}>{member.role}</p>
+                                </div>
+                                <div style={{ display: 'flex', gap: '8px' }}>
+                                  <button type="button" onClick={() => openEditMember(member)} style={{ border: '1px solid #cbd5e1', backgroundColor: '#ffffff', borderRadius: '8px', padding: '8px', cursor: 'pointer' }} aria-label={`Éditer ${member.name}`}>
+                                    <Pencil size={14} color="#334155" />
+                                  </button>
+                                  <button type="button" onClick={() => handleDeleteMember(member)} style={{ border: '1px solid #fecaca', backgroundColor: '#fff1f2', borderRadius: '8px', padding: '8px', cursor: 'pointer' }} aria-label={`Retirer ${member.name}`}>
+                                    <Trash2 size={14} color="#dc2626" />
+                                  </button>
+                                </div>
+                              </div>
+                            ))
+                          )}
                         </div>
                       </div>
                     </div>
@@ -914,6 +1250,165 @@ export default function Settings() {
               </div>
             </div>
 
+          </div>
+        )}
+
+        {/* Modal de formulaire d'ajout / édition de projet */}
+        {projectFormMode && (
+          <div
+            style={{
+              position: 'fixed',
+              inset: 0,
+              backgroundColor: 'rgba(15, 23, 42, 0.4)',
+              backdropFilter: 'blur(4px)',
+              zIndex: 210,
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              padding: '24px',
+            }}
+          >
+            <form
+              onSubmit={handleSubmitProject}
+              style={{
+                width: '100%',
+                maxWidth: '520px',
+                backgroundColor: '#ffffff',
+                borderRadius: '16px',
+                padding: '24px',
+                position: 'relative',
+                border: '1px solid #e2e8f0',
+                boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)',
+                maxHeight: '90vh',
+                overflowY: 'auto',
+              }}
+            >
+              <button
+                type="button"
+                onClick={closeProjectForm}
+                style={{ position: 'absolute', top: 16, right: 16, border: 'none', background: 'transparent', color: '#64748b', cursor: 'pointer', padding: '6px' }}
+              >
+                <X size={18} />
+              </button>
+
+              <h3 style={{ margin: '0 0 4px', fontSize: '20px', fontWeight: 700, color: '#0f172a' }}>
+                {projectFormMode === 'create' ? 'Ajouter un projet' : 'Modifier le projet'}
+              </h3>
+              <p style={{ margin: '0 0 20px', color: '#64748b', fontSize: '13px' }}>
+                {projectFormMode === 'create' ? 'Crée un nouveau projet de groupe et prépare son lineup.' : 'Mets à jour les informations du projet sélectionné.'}
+              </p>
+
+              <div style={{ display: 'grid', gap: '12px' }}>
+                <div>
+                  <label style={{ display: 'block', fontWeight: 600, fontSize: '13px', color: '#334155', marginBottom: '6px' }} htmlFor="project-name">Nom</label>
+                  <input id="project-name" value={projectForm.name} onChange={(e) => updateProjectFormField('name', e.target.value)} style={{ width: '100%', borderRadius: '10px', border: '1px solid #cbd5e1', padding: '10px 12px', fontSize: '14px' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontWeight: 600, fontSize: '13px', color: '#334155', marginBottom: '6px' }} htmlFor="project-style">Style</label>
+                  <input id="project-style" value={projectForm.style} onChange={(e) => updateProjectFormField('style', e.target.value)} style={{ width: '100%', borderRadius: '10px', border: '1px solid #cbd5e1', padding: '10px 12px', fontSize: '14px' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontWeight: 600, fontSize: '13px', color: '#334155', marginBottom: '6px' }} htmlFor="project-location">Localisation</label>
+                  <input id="project-location" value={projectForm.location} onChange={(e) => updateProjectFormField('location', e.target.value)} style={{ width: '100%', borderRadius: '10px', border: '1px solid #cbd5e1', padding: '10px 12px', fontSize: '14px' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontWeight: 600, fontSize: '13px', color: '#334155', marginBottom: '6px' }} htmlFor="project-bio">Bio</label>
+                  <textarea id="project-bio" value={projectForm.bio} onChange={(e) => updateProjectFormField('bio', e.target.value)} rows={3} style={{ width: '100%', borderRadius: '10px', border: '1px solid #cbd5e1', padding: '10px 12px', fontSize: '14px', resize: 'vertical' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontWeight: 600, fontSize: '13px', color: '#334155', marginBottom: '6px' }} htmlFor="project-mbid">MusicBrainz Artist ID</label>
+                  <input id="project-mbid" value={projectForm.musicBrainzArtistId} onChange={(e) => updateProjectFormField('musicBrainzArtistId', e.target.value)} style={{ width: '100%', borderRadius: '10px', border: '1px solid #cbd5e1', padding: '10px 12px', fontSize: '14px' }} />
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '20px' }}>
+                <button type="button" onClick={closeProjectForm} style={{ padding: '10px 14px', borderRadius: '8px', border: '1px solid #cbd5e1', backgroundColor: '#ffffff', color: '#334155', cursor: 'pointer', fontWeight: 600 }}>
+                  Annuler
+                </button>
+                <button type="submit" disabled={submittingProject} style={{ padding: '10px 14px', borderRadius: '8px', border: 'none', backgroundColor: '#3b82f6', color: '#ffffff', cursor: 'pointer', fontWeight: 700 }}>
+                  {submittingProject ? 'Enregistrement...' : projectFormMode === 'create' ? 'Créer le projet' : 'Enregistrer'}
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
+
+        {/* Modal de formulaire d'ajout / édition de musicien */}
+        {memberFormMode && (
+          <div
+            style={{
+              position: 'fixed',
+              inset: 0,
+              backgroundColor: 'rgba(15, 23, 42, 0.4)',
+              backdropFilter: 'blur(4px)',
+              zIndex: 210,
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              padding: '24px',
+            }}
+          >
+            <form
+              onSubmit={handleSubmitMember}
+              style={{
+                width: '100%',
+                maxWidth: '480px',
+                backgroundColor: '#ffffff',
+                borderRadius: '16px',
+                padding: '24px',
+                position: 'relative',
+                border: '1px solid #e2e8f0',
+                boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)',
+              }}
+            >
+              <button
+                type="button"
+                onClick={closeMemberForm}
+                style={{ position: 'absolute', top: 16, right: 16, border: 'none', background: 'transparent', color: '#64748b', cursor: 'pointer', padding: '6px' }}
+              >
+                <X size={18} />
+              </button>
+
+              <h3 style={{ margin: '0 0 4px', fontSize: '20px', fontWeight: 700, color: '#0f172a' }}>
+                {memberFormMode === 'create' ? 'Ajouter un musicien' : 'Modifier le musicien'}
+              </h3>
+              <p style={{ margin: '0 0 20px', color: '#64748b', fontSize: '13px' }}>
+                {memberFormMode === 'create' ? 'Ajoute un membre au lineup du projet actif.' : 'Mets à jour les informations du musicien sélectionné.'}
+              </p>
+
+              <div style={{ display: 'grid', gap: '12px' }}>
+                <div>
+                  <label style={{ display: 'block', fontWeight: 600, fontSize: '13px', color: '#334155', marginBottom: '6px' }} htmlFor="member-name">Nom</label>
+                  <input id="member-name" value={memberForm.name} onChange={(e) => updateMemberFormField('name', e.target.value)} style={{ width: '100%', borderRadius: '10px', border: '1px solid #cbd5e1', padding: '10px 12px', fontSize: '14px' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontWeight: 600, fontSize: '13px', color: '#334155', marginBottom: '6px' }} htmlFor="member-role">Rôle</label>
+                  <input id="member-role" value={memberForm.role} onChange={(e) => updateMemberFormField('role', e.target.value)} style={{ width: '100%', borderRadius: '10px', border: '1px solid #cbd5e1', padding: '10px 12px', fontSize: '14px' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontWeight: 600, fontSize: '13px', color: '#334155', marginBottom: '6px' }} htmlFor="member-project">Projet associé</label>
+                  <select
+                    id="member-project"
+                    value={memberForm.projectId ?? ''}
+                    onChange={(e) => updateMemberFormField('projectId', e.target.value === '' ? null : Number(e.target.value))}
+                    style={{ width: '100%', borderRadius: '10px', border: '1px solid #cbd5e1', padding: '10px 12px', fontSize: '14px', backgroundColor: '#f8fafc' }}
+                  >
+                    {projectsList.map((p) => (
+                      <option key={p.id} value={p.id}>{p.label}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '20px' }}>
+                <button type="button" onClick={closeMemberForm} style={{ padding: '10px 14px', borderRadius: '8px', border: '1px solid #cbd5e1', backgroundColor: '#ffffff', color: '#334155', cursor: 'pointer', fontWeight: 600 }}>
+                  Annuler
+                </button>
+                <button type="submit" disabled={submittingMember} style={{ padding: '10px 14px', borderRadius: '8px', border: 'none', backgroundColor: '#10b981', color: '#ffffff', cursor: 'pointer', fontWeight: 700 }}>
+                  {submittingMember ? 'Enregistrement...' : memberFormMode === 'create' ? 'Ajouter le musicien' : 'Enregistrer'}
+                </button>
+              </div>
+            </form>
           </div>
         )}
 

@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Repository\ContextRepository;
+use App\Repository\MemberRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -14,8 +16,11 @@ use Symfony\Component\Routing\Attribute\Route;
 class SettingsController extends AbstractController
 {
     #[Route('', name: 'index', methods: ['GET'])]
-    public function index(UserRepository $userRepository): JsonResponse
-    {
+    public function index(
+        UserRepository $userRepository,
+        ContextRepository $contextRepository,
+        MemberRepository $memberRepository
+    ): JsonResponse {
         $allUsers = $userRepository->findAll();
         $usersList = [];
 
@@ -23,18 +28,33 @@ class SettingsController extends AbstractController
             $usersList[] = $this->serializeUser($u);
         }
 
+        $projects = array_map(
+            fn ($context) => [
+                'id' => $context->getId(),
+                'value' => (string) $context->getId(),
+                'label' => $context->getName(),
+                'style' => $context->getStyle(),
+                'location' => $context->getLocation(),
+                'bio' => $context->getBio() ?? '',
+                'musicBrainzArtistId' => $context->getMusicBrainzArtistId() ?? '',
+            ],
+            $contextRepository->findBy([], ['name' => 'ASC'])
+        );
+
+        $members = array_map(
+            fn ($member) => [
+                'id' => $member->getId(),
+                'name' => $member->getName(),
+                'role' => $member->getRole(),
+                'projectId' => $member->getContext()?->getId(),
+                'projectName' => $member->getContext()?->getName(),
+            ],
+            $memberRepository->findBy([], ['id' => 'ASC'])
+        );
+
         return $this->json([
-            'projects' => [
-                ['value' => 'stuck', 'label' => 'Stuck In Yesterday'],
-                ['value' => 'youth', 'label' => 'Youth Collapse'],
-            ],
-            'members' => [
-                ['name' => 'Thomas', 'role' => 'Drums'],
-                ['name' => 'Elena', 'role' => 'Vocals'],
-                ['name' => 'Isaac', 'role' => 'Guitar'],
-                ['name' => 'Nina', 'role' => 'Bass'],
-                ['name' => 'Marc', 'role' => 'Keys'],
-            ],
+            'projects' => $projects,
+            'members' => $members,
             'users' => $usersList,
             'integrations' => [
                 'spotifySecret' => $this->maskSecret('sp_sec_8f3a19c8b7d2f1a3c89f24e5b'),

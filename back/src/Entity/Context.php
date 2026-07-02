@@ -37,9 +37,16 @@ class Context
     #[ORM\ManyToMany(targetEntity: Event::class, mappedBy: 'ContextId')]
     private Collection $events;
 
+    /**
+     * @var Collection<int, Member>
+     */
+    #[ORM\OneToMany(targetEntity: Member::class, mappedBy: 'context', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    private Collection $members;
+
     public function __construct()
     {
         $this->events = new ArrayCollection();
+        $this->members = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -129,6 +136,35 @@ class Context
     {
         if ($this->events->removeElement($event)) {
             $event->removeContextId($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Member>
+     */
+    public function getMembers(): Collection
+    {
+        return $this->members;
+    }
+
+    public function addMember(Member $member): static
+    {
+        if (!$this->members->contains($member)) {
+            $this->members->add($member);
+            $member->setContext($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMember(Member $member): static
+    {
+        if ($this->members->removeElement($member)) {
+            if ($member->getContext() === $this) {
+                $member->setContext(null);
+            }
         }
 
         return $this;

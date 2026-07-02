@@ -127,6 +127,68 @@ export function deleteSettingsUser(id: number): Promise<any> {
   return apiRequest(`/settings/users/${id}`, { method: 'DELETE' })
 }
 
+export function createProject(payload: {
+  name: string
+  style: string
+  location: string
+  bio?: string
+  musicBrainzArtistId?: string
+}): Promise<any> {
+  return apiRequest('/projects', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export function updateProject(
+  id: number,
+  payload: {
+    name?: string
+    style?: string
+    location?: string
+    bio?: string
+    musicBrainzArtistId?: string
+  },
+): Promise<any> {
+  return apiRequest(`/projects/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(payload),
+  })
+}
+
+export function deleteProject(id: number): Promise<any> {
+  return apiRequest(`/projects/${id}`, { method: 'DELETE' })
+}
+
+export function createMember(payload: {
+  name: string
+  role: string
+  projectId: number
+}): Promise<any> {
+  return apiRequest('/members', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export function updateMember(
+  id: number,
+  payload: {
+    name?: string
+    role?: string
+    projectId?: number
+  },
+): Promise<any> {
+  return apiRequest(`/members/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(payload),
+  })
+}
+
+export function deleteMember(id: number): Promise<any> {
+  return apiRequest(`/members/${id}`, { method: 'DELETE' })
+}
+
 export function getNotifications(): Promise<any> {
   return apiRequest('/notifications')
 }
