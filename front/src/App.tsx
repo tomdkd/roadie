@@ -1,6 +1,10 @@
-import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
+import {
+  createBrowserRouter,
+  RouterProvider,
+  Navigate,
+} from 'react-router-dom';
 import { Login } from './pages/Login/Login';
-import './App.scss'
+import './App.scss';
 
 const router = createBrowserRouter([
   {
