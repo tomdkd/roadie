@@ -1,5 +1,6 @@
 BACK_SERVICE=php-fpm
 FRONT_SERVICE=frontend
+ENV_FILE=--env-file ./back/.env
 
 .DEFAULT_GOAL := help
 
@@ -7,15 +8,15 @@ help: ## Display all available make commands
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
 up: ## Run all containers in detached mode
-	docker compose up -d
+	docker compose $(ENV_FILE) up -d
 
 down: ## Stop all containers and remove orphans
 	docker compose down --remove-orphans
 
 install: ## Install the application (Backend + Frontend)
 	@if [ ! -f ./back/.env ]; then cp ./back/.env.dist ./back/.env; fi
-	docker compose build
-	docker compose up -d
+	docker compose $(ENV_FILE) build
+	docker compose $(ENV_FILE) up -d
 	docker compose exec $(BACK_SERVICE) composer install
 	docker compose exec $(BACK_SERVICE) php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration
 

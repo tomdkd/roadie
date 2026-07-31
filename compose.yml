@@ -4,7 +4,7 @@ services:
       context: ./back
       target: base
     env_file:
-      - .env
+      - ./back/.env
     networks:
       - roadie-net
 
@@ -24,7 +24,7 @@ services:
     image: node:26-alpine
     working_dir: /app
     env_file:
-      - .env
+      - ./back/.env
     volumes:
       - ./front:/app
       - /app/node_modules
