@@ -31,8 +31,8 @@ services:
     volumes:
       - ./front:/app
       - /app/node_modules
-    ports:
-      - "5173:5173"
+    # ports:
+    #   - "5173:5173"
     networks:
       - roadie-net
       - lefrigo-net
