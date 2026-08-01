@@ -19,5 +19,6 @@ export default defineConfig({
         changeOrigin: true,
       },
     },
+    allowedHosts: ['localhost', 'roadie.le-frigo.fr'],
   },
 })
