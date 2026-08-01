@@ -1,6 +1,6 @@
 BACK_SERVICE=php-fpm
 FRONT_SERVICE=frontend
-ENV_FILE=--env-file ./back/.env
+ENV_FILE=--env-file ./back/.env.dist
 
 .DEFAULT_GOAL := help
 

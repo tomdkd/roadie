@@ -4,14 +4,19 @@ services:
       context: ./back
       target: base
     env_file:
-      - ./back/.env
+      - ./back/.env.dist
+    environment:
+      - DB_NAME=${DB_NAME:-roadie}
+      - DB_USER=${DB_USER:-app}
+      - DB_PASSWORD=${DB_PASSWORD:-!ChangeMe!}
+      - DB_PORT=${DB_PORT:-5432}
+      - DB_HOST=database
+      - APP_SECRET=${APP_SECRET}
     networks:
       - roadie-net
 
   nginx:
     image: nginx:alpine
-    ports:
-      - "8080:80"
     depends_on:
       - php-fpm
     volumes:
@@ -23,8 +28,6 @@ services:
   frontend:
     image: node:26-alpine
     working_dir: /app
-    env_file:
-      - ./back/.env
     volumes:
       - ./front:/app
       - /app/node_modules
@@ -32,7 +35,18 @@ services:
       - "5173:5173"
     networks:
       - roadie-net
+      - lefrigo-net
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.roadie.rule=Host(`roadie.le-frigo.fr`)
+      - traefik.http.routers.roadie.entrypoints=websecure
+      - traefik.http.routers.roadie.tls=true
+      - traefik.http.routers.roadie.tls.certresolver=myresolver
+      - traefik.http.routers.roadie.service=roadie-svc
+      - traefik.http.services.roadie-svc.loadbalancer.server.port=5173
 
 networks:
   roadie-net:
     name: roadie-net
+  lefrigo-net:
+    external: true
