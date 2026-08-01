@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '../components/ui/Button';
@@ -102,6 +102,15 @@ export function LoginPage() {
             Sign In
           </Button>
         </form>
+        <div className="mt-6 text-center text-xs text-slate-500 dark:text-slate-400">
+          Vous n'avez pas encore de compte ?{' '}
+          <Link
+            to="/register"
+            className="font-semibold text-blue-600 hover:underline dark:text-blue-400"
+          >
+            Créer un compte
+          </Link>
+        </div>
       </div>
     </main>
   );
