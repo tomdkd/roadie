@@ -10,12 +10,15 @@ import { loginSchema, type LoginFormData } from '../features/auth/schemas/loginS
 import { authService } from '../features/auth/services/authService';
 import { useAuthStore } from '../features/auth/store/useAuthStore';
 import logo from '../assets/logo.png';
+import { LanguageToggle } from '../components/ui/LanguageToggle';
+import { useTranslation } from 'react-i18next';
 
 export function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
   const setAuth = useAuthStore((state) => state.setAuth);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const {
     register,
@@ -37,7 +40,7 @@ export function LoginPage() {
     try {
       const response = await authService.login(data);
       setAuth(response.user, response.token);
-      navigate('/dashboard'); // 👈 Redirection vers le dashboard après login
+      navigate('/dashboard');
     } catch (err) {
       setApiError(err instanceof Error ? err.message : 'Une erreur est survenue');
     } finally {
@@ -47,7 +50,8 @@ export function LoginPage() {
 
   return (
     <main className="relative flex min-h-screen items-center justify-center bg-slate-100 p-4 transition-colors duration-300 dark:bg-slate-950">
-      <div className="absolute top-6 right-6">
+      <div className="flex items-center gap-2 absolute top-4 right-4">
+        <LanguageToggle />
         <ThemeToggle />
       </div>
 
@@ -62,7 +66,7 @@ export function LoginPage() {
             Roadie
           </h1>
           <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-            Welcome back! Please sign in to manage your band.
+            {t('login.welcome')}
           </p>
         </div>
 
@@ -74,7 +78,7 @@ export function LoginPage() {
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
           <Input
-            label="Username or Email"
+            label={t('login.input.email')}
             type="email"
             placeholder="you@domain.com"
             error={errors.email?.message}
@@ -82,7 +86,7 @@ export function LoginPage() {
           />
 
           <Input
-            label="Password"
+            label={t('login.input.password')}
             type="password"
             placeholder="••••••••"
             error={errors.password?.message}
@@ -90,7 +94,7 @@ export function LoginPage() {
           />
 
           <div className="pt-1">
-            <Checkbox label="Remember me" {...register('rememberMe')} />
+            <Checkbox label={t('login.input.rememberMe')} {...register('rememberMe')} />
           </div>
 
           <Button
@@ -99,16 +103,16 @@ export function LoginPage() {
             className="mt-2 w-full py-2.5 text-sm font-semibold rounded-xl"
             isLoading={isLoading}
           >
-            Sign In
+            {t('login.button.login')}
           </Button>
         </form>
         <div className="mt-6 text-center text-xs text-slate-500 dark:text-slate-400">
-          Vous n'avez pas encore de compte ?{' '}
+          {t('login.noAccount')}{' '}
           <Link
             to="/register"
             className="font-semibold text-blue-600 hover:underline dark:text-blue-400"
           >
-            Créer un compte
+            {t('login.createAccount')}
           </Link>
         </div>
       </div>
