@@ -61,7 +61,7 @@ export function Header({ onOpenMobileSidebar }: HeaderProps) {
             N
           </span>
           {/* Nom masqué sur très petits écrans pour gagner de la place */}
-          <span className="hidden xs:inline max-w-[100px] sm:max-w-none truncate">
+          <span className="max-w-[120px] sm:max-w-none truncate">
             The Neon Monkeys
           </span>
           <ChevronDown className="h-3.5 w-3.5 text-slate-400 shrink-0" />
