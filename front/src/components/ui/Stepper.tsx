@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 interface Step {
   id: number;
   label: string;
@@ -9,6 +11,8 @@ interface StepperProps {
 }
 
 export function Stepper({ steps, currentStep }: StepperProps) {
+  const { t } = useTranslation();
+  
   return (
     <div className="flex items-center justify-center gap-2 md:gap-4">
       {steps.map((step, index) => {
@@ -36,7 +40,7 @@ export function Stepper({ steps, currentStep }: StepperProps) {
                     : 'text-slate-400 dark:text-slate-500'
                 }`}
               >
-                {step.label}
+                {t(step.label)}
               </span>
             </div>
 

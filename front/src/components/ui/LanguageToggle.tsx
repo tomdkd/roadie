@@ -8,7 +8,6 @@ interface LanguageOption {
   flag: string;
 }
 
-// 💡 Il suffira d'ajouter tes nouvelles langues ici plus tard !
 const LANGUAGES: LanguageOption[] = [
   { code: 'fr', name: 'Français', flag: '🇫🇷' },
   { code: 'en', name: 'English', flag: '🇬🇧' },
@@ -64,7 +63,7 @@ export function LanguageToggle() {
       {isOpen && (
         <div className="absolute right-0 z-50 mt-2 w-40 rounded-2xl border border-slate-200 bg-white/95 p-1.5 shadow-xl backdrop-blur-md transition-all dark:border-slate-800 dark:bg-slate-900/95 animate-in fade-in zoom-in-95 duration-100">
           <div className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-            Langue / Language
+            {i18n.t('language')}
           </div>
           
           <div className="space-y-0.5">

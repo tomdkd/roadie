@@ -28,7 +28,6 @@ export function MultiSelect({
     } else {
       onChange([...selected, option]);
     }
-    // 💡 On ne met PAS setIsOpen(false) ici pour laisser le menu ouvert !
   };
 
   const handleRemoveBadge = (e: React.MouseEvent, optionToRemove: string) => {
@@ -36,7 +35,6 @@ export function MultiSelect({
     onChange(selected.filter((item) => item !== optionToRemove));
   };
 
-  // Fermer le menu si l'utilisateur clique en dehors du composant
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {

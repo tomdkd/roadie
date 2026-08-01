@@ -103,7 +103,7 @@ export function LoginPage() {
             className="mt-2 w-full py-2.5 text-sm font-semibold rounded-xl"
             isLoading={isLoading}
           >
-            {t('login.button.login')}
+            {t('login.button')}
           </Button>
         </form>
         <div className="mt-6 text-center text-xs text-slate-500 dark:text-slate-400">
