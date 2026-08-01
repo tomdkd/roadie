@@ -3,6 +3,7 @@ import { LoginPage } from '../pages/LoginPage';
 import { RegisterPage } from '../pages/RegisterPage'; // 👈 Import de la nouvelle page
 import { DashboardPage } from '../pages/DashboardPage';
 import { ProtectedRoute } from './ProtectedRoute';
+import { AppLayout } from '../components/layout/AppLayout';
 
 const router = createBrowserRouter([
   {
@@ -17,8 +18,13 @@ const router = createBrowserRouter([
     element: <ProtectedRoute />,
     children: [
       {
-        path: '/dashboard',
-        element: <DashboardPage />,
+        element: <AppLayout />,
+        children: [
+          {
+            path: '/dashboard',
+            element: <DashboardPage />,
+          },
+        ],
       },
     ],
   },
