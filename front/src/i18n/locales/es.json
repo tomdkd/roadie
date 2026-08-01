@@ -1,0 +1,100 @@
+{
+    "login": {
+        "welcome": "¡Bienvenido/a! Inicia sesión para gestionar tu proyecto.",
+        "input": {
+            "email": "Correo electrónico",
+            "password": "Contraseña",
+            "rememberMe": "Recordarme"
+        },
+        "button": "Iniciar sesión",
+        "noAccount": "¿Aún no tienes una cuenta?",
+        "createAccount": "Crear una cuenta"
+    },
+    "register": {
+        "backToHome": "Volver al inicio",
+        "alreadyHaveAccount": "¿Ya tienes una cuenta?",
+        "step1": {
+            "mainTitle": "Tipo",
+            "title": "Tipo de cuenta",
+            "description": "Selecciona el tipo de cuenta que deseas crear.",
+            "musician": {
+                "title": "Músico/a",
+                "description": "Soy músico/a y quiero gestionar mis proyectos."
+            },
+            "booker": {
+                "title": "Booker",
+                "description": "Soy booker y quiero gestionar los proyectos de mis artistas."
+            },
+            "label": {
+                "title": "Sello / Manager",
+                "description": "Soy un sello discográfico y quiero gestionar los proyectos de mis artistas."
+            }
+        },
+        "step2": {
+            "mainTitle": "Perfil",
+            "title": "Cuéntanos sobre ti 👋",
+            "description": "Unos pocos datos personales para crear tu identidad en Roadie.",
+            "addAvatar": "Añade tu foto de perfil",
+            "error": {
+                "email": "El correo electrónico es obligatorio",
+                "invalidEmail": "Correo electrónico no válido",
+                "password": "La contraseña es obligatoria",
+                "passwordMin": "La contraseña debe tener al menos 6 caracteres",
+                "confirmPassword": "Las contraseñas no coinciden",
+                "firstname": "El nombre es obligatorio",
+                "lastname": "El apellido es obligatorio",
+                "city": "La ciudad es obligatoria"
+            }
+        },
+        "step3": {
+            "mainTitle": "Proyecto",
+            "title": "Cuéntanos sobre tu proyecto 🎸",
+            "description": "Crea tu ficha de artista o únete a un proyecto ya existente.",
+            "projectExists": "Mi proyecto ya existe en Roadie (Unirse a un grupo)"
+        },
+        "step4": {
+            "mainTitle": "Confirmación",
+            "waiting": {
+                "title": "¡Solicitud de adhesión enviada!",
+                "successMessage": "Tu cuenta <0>{{email}}</0> ha sido creada con éxito.",
+                "waitingTitle": "Pendiente de aprobación",
+                "waitingMessage": "Se ha enviado una notificación a los administradores de <0>{{projectName}}</0>. Tendrás acceso a las setlists, fechas y documentos del grupo en cuanto aprueben tu solicitud.",
+                "finish": "Entendido, ir al inicio de sesión"
+            },
+            "success": {
+                "title": "¡Bienvenido/a a Roadie!",
+                "description": "Tu cuenta y la ficha de tu proyecto <0>{{projectName}}</0> están listas.",
+                "information": {
+                    "title": "Tu espacio ya está activo 🚀",
+                    "description": "Ya puedes invitar a tus músicos, añadir tus próximas fechas de conciertos y organizar tus setlists."
+                },
+                "finish": "Ir al inicio de sesión"
+            }
+        }
+    },
+    "projectTypes": {
+        "band": "Banda / Grupo musical",
+        "artist": "Artista en solitario",
+        "orchestra": "Orquesta",
+        "choir": "Coro",
+        "fanfare": "Charanga / Fanfarria",
+        "dj": "DJ / Productor/a",
+        "other": "Otro"
+    },
+    "next": "Siguiente",
+    "previous": "Anterior",
+    "submit": "Guardar",
+    "firstname": "Nombre",
+    "lastname": "Apellido",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "confirmPassword": "Confirmar contraseña",
+    "phone": "Teléfono",
+    "city": "Ciudad",
+    "country": "País",
+    "projectName": "Nombre del proyecto",
+    "projectType": "Tipo de proyecto",
+    "musicStyles": "Estilo(s) musical(es)",
+    "finish": "Finalizar",
+    "language": "Idioma"
+}
