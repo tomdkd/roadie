@@ -8,19 +8,15 @@ export function AppLayout() {
 
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-slate-100 transition-colors dark:bg-slate-950">
-      {/* Sidebar (Contrôlée pour desktop & mobile) */}
       <Sidebar
         isOpenMobile={isMobileSidebarOpen}
         onCloseMobile={() => setIsMobileSidebarOpen(false)}
       />
 
-      {/* Zone Principale */}
-      <div className="flex flex-1 flex-col overflow-hidden">
-        {/* Header avec trigger pour ouvrir la sidebar sur mobile */}
+      <div className="flex flex-1 flex-col h-screen overflow-hidden">
         <Header onOpenMobileSidebar={() => setIsMobileSidebarOpen(true)} />
 
-        {/* Zone de contenu défilante */}
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 h-[calc(100vh-4rem)]">
           <Outlet />
         </main>
       </div>

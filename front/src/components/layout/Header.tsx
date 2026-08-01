@@ -39,7 +39,7 @@ export function Header({ onOpenMobileSidebar }: HeaderProps) {
   };
 
   return (
-    <header className="flex h-16 w-full items-center justify-between border-b border-slate-200 bg-white/80 px-3 sm:px-6 backdrop-blur-md transition-colors dark:border-slate-800 dark:bg-slate-900/80">
+    <header className="flex relative z-30 h-16 w-full items-center justify-between border-b border-slate-200 bg-white/80 px-3 sm:px-6 backdrop-blur-md transition-colors dark:border-slate-800 dark:bg-slate-900/80">
       {/* 📱 Gauche : Bouton Burger (Mobile) + Sélecteur de Projet */}
       <div className="flex items-center gap-2">
         {/* Bouton Menu Burger sur Mobile */}
@@ -110,7 +110,7 @@ export function Header({ onOpenMobileSidebar }: HeaderProps) {
         <div className="h-4 w-px bg-slate-200 dark:bg-slate-800" />
 
         {/* User Profile */}
-        <div ref={userMenuRef} className="relative">
+        <div ref={userMenuRef} className="relative z-50">
           <button
             type="button"
             onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
