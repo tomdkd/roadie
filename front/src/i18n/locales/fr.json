@@ -6,10 +6,95 @@
             "password": "Mot de passe",
             "rememberMe": "Se souvenir de moi"
         },
-        "button": {
-            "login": "Se connecter"
-        },
+        "button": "Se connecter",
         "noAccount": "Vous n'avez pas encore de compte ?",
         "createAccount": "Créer un compte"
-    }
+    },
+    "register": {
+        "backToHome": "Retour à l'accueil",
+        "alreadyHaveAccount": "Vous avez déjà un compte ?",
+        "step1": {
+            "mainTitle": "Type",
+            "title": "Type de compte",
+            "description": "Sélectionne le type de compte que tu souhaites créer.",
+            "musician": {
+                "title": "Musicien",
+                "description": "Je suis un musicien et je veux gérer mes projets."
+            },
+            "booker": {
+                "title": "Booker",
+                "description": "Je suis un booker et je veux gérer les projets de mes artistes."
+            },
+            "label": {
+                "title": "Label",
+                "description": "Je suis un label et je veux gérer les projets de mes artistes."
+            }
+        },
+        "step2": {
+            "mainTitle": "Profil",
+            "title": "Parle-nous de toi 👋",
+            "description": "Quelques informations personnelles pour créer ton identité sur Roadie.",
+            "addAvatar": "Ajoute ta photo de profil",
+            "error": {
+                "email": "L'adresse e-mail est requise",
+                "invalidEmail": "Adresse e-mail invalide",
+                "password": "Le mot de passe est requis",
+                "passwordMin": "Le mot de passe doit contenir au moins 6 caractères",
+                "confirmPassword": "Les mots de passe ne correspondent pas",
+                "firstname": "Le prénom est requis",
+                "lastname": "Le nom est requis",
+                "city": "La ville est requise"
+            }
+        },
+        "step3": {
+            "mainTitle": "Projet",
+            "title": "Parle-nous de ton projet 🎸",
+            "description": "Crée ta fiche artiste ou rejoins un projet déjà existant.",
+            "projectExists": "Mon projet existe déjà sur Roadie (Rejoindre un groupe)"
+        },
+        "step4": {
+            "mainTitle": "Confirmation",
+            "waiting": {
+                "title": "Demande d'adhésion envoyée !",
+                "successMessage": "Ton compte <0>{{email}}</0> a été créé avec succès.",
+                "waitingTitle": "En attente de validation",
+                "waitingMessage": "Une notification a été transmise aux membres administrateurs de <0>{{projectName}}</0>. Tu auras accès aux setlists, dates et documents du groupe dès qu'ils auront approuvé ta demande.",
+                "finish": "Compris, aller à la connexion"
+            },
+            "success": {
+                "title": "Bienvenue sur Roadie !",
+                "description": "Ton compte et la fiche de ton projet <0>{{projectName}}</0> sont prêts.",
+                "information": {
+                    "title": "Ton espace est ouvert 🚀",
+                    "description": "Tu peux dès à présent inviter tes musiciens, ajouter tes prochaines dates de concert et organiser tes setlists."
+                },
+                "finish": "Aller à la connexion"
+            }
+        }
+    },
+    "projectTypes": {
+        "band": "Groupe de musique",
+        "artist": "Artiste solo",
+        "orchestra": "Orchestre",
+        "choir": "Chorale",
+        "fanfare": "Fanfare",
+        "dj": "DJ / Producteur",
+        "other": "Autre"
+    },
+    "next": "Suivant",
+    "previous": "Précédent",
+    "submit": "Enregistrer",
+    "firstname": "Prénom",
+    "lastname": "Nom",
+    "email": "Adresse e-mail",
+    "password": "Mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
+    "phone": "Téléphone",
+    "city": "Ville",
+    "country": "Pays",
+    "projectName": "Nom du projet",
+    "projectType": "Type de projet",
+    "musicStyles": "Style(s) musical(aux)",
+    "finish": "Terminer",
+    "language": "Langue"
 }
