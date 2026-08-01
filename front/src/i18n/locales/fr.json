@@ -1,0 +1,15 @@
+{
+    "login": {
+        "welcome": "Bienvenue ! Connecte-toi pour gérer ton projet.",
+        "input": {
+            "email": "Adresse e-mail",
+            "password": "Mot de passe",
+            "rememberMe": "Se souvenir de moi"
+        },
+        "button": {
+            "login": "Se connecter"
+        },
+        "noAccount": "Vous n'avez pas encore de compte ?",
+        "createAccount": "Créer un compte"
+    }
+}

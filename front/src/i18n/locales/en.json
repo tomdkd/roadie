@@ -1,0 +1,15 @@
+{
+    "login": {
+        "welcome": "Welcome ! Please login to manage your project.",
+        "input": {
+            "email": "Email",
+            "password": "Password",
+            "rememberMe": "Remember me"
+        },
+        "button": {
+            "login": "Login"
+        },
+        "noAccount": "Don't have an account yet?",
+        "createAccount": "Create an account"
+    }
+}
