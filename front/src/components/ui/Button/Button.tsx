@@ -23,11 +23,11 @@ export function Button({
 
   const variants = {
     primary:
-      'bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500',
+      'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500/40 dark:bg-blue-600 dark:hover:bg-blue-500',
     secondary:
-      'bg-slate-800 text-white hover:bg-slate-900 focus:ring-slate-700',
+      'bg-slate-100 text-slate-900 hover:bg-slate-200 focus:ring-slate-400 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700',
     outline:
-      'border border-slate-300 bg-transparent text-slate-700 hover:bg-slate-50 focus:ring-indigo-500',
+      'border border-slate-200 bg-transparent text-slate-700 hover:bg-slate-50 focus:ring-blue-500 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800',
   };
 
   const sizes = {
