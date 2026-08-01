@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useForm, type SubmitHandler, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Stepper } from '../components/ui/Stepper';
@@ -16,12 +16,15 @@ import {
 } from '../features/auth/schemas/registerSchema';
 import logo from '../assets/logo.png';
 import { Camera, User as UserIcon, Link2, ChevronDown, Wand2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { LanguageToggle } from '../components/ui/LanguageToggle';
+import { Trans } from 'react-i18next';
 
 const STEPS = [
-  { id: 1, label: 'Type de compte' },
-  { id: 2, label: 'Profil' },
-  { id: 3, label: 'Projet' },
-  { id: 4, label: 'Confirmation' },
+  { id: 1, label: 'register.step1.mainTitle' },
+  { id: 2, label: 'register.step2.mainTitle' },
+  { id: 3, label: 'register.step3.mainTitle' },
+  { id: 4, label: 'register.step4.mainTitle' },
 ];
 
 type AccountType = 'musician' | 'booker' | 'label';
@@ -36,20 +39,20 @@ interface AccountOption {
 const ACCOUNT_TYPES: AccountOption[] = [
   {
     id: 'musician',
-    title: 'Musicien / Groupe',
-    description: 'Gérez vos dates, setlists, répétitions et votre matériel au même endroit.',
+    title: 'register.step1.musician.title',
+    description: 'register.step1.musician.description',
     icon: '🎸',
   },
   {
     id: 'booker',
-    title: 'Booker / Promoteur',
-    description: 'Organisez vos événements, gérez la programmation et le routing des artistes.',
+    title: 'register.step1.booker.title',
+    description: 'register.step1.booker.description',
     icon: '🎟️',
   },
   {
     id: 'label',
-    title: 'Label / Manager',
-    description: 'Supervisez plusieurs artistes, centralisez les contrats et suivez les tournées.',
+    title: 'register.step1.label.title',
+    description: 'register.step1.label.description',
     icon: '🏢',
   },
 ];
@@ -59,26 +62,28 @@ const MUSIC_STYLES = [
   'Pop',
   'Hip-Hop / Rap',
   'Metal',
-  'Électro / Synthwave',
+  'Electronic',
   'Jazz',
   'Blues',
   'Reggae',
   'Funk / Soul',
-  'Classique',
+  'Classical',
   'Folk / Indie',
   'Punk',
 ];
 
 const PROJECT_TYPES = [
-  'Groupe de musique',
-  'Artiste solo',
-  'Orchestre',
-  'Fanfare / Ensemble',
-  'DJ / Producteur',
-  'Autre',
+  'band',
+  'artist',
+  'orchestra',
+  'choir',
+  'fanfare',
+  'dj',
+  'other',
 ];
 
 export function RegisterPage() {
+  const { t } = useTranslation();
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
   const [selectedRole, setSelectedRole] = useState<'musician' | 'booker' | 'label'>('musician');
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
@@ -90,7 +95,7 @@ export function RegisterPage() {
   const formStep2 = useForm<RegisterStep2FormData>({ resolver: zodResolver(registerStep2Schema) });
   const formStep3 = useForm<RegisterStep3FormData>({
     resolver: zodResolver(registerStep3Schema),
-    defaultValues: { projectName: '', projectType: 'Groupe de musique', country: 'France', city: '', styles: [] },
+    defaultValues: { projectName: '', projectType: 'band', country: 'France', city: '', styles: [] },
   });
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -117,7 +122,7 @@ export function RegisterPage() {
   };
 
   const handleCreateNewProjectSubmit = (data: RegisterStep3FormData) => {
-    setSelectedExistingProject(null); // Il s'agit d'une création de projet
+    setSelectedExistingProject(null);
     setCurrentStep(4);
   };
 
@@ -126,11 +131,6 @@ export function RegisterPage() {
   };
 
   const onSubmitStep3: SubmitHandler<RegisterStep3FormData> = (data) => {
-    console.log('Récapitulatif inscription :', {
-      role: selectedRole,
-      profil: formStep2.getValues(),
-      projet: data,
-    });
     setCurrentStep(4);
   };
 
@@ -146,7 +146,7 @@ export function RegisterPage() {
 
   const fillStep3MockData = () => {
     formStep3.setValue('projectName', 'The Electric Experience');
-    formStep3.setValue('projectType', 'Groupe de musique');
+    formStep3.setValue('projectType', 'band');
     formStep3.setValue('country', 'France');
     formStep3.setValue('city', 'Paris');
     formStep3.setValue('styles', ['Rock', 'Blues', 'Funk / Soul']);
@@ -160,7 +160,10 @@ export function RegisterPage() {
           <img src={logo} alt="Roadie" className="h-10 w-10 object-contain" />
           <span className="text-xl font-bold text-slate-900 dark:text-white">Roadie</span>
         </Link>
-        <ThemeToggle />
+        <div className="flex items-center gap-2 absolute top-4 right-4">
+          <LanguageToggle />
+          <ThemeToggle />
+        </div>
       </div>
 
       {/* Contenu principal */}
@@ -172,10 +175,10 @@ export function RegisterPage() {
           <div className="space-y-8">
             <div className="text-center">
               <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl dark:text-white">
-                Quel type de compte souhaitez-vous créer&nbsp;?
+                {t('register.step1.title')}
               </h1>
               <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-                Sélectionnez votre profil pour personnaliser votre expérience.
+                {t('register.step1.description')}
               </p>
             </div>
 
@@ -213,11 +216,11 @@ export function RegisterPage() {
                       </div>
 
                       <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-                        {type.title}
+                        {t(type.title)}
                       </h3>
 
                       <p className="mt-2 text-xs leading-relaxed text-slate-500 dark:text-slate-400">
-                        {type.description}
+                        {t(type.description)}
                       </p>
                     </div>
                   </button>
@@ -228,7 +231,7 @@ export function RegisterPage() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4">
               <Link to="/login" className="w-full sm:w-auto">
                 <Button variant="outline" type="button" className="w-full sm:w-auto px-6 py-3 font-semibold rounded-xl">
-                  Retourner à l'accueil
+                  {t('register.backToHome')}
                 </Button>
               </Link>
               <Button
@@ -236,7 +239,7 @@ export function RegisterPage() {
                 disabled={!selectedRole}
                 className="w-full sm:w-auto min-w-[160px] px-8 py-3 font-semibold rounded-xl"
               >
-                Suivant
+                {t('next')}
               </Button>
             </div>
           </div>
@@ -248,10 +251,10 @@ export function RegisterPage() {
             <div className="flex items-center justify-between">
               <div className="text-left">
                 <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-                  Parle-nous de toi 👋
+                  {t('register.step2.title')}
                 </h1>
                 <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                  Quelques informations personnelles pour créer ton identité sur Roadie.
+                  {t('register.step2.description')}
                 </p>
               </div>
 
@@ -291,56 +294,56 @@ export function RegisterPage() {
                   </div>
                 </button>
                 <span className="mt-2 text-xs text-slate-500 dark:text-slate-400">
-                  Ajoute ta photo de profil
+                  {t('register.step2.addAvatar')}
                 </span>
               </div>
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <Input
-                  label="Prénom *"
-                  placeholder="Thomas"
-                  error={formStep2.formState.errors.firstName?.message}
+                  label={t('firstname') + ' *'}
+                  placeholder="John"
+                  error={t(formStep2.formState.errors.firstName?.message)}
                   {...formStep2.register('firstName')}
                 />
                 <Input
-                  label="Nom *"
+                  label={t('lastname') + ' *'}
                   placeholder="Dupont"
-                  error={formStep2.formState.errors.lastName?.message}
+                  error={t(formStep2.formState.errors.lastName?.message)}
                   {...formStep2.register('lastName')}
                 />
                 <Input
-                  label="Adresse Email *"
+                  label={t('email') + ' *'}
                   type="email"
-                  placeholder="thomas@exemple.fr"
-                  error={formStep2.formState.errors.email?.message}
+                  placeholder="johndoe@example.fr"
+                  error={t(formStep2.formState.errors.email?.message)}
                   {...formStep2.register('email')}
                 />
                 <Input
-                  label="Téléphone"
+                  label={t('phone')}
                   placeholder="06 12 34 56 78"
-                  error={formStep2.formState.errors.phone?.message}
+                  error={t(formStep2.formState.errors.phone?.message)}
                   {...formStep2.register('phone')}
                 />
                 <div className="sm:col-span-2">
                   <Input
-                    label="Ville *"
+                    label={t('city') + ' *'}
                     placeholder="Paris, Lyon, Lille..."
-                    error={formStep2.formState.errors.city?.message}
+                    error={t(formStep2.formState.errors.city?.message)}
                     {...formStep2.register('city')}
                   />
                 </div>
                 <Input
-                  label="Mot de passe *"
+                  label={t('password') + ' *'}
                   type="password"
                   placeholder="••••••••"
-                  error={formStep2.formState.errors.password?.message}
+                  error={t(formStep2.formState.errors.password?.message)}
                   {...formStep2.register('password')}
                 />
                 <Input
-                  label="Confirmer le mot de passe *"
+                  label={t('confirmPassword') + ' *'}
                   type="password"
                   placeholder="••••••••"
-                  error={formStep2.formState.errors.confirmPassword?.message}
+                  error={t(formStep2.formState.errors.confirmPassword?.message)}
                   {...formStep2.register('confirmPassword')}
                 />
               </div>
@@ -352,10 +355,10 @@ export function RegisterPage() {
                   onClick={() => setCurrentStep(1)}
                   className="px-6 py-2.5 rounded-xl font-medium"
                 >
-                  Retour
+                  {t('previous')}
                 </Button>
                 <Button type="submit" className="px-8 py-2.5 rounded-xl font-semibold">
-                  Suivant
+                  {t('next')}
                 </Button>
               </div>
             </form>
@@ -368,10 +371,10 @@ export function RegisterPage() {
             <div className="flex items-center justify-between">
               <div className="text-left">
                 <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-                  Parle-nous de ton projet 🎸
+                  {t('register.step3.title')}
                 </h1>
                 <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                  Crée ta fiche artiste ou rejoins un projet déjà existant.
+                  {t('register.step3.description')}
                 </p>
               </div>
 
@@ -388,12 +391,12 @@ export function RegisterPage() {
             </div>
 
           <form onSubmit={formStep3.handleSubmit((data) => { setCurrentStep(4); })} className="space-y-4" noValidate>
-            <Input label="Nom du projet *" placeholder="Ex: The Neon Monkeys" {...formStep3.register('projectName')} />
+            <Input label={t('projectName')} placeholder="Ex: The Neon Monkeys" {...formStep3.register('projectName')} />
 
             {/* Select Type de projet avec Chevron custom */}
             <div className="space-y-1 text-left relative">
               <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
-                Type de projet *
+                {t('projectType')} *
               </label>
               <div className="relative">
                 <select
@@ -401,7 +404,9 @@ export function RegisterPage() {
                   className="w-full appearance-none rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-xs text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-white cursor-pointer pr-10"
                 >
                   {PROJECT_TYPES.map((type) => (
-                    <option key={type} value={type}>{type}</option>
+                    <option key={type} value={type}>
+                      {t(`projectTypes.${type}`)}
+                    </option>
                   ))}
                 </select>
                 <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
@@ -409,8 +414,8 @@ export function RegisterPage() {
             </div>
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <Input label="Pays *" placeholder="France" {...formStep3.register('country')} />
-              <Input label="Ville *" placeholder="Lille" {...formStep3.register('city')} />
+              <Input label={t('country') + ' *'} placeholder="France" {...formStep3.register('country')} />
+              <Input label={t('city') + ' *'} placeholder="Lille" {...formStep3.register('city')} />
             </div>
 
             <Controller
@@ -418,7 +423,7 @@ export function RegisterPage() {
               control={formStep3.control}
               render={({ field }) => (
                 <MultiSelect
-                  label="Style(s) musical(aux) *"
+                  label={t('musicStyles') + ' *'}
                   options={MUSIC_STYLES}
                   selected={field.value}
                   onChange={field.onChange}
@@ -434,13 +439,15 @@ export function RegisterPage() {
                 className="group flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed border-slate-300 p-3 text-xs font-medium text-slate-600 transition-colors hover:border-blue-500 hover:bg-blue-50/50 hover:text-blue-600 dark:border-slate-700 dark:text-slate-400 dark:hover:border-blue-500 dark:hover:bg-blue-950/30 dark:hover:text-blue-400"
               >
                 <Link2 className="h-4 w-4 text-slate-400 transition-transform group-hover:rotate-45 group-hover:text-blue-500" />
-                Mon projet existe déjà sur Roadie (Rejoindre un groupe)
+                {t('register.step3.projectExists')}
               </button>
             </div>
 
             <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-800">
-              <Button type="button" variant="outline" onClick={() => setCurrentStep(2)}>Retour</Button>
-              <Button type="submit">Terminer</Button>
+              <Button type="button" variant="outline" onClick={() => setCurrentStep(2)}>
+                {t('previous')}
+              </Button>
+              <Button type="submit">{t('finish')}</Button>
             </div>
           </form>
         </div>
@@ -459,29 +466,37 @@ export function RegisterPage() {
 
               <div className="space-y-2">
                 <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-                  Demande d'adhésion envoyée !
+                  {t('register.step4.waiting.title')}
                 </h2>
                 <p className="text-xs leading-relaxed text-slate-500 dark:text-slate-400">
-                  Ton compte <strong className="text-slate-700 dark:text-slate-200">{formStep2.getValues('email')}</strong> a été créé avec succès.
+                  <Trans
+                    i18nKey="register.step4.waiting.successMessage"
+                    values={{ email: formStep2.getValues('email') }}
+                    components={[
+                      <strong key="email" className="text-slate-700 dark:text-slate-200" />
+                    ]}
+                  />
                 </p>
               </div>
 
               <div className="rounded-2xl border border-amber-200/80 bg-amber-50/50 p-4 text-left dark:border-amber-900/50 dark:bg-amber-950/20">
                 <p className="text-xs font-semibold text-amber-900 dark:text-amber-300">
-                  En attente de validation 🎸
+                  {t('register.step4.waiting.waitingTitle')}
                 </p>
                 <p className="mt-1 text-[11px] leading-relaxed text-amber-800/80 dark:text-amber-400/80">
-                  Une notification a été transmise aux membres administrateurs de{' '}
-                  <strong className="font-bold text-amber-900 dark:text-amber-200">
-                    {selectedExistingProject.name}
-                  </strong>
-                  . Tu auras accès aux setlists, dates et documents du groupe dès qu'ils auront approuvé ta demande.
+                  <Trans
+                    i18nKey="register.step4.waiting.waitingMessage"
+                    values={{ projectName: selectedExistingProject.name }}
+                    components={[
+                      <strong key="projectName" className="font-bold text-amber-900 dark:text-amber-200" />
+                    ]}
+                  />
                 </p>
               </div>
 
               <Link to="/login" className="block pt-2">
                 <Button className="w-full py-2.5 font-semibold rounded-xl">
-                  Compris, aller à la connexion
+                  {t('register.step4.waiting.finish')}
                 </Button>
               </Link>
             </>
@@ -494,29 +509,31 @@ export function RegisterPage() {
 
               <div className="space-y-2">
                 <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-                  Bienvenue sur Roadie !
+                  {t('register.step4.success.title')}
                 </h2>
                 <p className="text-xs leading-relaxed text-slate-500 dark:text-slate-400">
-                  Ton compte et la fiche de ton projet{' '}
-                  <strong className="text-slate-700 dark:text-slate-200">
-                    {formStep3.getValues('projectName')}
-                  </strong>{' '}
-                  sont prêts.
+                  <Trans
+                    i18nKey="register.step4.success.description"
+                    values={{ projectName: formStep3.getValues('projectName') }}
+                    components={[
+                      <strong key="projectName" className="font-bold text-emerald-900 dark:text-emerald-200" />
+                    ]}
+                  />
                 </p>
               </div>
 
               <div className="rounded-2xl border border-emerald-200/80 bg-emerald-50/50 p-4 text-left dark:border-emerald-900/50 dark:bg-emerald-950/20">
                 <p className="text-xs font-semibold text-emerald-900 dark:text-emerald-300">
-                  Ton espace est ouvert 🚀
+                  {t('register.step4.success.information.title')}
                 </p>
                 <p className="mt-1 text-[11px] leading-relaxed text-emerald-800/80 dark:text-emerald-400/80">
-                  Tu peux dès à présent inviter tes musiciens, ajouter tes prochaines dates de concert et organiser tes setlists.
+                  {t('register.step4.success.information.description')}
                 </p>
               </div>
 
               <Link to="/login" className="block pt-2">
                 <Button className="w-full py-2.5 font-semibold rounded-xl">
-                  Accéder à l'application
+                  {t('register.step4.success.finish')}
                 </Button>
               </Link>
             </>
@@ -535,9 +552,9 @@ export function RegisterPage() {
 
       {/* Footer */}
       <div className="text-center text-xs text-slate-500 dark:text-slate-400">
-        Vous avez déjà un compte ?{' '}
+        {t('register.alreadyHaveAccount')}{' '}
         <Link to="/login" className="font-semibold text-blue-600 hover:underline dark:text-blue-400">
-          Se connecter
+          {t('login.button')}
         </Link>
       </div>
     </main>
