@@ -14,6 +14,7 @@ import {
   Bug,
   Sparkles,
   X,
+  Music,
 } from 'lucide-react';
 import logo from '../../../assets/logo.png';
 import { UpgradeModal } from '../../../features/subscriptions/components/UpgradeModal';
@@ -40,6 +41,12 @@ export function Sidebar({ isOpenMobile = false, onCloseMobile }: SidebarProps) {
       labelKey: 'nav.events',
       defaultLabel: 'Events',
       icon: Calendar,
+    },
+    {
+      to: '/songs',
+      labelKey: 'nav.songs',
+      defaultLabel: 'Songs',
+      icon: Music,
     },
     {
       to: '/setlists',

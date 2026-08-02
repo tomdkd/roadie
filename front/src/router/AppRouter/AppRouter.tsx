@@ -9,6 +9,7 @@ import { DashboardPage } from '../../pages/DashboardPage';
 import { ProtectedRoute } from '../ProtectedRoute';
 import { AppLayout } from '../../components/layout/AppLayout';
 import { SettingsPage } from '../../pages/SettingsPage';
+import { SongsPage } from '../../pages/SongsPage/SongsPage';
 
 const router = createBrowserRouter([
   {
@@ -32,6 +33,10 @@ const router = createBrowserRouter([
           {
             path: '/settings',
             element: <SettingsPage />,
+          },
+          {
+            path: '/songs',
+            element: <SongsPage />,
           },
         ],
       },
