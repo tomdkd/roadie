@@ -37,7 +37,10 @@ export function MultiSelect({
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     };
@@ -46,7 +49,7 @@ export function MultiSelect({
   }, []);
 
   return (
-    <div ref={containerRef} className="space-y-1 text-left relative">
+    <div ref={containerRef} className="relative space-y-1 text-left">
       <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
         {label}
       </label>
@@ -54,14 +57,14 @@ export function MultiSelect({
       {/* Zone Input principale */}
       <div
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex min-h-[42px] w-full flex-wrap items-center gap-1.5 rounded-xl border bg-white p-2 text-sm transition focus-within:ring-2 dark:bg-slate-900 cursor-pointer pr-9 ${
+        className={`flex min-h-[42px] w-full cursor-pointer flex-wrap items-center gap-1.5 rounded-xl border bg-white p-2 pr-9 text-sm transition focus-within:ring-2 dark:bg-slate-900 ${
           error
             ? 'border-red-500 focus-within:ring-red-500/20'
             : 'border-slate-300 focus-within:border-blue-500 focus-within:ring-blue-500/20 dark:border-slate-700'
         }`}
       >
         {selected.length === 0 && (
-          <span className="text-slate-400 dark:text-slate-500 text-xs pl-1 select-none">
+          <span className="pl-1 text-xs text-slate-400 select-none dark:text-slate-500">
             {placeholder}
           </span>
         )}
@@ -70,13 +73,13 @@ export function MultiSelect({
         {selected.map((item) => (
           <span
             key={item}
-            className="inline-flex items-center gap-1 rounded-lg bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 border border-blue-200 dark:border-blue-800 animate-in fade-in zoom-in-95 duration-100"
+            className="animate-in fade-in zoom-in-95 inline-flex items-center gap-1 rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700 duration-100 dark:border-blue-800 dark:bg-blue-950/60 dark:text-blue-300"
           >
             {item}
             <button
               type="button"
               onClick={(e) => handleRemoveBadge(e, item)}
-              className="rounded-full hover:bg-blue-200 dark:hover:bg-blue-900 p-0.5 transition-colors"
+              className="rounded-full p-0.5 transition-colors hover:bg-blue-200 dark:hover:bg-blue-900"
             >
               <X className="h-3 w-3" />
             </button>
@@ -84,7 +87,7 @@ export function MultiSelect({
         ))}
 
         <ChevronDown
-          className={`absolute right-3 top-[34px] h-4 w-4 text-slate-400 transition-transform duration-200 ${
+          className={`absolute top-[34px] right-3 h-4 w-4 text-slate-400 transition-transform duration-200 ${
             isOpen ? 'rotate-180' : ''
           }`}
         />
@@ -92,7 +95,7 @@ export function MultiSelect({
 
       {/* Menu déroulant (Garde l'état ouvert au clic) */}
       {isOpen && (
-        <div className="absolute z-30 mt-1 max-h-52 w-full overflow-auto rounded-xl border border-slate-200 bg-white p-1 shadow-xl dark:border-slate-800 dark:bg-slate-900 animate-in fade-in slide-in-from-top-2 duration-150">
+        <div className="animate-in fade-in slide-in-from-top-2 absolute z-30 mt-1 max-h-52 w-full overflow-auto rounded-xl border border-slate-200 bg-white p-1 shadow-xl duration-150 dark:border-slate-800 dark:bg-slate-900">
           {options.map((option) => {
             const isSelected = selected.includes(option);
             return (
@@ -107,7 +110,9 @@ export function MultiSelect({
                 }`}
               >
                 <span>{option}</span>
-                {isSelected && <Check className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />}
+                {isSelected && (
+                  <Check className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
+                )}
               </button>
             );
           })}

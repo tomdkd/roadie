@@ -12,7 +12,7 @@ interface StepperProps {
 
 export function Stepper({ steps, currentStep }: StepperProps) {
   const { t } = useTranslation();
-  
+
   return (
     <div className="flex items-center justify-center gap-2 md:gap-4">
       {steps.map((step, index) => {
@@ -34,9 +34,9 @@ export function Stepper({ steps, currentStep }: StepperProps) {
                 {step.id}
               </span>
               <span
-                className={`text-xs font-medium hidden sm:inline-block ${
+                className={`hidden text-xs font-medium sm:inline-block ${
                   isCurrent
-                    ? 'text-slate-900 font-semibold dark:text-white'
+                    ? 'font-semibold text-slate-900 dark:text-white'
                     : 'text-slate-400 dark:text-slate-500'
                 }`}
               >
@@ -46,8 +46,10 @@ export function Stepper({ steps, currentStep }: StepperProps) {
 
             {index < steps.length - 1 && (
               <div
-                className={`h-0.5 w-8 sm:w-12 transition-colors ${
-                  step.id < currentStep ? 'bg-slate-900 dark:bg-slate-100' : 'bg-slate-200 dark:bg-slate-800'
+                className={`h-0.5 w-8 transition-colors sm:w-12 ${
+                  step.id < currentStep
+                    ? 'bg-slate-900 dark:bg-slate-100'
+                    : 'bg-slate-200 dark:bg-slate-800'
                 }`}
               />
             )}

@@ -2,7 +2,10 @@ import type { InputHTMLAttributes } from 'react';
 import { forwardRef } from 'react';
 import { cn } from '../../../utils/cn';
 
-export interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> {
+export interface CheckboxProps extends Omit<
+  InputHTMLAttributes<HTMLInputElement>,
+  'type'
+> {
   label: string;
 }
 
@@ -24,7 +27,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
         />
         <label
           htmlFor={checkboxId}
-          className="cursor-pointer text-sm text-slate-600 dark:text-slate-400 select-none"
+          className="cursor-pointer text-sm text-slate-600 select-none dark:text-slate-400"
         >
           {label}
         </label>

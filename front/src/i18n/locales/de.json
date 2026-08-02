@@ -1,100 +1,100 @@
 {
-    "login": {
-        "welcome": "Willkommen! Melde dich an, um dein Projekt zu verwalten.",
-        "input": {
-            "email": "E-Mail-Adresse",
-            "password": "Passwort",
-            "rememberMe": "Angemeldet bleiben"
-        },
-        "button": "Anmelden",
-        "noAccount": "Du hast noch kein Konto?",
-        "createAccount": "Konto erstellen"
+  "login": {
+    "welcome": "Willkommen! Melde dich an, um dein Projekt zu verwalten.",
+    "input": {
+      "email": "E-Mail-Adresse",
+      "password": "Passwort",
+      "rememberMe": "Angemeldet bleiben"
     },
-    "register": {
-        "backToHome": "Zurück zur Startseite",
-        "alreadyHaveAccount": "Du hast bereits ein Konto?",
-        "step1": {
-            "mainTitle": "Typ",
-            "title": "Konto-Typ",
-            "description": "Wähle den Konto-Typ aus, den du erstellen möchtest.",
-            "musician": {
-                "title": "Musiker/in / Band",
-                "description": "Ich bin Musiker/in und möchte meine Projekte verwalten."
-            },
-            "booker": {
-                "title": "Booker/in",
-                "description": "Ich bin Booker/in und möchte die Projekte meiner Künstler verwalten."
-            },
-            "label": {
-                "title": "Label / Manager",
-                "description": "Ich bin ein Label und möchte die Projekte meiner Künstler verwalten."
-            }
-        },
-        "step2": {
-            "mainTitle": "Profil",
-            "title": "Erzähl uns von dir 👋",
-            "description": "Ein paar persönliche Angaben, um deine Identität auf Roadie zu erstellen.",
-            "addAvatar": "Profilbild hinzufügen",
-            "error": {
-                "email": "E-Mail-Adresse ist erforderlich",
-                "invalidEmail": "Ungültige E-Mail-Adresse",
-                "password": "Passwort ist erforderlich",
-                "passwordMin": "Passwort muss mindestens 6 Zeichen lang sein",
-                "confirmPassword": "Passwörter stimmen nicht überein",
-                "firstname": "Vorname ist erforderlich",
-                "lastname": "Nachname ist erforderlich",
-                "city": "Stadt ist erforderlich"
-            }
-        },
-        "step3": {
-            "mainTitle": "Projekt",
-            "title": "Erzähl uns von deinem Projekt 🎸",
-            "description": "Erstelle deine Künstlerseite oder tritt einem bestehenden Projekt bei.",
-            "projectExists": "Mein Projekt existiert bereits auf Roadie (Einer Band beitreten)"
-        },
-        "step4": {
-            "mainTitle": "Bestätigung",
-            "waiting": {
-                "title": "Beitrittsanfrage gesendet!",
-                "successMessage": "Dein Konto <0>{{email}}</0> wurde erfolgreich erstellt.",
-                "waitingTitle": "Wartet auf Bestätigung",
-                "waitingMessage": "Eine Benachrichtigung wurde an die Administratoren von <0>{{projectName}}</0> gesendet. Du erhältst Zugriff auf Setlists, Konzerttermine und Banddokumente, sobald deine Anfrage bestätigt wurde.",
-                "finish": "Verstanden, weiter zur Anmeldung"
-            },
-            "success": {
-                "title": "Willkommen bei Roadie!",
-                "description": "Dein Konto und die Seite für dein Projekt <0>{{projectName}}</0> sind bereit.",
-                "information": {
-                    "title": "Dein Bereich ist startklar 🚀",
-                    "description": "Du kannst ab sofort deine Musiker einladen, deine nächsten Konzerttermine hinzufügen und deine Setlists organisieren."
-                },
-                "finish": "Weiter zur Anmeldung"
-            }
-        }
+    "button": "Anmelden",
+    "noAccount": "Du hast noch kein Konto?",
+    "createAccount": "Konto erstellen"
+  },
+  "register": {
+    "backToHome": "Zurück zur Startseite",
+    "alreadyHaveAccount": "Du hast bereits ein Konto?",
+    "step1": {
+      "mainTitle": "Typ",
+      "title": "Konto-Typ",
+      "description": "Wähle den Konto-Typ aus, den du erstellen möchtest.",
+      "musician": {
+        "title": "Musiker/in / Band",
+        "description": "Ich bin Musiker/in und möchte meine Projekte verwalten."
+      },
+      "booker": {
+        "title": "Booker/in",
+        "description": "Ich bin Booker/in und möchte die Projekte meiner Künstler verwalten."
+      },
+      "label": {
+        "title": "Label / Manager",
+        "description": "Ich bin ein Label und möchte die Projekte meiner Künstler verwalten."
+      }
     },
-    "projectTypes": {
-        "band": "Band / Musikgruppe",
-        "artist": "Solo-Künstler/in",
-        "orchestra": "Orchester",
-        "choir": "Chor",
-        "fanfare": "Blaskapelle / Fanfarenzug",
-        "dj": "DJ / Produzent/in",
-        "other": "Sonstiges"
+    "step2": {
+      "mainTitle": "Profil",
+      "title": "Erzähl uns von dir 👋",
+      "description": "Ein paar persönliche Angaben, um deine Identität auf Roadie zu erstellen.",
+      "addAvatar": "Profilbild hinzufügen",
+      "error": {
+        "email": "E-Mail-Adresse ist erforderlich",
+        "invalidEmail": "Ungültige E-Mail-Adresse",
+        "password": "Passwort ist erforderlich",
+        "passwordMin": "Passwort muss mindestens 6 Zeichen lang sein",
+        "confirmPassword": "Passwörter stimmen nicht überein",
+        "firstname": "Vorname ist erforderlich",
+        "lastname": "Nachname ist erforderlich",
+        "city": "Stadt ist erforderlich"
+      }
     },
-    "next": "Weiter",
-    "previous": "Zurück",
-    "submit": "Speichern",
-    "firstname": "Vorname",
-    "lastname": "Nachname",
-    "email": "E-Mail-Adresse",
-    "password": "Passwort",
-    "confirmPassword": "Passwort bestätigen",
-    "phone": "Telefonnummer",
-    "city": "Stadt",
-    "country": "Land",
-    "projectName": "Projektname",
-    "projectType": "Projekttyp",
-    "musicStyles": "Musikrichtung(en)",
-    "finish": "Fertigstellen",
-    "language": "Sprache"
+    "step3": {
+      "mainTitle": "Projekt",
+      "title": "Erzähl uns von deinem Projekt 🎸",
+      "description": "Erstelle deine Künstlerseite oder tritt einem bestehenden Projekt bei.",
+      "projectExists": "Mein Projekt existiert bereits auf Roadie (Einer Band beitreten)"
+    },
+    "step4": {
+      "mainTitle": "Bestätigung",
+      "waiting": {
+        "title": "Beitrittsanfrage gesendet!",
+        "successMessage": "Dein Konto <0>{{email}}</0> wurde erfolgreich erstellt.",
+        "waitingTitle": "Wartet auf Bestätigung",
+        "waitingMessage": "Eine Benachrichtigung wurde an die Administratoren von <0>{{projectName}}</0> gesendet. Du erhältst Zugriff auf Setlists, Konzerttermine und Banddokumente, sobald deine Anfrage bestätigt wurde.",
+        "finish": "Verstanden, weiter zur Anmeldung"
+      },
+      "success": {
+        "title": "Willkommen bei Roadie!",
+        "description": "Dein Konto und die Seite für dein Projekt <0>{{projectName}}</0> sind bereit.",
+        "information": {
+          "title": "Dein Bereich ist startklar 🚀",
+          "description": "Du kannst ab sofort deine Musiker einladen, deine nächsten Konzerttermine hinzufügen und deine Setlists organisieren."
+        },
+        "finish": "Weiter zur Anmeldung"
+      }
+    }
+  },
+  "projectTypes": {
+    "band": "Band / Musikgruppe",
+    "artist": "Solo-Künstler/in",
+    "orchestra": "Orchester",
+    "choir": "Chor",
+    "fanfare": "Blaskapelle / Fanfarenzug",
+    "dj": "DJ / Produzent/in",
+    "other": "Sonstiges"
+  },
+  "next": "Weiter",
+  "previous": "Zurück",
+  "submit": "Speichern",
+  "firstname": "Vorname",
+  "lastname": "Nachname",
+  "email": "E-Mail-Adresse",
+  "password": "Passwort",
+  "confirmPassword": "Passwort bestätigen",
+  "phone": "Telefonnummer",
+  "city": "Stadt",
+  "country": "Land",
+  "projectName": "Projektname",
+  "projectType": "Projekttyp",
+  "musicStyles": "Musikrichtung(en)",
+  "finish": "Fertigstellen",
+  "language": "Sprache"
 }
