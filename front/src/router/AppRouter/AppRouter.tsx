@@ -10,7 +10,7 @@ import { ProtectedRoute } from '../ProtectedRoute';
 import { AppLayout } from '../../components/layout/AppLayout';
 import { SettingsPage } from '../../pages/SettingsPage';
 import { SongsPage } from '../../pages/SongsPage/SongsPage';
-import { SetlistsPage } from '../../pages/SetlistPage/SetlistsPage';
+import { SetlistsPage } from '../../pages/SetlistPage/SetlistsPage/SetlistsPage';
 
 const router = createBrowserRouter([
   {

@@ -10,8 +10,8 @@ import {
   Clock,
 } from 'lucide-react';
 import { CreateProjectForm } from '../CreateProjectForm';
-import { SearchProjectModal, type ProjectResult } from '../SearchProjectModal';
-import type { RegisterStep3FormData } from '../../auth/schemas/registerSchema';
+import { SearchProjectModal, type ProjectResult } from '../SearchProjectModal/SearchProjectModal';
+import type { RegisterStep3FormData } from '../../../auth/schemas/registerSchema';
 import { Button } from '../../../../components/ui/Button';
 
 interface NewProjectModalProps {

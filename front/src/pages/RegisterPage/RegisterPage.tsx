@@ -9,7 +9,7 @@ import { ThemeToggle } from '../../components/ui/ThemeToggle';
 import {
   SearchProjectModal,
   type ProjectResult,
-} from '../../features/projects/components/SearchProjectModal';
+} from '../../features/projects/components/SearchProjectModal/SearchProjectModal';
 import {
   registerStep2Schema,
   registerStep3Schema,
@@ -306,33 +306,33 @@ export function RegisterPage() {
                 <Input
                   label={t('firstname') + ' *'}
                   placeholder="John"
-                  error={t(formStep2.formState.errors.firstName?.message)}
+                  error={formStep2.formState.errors.firstName?.message ? t(formStep2.formState.errors.firstName.message) : undefined}
                   {...formStep2.register('firstName')}
                 />
                 <Input
                   label={t('lastname') + ' *'}
                   placeholder="Dupont"
-                  error={t(formStep2.formState.errors.lastName?.message)}
+                  error={formStep2.formState.errors.lastName?.message ? t(formStep2.formState.errors.lastName.message) : undefined}
                   {...formStep2.register('lastName')}
                 />
                 <Input
                   label={t('email') + ' *'}
                   type="email"
                   placeholder="johndoe@example.fr"
-                  error={t(formStep2.formState.errors.email?.message)}
+                  error={formStep2.formState.errors.email?.message ? t(formStep2.formState.errors.email.message) : undefined}
                   {...formStep2.register('email')}
                 />
                 <Input
                   label={t('phone')}
                   placeholder="06 12 34 56 78"
-                  error={t(formStep2.formState.errors.phone?.message)}
+                  error={formStep2.formState.errors.phone?.message ? t(formStep2.formState.errors.phone.message) : undefined}
                   {...formStep2.register('phone')}
                 />
                 <div className="sm:col-span-2">
                   <Input
                     label={t('city') + ' *'}
                     placeholder="Paris, Lyon, Lille..."
-                    error={t(formStep2.formState.errors.city?.message)}
+                    error={formStep2.formState.errors.city?.message ? t(formStep2.formState.errors.city.message) : undefined}
                     {...formStep2.register('city')}
                   />
                 </div>
@@ -340,14 +340,14 @@ export function RegisterPage() {
                   label={t('password') + ' *'}
                   type="password"
                   placeholder="••••••••"
-                  error={t(formStep2.formState.errors.password?.message)}
+                  error={formStep2.formState.errors.password?.message ? t(formStep2.formState.errors.password.message) : undefined}
                   {...formStep2.register('password')}
                 />
                 <Input
                   label={t('confirmPassword') + ' *'}
                   type="password"
                   placeholder="••••••••"
-                  error={t(formStep2.formState.errors.confirmPassword?.message)}
+                  error={formStep2.formState.errors.confirmPassword?.message ? t(formStep2.formState.errors.confirmPassword.message) : undefined}
                   {...formStep2.register('confirmPassword')}
                 />
               </div>

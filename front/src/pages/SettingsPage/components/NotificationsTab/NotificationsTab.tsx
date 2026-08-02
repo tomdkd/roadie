@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Mail, HelpCircle, Send, X } from 'lucide-react';
-import { Button } from '../../../components/ui/Button';
-import { Input } from '../../../components/ui/Input';
-import { Switch } from '../../../components/ui/Switch';
+import { Button } from '../../../../components/ui/Button';
+import { Input } from '../../../../components/ui/Input';
+import { Switch } from '../../../../components/ui/Switch';
 
 export function NotificationsTab() {
   const [notifSubTab, setNotifSubTab] = useState<'email' | 'discord'>('email');

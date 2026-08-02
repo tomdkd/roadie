@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Settings, Ticket, Bell, Calendar } from 'lucide-react';
-import { GeneralTab } from './components/GeneralTab';
-import { InvitationsTab } from './components/InvitationsTab';
-import { NotificationsTab } from './components/NotificationsTab';
-import { IntegrationsTab } from './components/IntegrationsTab';
+import { GeneralTab } from './components/GeneralTab/GeneralTab';
+import { InvitationsTab } from './components/InvitationsTab/InvitationsTab';
+import { NotificationsTab } from './components/NotificationsTab/NotificationsTab';
+import { IntegrationsTab } from './components/IntegrationsTab/IntegrationsTab';
 
 type SettingsTab = 'general' | 'invitations' | 'notifications' | 'integrations';
 

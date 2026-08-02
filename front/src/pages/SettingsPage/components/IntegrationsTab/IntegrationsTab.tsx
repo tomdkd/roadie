@@ -1,5 +1,5 @@
 import { Copy, AlertTriangle, Trash2 } from 'lucide-react';
-import { Button } from '../../../components/ui/Button';
+import { Button } from '../../../../components/ui/Button';
 
 export function IntegrationsTab() {
   const handleCopyCode = (text: string) => {

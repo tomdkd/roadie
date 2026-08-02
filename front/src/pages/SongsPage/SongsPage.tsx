@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { SongModal } from './modals/SongModal';
+import type { SongForm } from './modals/SongModal/SongModal';
 
 export interface Song {
   id: string;
@@ -90,16 +91,16 @@ export function SongsPage() {
     return matchesSearch && matchesStatus;
   });
 
-  const handleAddSong = (newSongData: any) => {
+  const handleAddSong = (newSongData: SongForm) => {
     const newSong: Song = {
       id: Date.now().toString(),
-      title: newSongData.title,
+      title: newSongData.title || 'Untitled',
       album: newSongData.album || 'Inédit',
       duration: newSongData.duration || '03:30',
       bpm: parseInt(newSongData.bpm) || 120,
       key: newSongData.key || 'C',
       tuning: newSongData.tuning || 'Standard (E)',
-      status: newSongData.status,
+      status: (newSongData.status as Song['status']) || 'ready',
     };
     setSongs([newSong, ...songs]);
   };

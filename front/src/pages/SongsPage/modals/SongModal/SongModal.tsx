@@ -3,10 +3,20 @@ import { X, Music, ChevronDown } from 'lucide-react';
 import { Button } from '../../../../components/ui/Button';
 import { Input } from '../../../../components/ui/Input';
 
+export type SongForm = {
+  title: string;
+  album: string;
+  duration: string;
+  bpm: string;
+  key: string;
+  tuning: string;
+  status: string;
+};
+
 interface SongModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (songData: any) => void;
+  onSave: (songData: SongForm) => void;
 }
 
 export function SongModal({ isOpen, onClose, onSave }: SongModalProps) {

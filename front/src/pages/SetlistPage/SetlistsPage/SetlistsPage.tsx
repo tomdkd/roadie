@@ -11,10 +11,10 @@ import {
   Trash2,
   FileDown,
 } from 'lucide-react';
-import { Button } from '../../components/ui/Button';
-import { SetlistModal } from './modals/SetlistModal';
-import type { Song } from './modals/SetlistModal';
-import type { SetlistItem } from './modals/SetlistModal';
+import { Button } from '../../../components/ui/Button';
+import { SetlistModal } from '../modals/SetlistModal/SetlistModal';
+import type { Song } from '../modals/SetlistModal/SetlistModal';
+import type { SetlistItem } from '../modals/SetlistModal/SetlistModal';
 
 export interface Setlist {
   id: string;
@@ -166,7 +166,7 @@ export function SetlistsPage() {
             ${
               setlist.items && setlist.items.length > 0
                 ? setlist.items
-                    .map((item, idx) => {
+                    .map((item, _idx) => {
                       if (item.type === 'song') {
                         return `<div class="item"><span>${item.data.title} <small style="font-weight:normal; font-size:13px; color:#666;">(${item.data.tuning})</small></span> <span>${item.data.duration}</span></div>`;
                       } else {
