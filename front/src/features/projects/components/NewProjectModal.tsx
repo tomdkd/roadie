@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Search, PlusCircle, ArrowRight, Music2, CheckCircle2, Clock } from 'lucide-react';
-import { CreateProjectForm } from '../../features/projects/components/CreateProjectForm';
-import { SearchProjectModal, type ProjectResult } from '../../features/auth/components/SearchProjectModal';
-import type { RegisterStep3FormData } from '../../features/auth/schemas/registerSchema';
-import { Button } from '../../components/ui/Button';
+import { CreateProjectForm } from './CreateProjectForm';
+import { SearchProjectModal, type ProjectResult } from './SearchProjectModal';
+import type { RegisterStep3FormData } from '../../auth/schemas/registerSchema';
+import { Button } from '../../../components/ui/Button';
 
 interface NewProjectModalProps {
   isOpen: boolean;

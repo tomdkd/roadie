@@ -1,7 +1,7 @@
-import { PlatformsWidget } from '../components/dashboard/PlatformsWidget';
-import { NextShowWidget } from '../components/dashboard/NextShowWidget';
-import { ActiveSetlistsWidget } from '../components/dashboard/ActiveSetlistsWidget';
-import { QuickActionsWidget } from '../components/dashboard/QuickActionsWidget';
+import { PlatformsWidget } from '../features/dashboard/components/PlatformsWidget';
+import { NextShowWidget } from '../features/dashboard/components/NextShowWidget';
+import { ActiveSetlistsWidget } from '../features/dashboard/components/ActiveSetlistsWidget';
+import { QuickActionsWidget } from '../features/dashboard/components/QuickActionsWidget';
 
 export function DashboardPage() {
   return (

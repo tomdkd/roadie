@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { ChevronDown, Wand2 } from 'lucide-react';
 import { Input } from '../../../components/ui/Input';
 import { Button } from '../../../components/ui/Button';
-import { MultiSelect } from '../../../components/ui/MultiSelect';
+import { MultiSelect } from '../../../components/ui/MultiSelect/MultiSelect';
 import {
   registerStep3Schema,
   type RegisterStep3FormData,

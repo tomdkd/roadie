@@ -10,11 +10,10 @@ import {
   FolderKanban,
   FileText,
   LogOut,
-  Plus,
   Menu,
 } from 'lucide-react';
-import { NewProjectModal } from '../modals/NewProjectModal';
-import { ProjectSelector } from '../ui/ProjectSelector';
+import { NewProjectModal } from '../../features/projects/components/NewProjectModal';
+import { ProjectSelector } from '../../features/projects/components/ProjectSelector';
 
 interface HeaderProps {
   onOpenMobileSidebar?: () => void;

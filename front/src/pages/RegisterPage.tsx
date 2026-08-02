@@ -2,12 +2,12 @@ import { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useForm, type SubmitHandler, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Stepper } from '../components/ui/Stepper';
+import { Stepper } from '../components/ui/Stepper/Stepper';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
-import { MultiSelect } from '../components/ui/MultiSelect';
+import { MultiSelect } from '../components/ui/MultiSelect/MultiSelect';
 import { ThemeToggle } from '../components/ui/ThemeToggle';
-import { SearchProjectModal, type ProjectResult } from '../features/auth/components/SearchProjectModal';
+import { SearchProjectModal, type ProjectResult } from '../features/projects/components/SearchProjectModal';
 import {
   registerStep2Schema,
   registerStep3Schema,

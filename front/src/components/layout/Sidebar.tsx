@@ -16,7 +16,7 @@ import {
   X,
 } from 'lucide-react';
 import logo from '../../assets/logo.png';
-import { UpgradeModal } from '../modals/UpgradeModal';
+import { UpgradeModal } from '../../features/subscriptions/components/UpgradeModal';
 
 interface SidebarProps {
   isOpenMobile?: boolean;
