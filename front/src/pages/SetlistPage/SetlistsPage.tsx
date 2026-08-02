@@ -9,10 +9,12 @@ import {
   Eye,
   Pencil,
   Trash2,
+  FileDown,
 } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { SetlistModal } from './modals/SetlistModal';
 import type { Song } from './modals/SetlistModal';
+import type { SetlistItem } from './modals/SetlistModal';
 
 export interface Setlist {
   id: string;
@@ -20,9 +22,9 @@ export interface Setlist {
   songCount: number;
   totalDuration: string;
   status: 'validated' | 'draft' | 'archived';
+  items?: SetlistItem[];
 }
 
-// 🎵 CHANSONS DU RÉPERTOIRE (Transmises à la modale)
 const REPERTOIRE_SONGS: Song[] = [
   {
     id: '1',
@@ -36,7 +38,7 @@ const REPERTOIRE_SONGS: Song[] = [
     title: 'Midnight Run',
     album: 'City Lights (2025)',
     duration: '03:48',
-    tuning: 'Drop D', // Accordage différent pour tester l'alerte !
+    tuning: 'Drop D',
   },
   {
     id: '3',
@@ -94,7 +96,6 @@ export function SetlistsPage() {
 
   const menuRef = useRef<HTMLDivElement | null>(null);
 
-  // Fermer le menu au clic extérieur
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -116,15 +117,17 @@ export function SetlistsPage() {
 
   const handleSaveSetlist = (data: {
     title: string;
-    songs: Song[];
+    items: SetlistItem[];
     totalDuration: string;
   }) => {
+    const songsOnly = data.items.filter((i) => i.type === 'song');
     const newSetlist: Setlist = {
       id: Date.now().toString(),
       title: data.title,
-      songCount: data.songs.length,
+      songCount: songsOnly.length,
       totalDuration: data.totalDuration,
       status: 'draft',
+      items: data.items,
     };
     setSetlists([newSetlist, ...setlists]);
   };
@@ -132,6 +135,55 @@ export function SetlistsPage() {
   const handleDelete = (id: string) => {
     setSetlists(setlists.filter((s) => s.id !== id));
     setActiveMenuId(null);
+  };
+
+  // 🖨️ FONCTION D'EXPORTATION PDF / IMPRESSION SCÈNE
+  const handleExportPDF = (setlist: Setlist) => {
+    setActiveMenuId(null);
+    
+    // Création d'une fenêtre d'impression optimisée scène
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return;
+
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Setlist - ${setlist.title}</title>
+          <style>
+            body { font-family: system-ui, sans-serif; padding: 40px; color: #000; }
+            h1 { font-size: 28px; font-weight: 900; margin-bottom: 5px; text-transform: uppercase; }
+            .meta { font-size: 14px; color: #666; margin-bottom: 30px; border-bottom: 2px solid #000; padding-bottom: 10px; }
+            .item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #ddd; font-size: 18px; font-weight: bold; }
+            .note { background: #f0f4ff; padding: 10px 15px; border-radius: 8px; margin: 8px 0; font-style: italic; font-size: 14px; color: #334155; }
+            .tuning { font-size: 12px; color: #d97706; background: #fef3c7; padding: 4px 8px; border-radius: 4px; margin: 6px 0; display: inline-block; font-weight: bold; }
+          </style>
+        </head>
+        <body>
+          <h1>${setlist.title}</h1>
+          <div class="meta">Roadie Setlist • ${setlist.songCount} Morceaux • Durée estimée : ${setlist.totalDuration}</div>
+          <div class="list">
+            ${
+              setlist.items && setlist.items.length > 0
+                ? setlist.items
+                    .map((item, idx) => {
+                      if (item.type === 'song') {
+                        return `<div class="item"><span>${item.data.title} <small style="font-weight:normal; font-size:13px; color:#666;">(${item.data.tuning})</small></span> <span>${item.data.duration}</span></div>`;
+                      } else {
+                        return `<div class="note">💬 ${item.content}</div>`;
+                      }
+                    })
+                    .join('')
+                : '<p>Visualisation standard de la setlist</p>'
+            }
+          </div>
+          <script>
+            window.onload = function() { window.print(); }
+          </script>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
   };
 
   const getStatusBadge = (status: Setlist['status']) => {
@@ -235,7 +287,19 @@ export function SetlistsPage() {
                 </div>
               </div>
 
-              <div className="relative">
+              {/* BOUTONS D'ACTIONS (PDF + MENU 3 POINTS) */}
+              <div className="flex items-center gap-1 relative">
+                {/* BOUTON RAPIDE EXPORT PDF */}
+                <button
+                  type="button"
+                  onClick={() => handleExportPDF(setlist)}
+                  title="Exporter / Imprimer en PDF"
+                  className="p-1.5 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-950/40 transition-colors"
+                >
+                  <FileDown className="h-4 w-4" />
+                </button>
+
+                {/* MENU REROULANT 3 POINTS */}
                 <button
                   type="button"
                   onClick={() =>
@@ -249,7 +313,7 @@ export function SetlistsPage() {
                 {activeMenuId === setlist.id && (
                   <div
                     ref={menuRef}
-                    className="absolute right-0 bottom-8 z-20 w-36 overflow-hidden rounded-xl border border-slate-200 bg-white p-1 shadow-lg dark:border-slate-800 dark:bg-slate-900"
+                    className="absolute right-0 bottom-8 z-20 w-44 overflow-hidden rounded-xl border border-slate-200 bg-white p-1 shadow-lg dark:border-slate-800 dark:bg-slate-900"
                   >
                     <button
                       type="button"
@@ -269,6 +333,15 @@ export function SetlistsPage() {
                     </button>
                     <button
                       type="button"
+                      onClick={() => handleExportPDF(setlist)}
+                      className="flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-medium text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-950/40 transition-colors"
+                    >
+                      <FileDown className="h-3.5 w-3.5 text-blue-500" />
+                      <span>Exporter PDF</span>
+                    </button>
+                    <div className="my-1 border-t border-slate-100 dark:border-slate-800" />
+                    <button
+                      type="button"
                       onClick={() => handleDelete(setlist.id)}
                       className="flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-medium text-rose-600 hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-950/40 transition-colors"
                     >
@@ -283,7 +356,6 @@ export function SetlistsPage() {
         ))}
       </div>
 
-      {/* MODALE INJECTÉE AVEC REPERTOIRE_SONGS */}
       <SetlistModal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}

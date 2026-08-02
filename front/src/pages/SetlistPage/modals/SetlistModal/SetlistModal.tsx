@@ -9,6 +9,7 @@ import {
   AlertCircle,
   Plus,
   Music2,
+  MessageSquare
 } from 'lucide-react';
 import { Button } from '../../../../components/ui/Button';
 import { Input } from '../../../../components/ui/Input';
@@ -21,12 +22,17 @@ export interface Song {
   album?: string;
 }
 
+// Un élément de la setlist peut être soit un morceau, soit une note
+export type SetlistItem =
+  | { type: 'song'; data: Song; id: string }
+  | { type: 'note'; content: string; id: string };
+
 interface SetlistModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (setlistData: {
     title: string;
-    songs: Song[];
+    items: SetlistItem[];
     totalDuration: string;
   }) => void;
   availableSongs: Song[];
@@ -57,20 +63,27 @@ export function SetlistModal({
   availableSongs = [],
 }: SetlistModalProps) {
   const [title, setTitle] = useState('');
-  const [selectedSongs, setSelectedSongs] = useState<Song[]>([]);
+  const [items, setItems] = useState<SetlistItem[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+
+  // Gestion de la création de note
+  const [isAddingNote, setIsAddingNote] = useState(false);
+  const [noteText, setNoteText] = useState('');
 
   // Onglet actif pour le mobile ('setlist' ou 'repertoire')
   const [activeTab, setActiveTab] = useState<'setlist' | 'repertoire'>('setlist');
 
+  // Calcul dynamique de la durée totale (basé uniquement sur les chansons)
   const totalDurationStr = useMemo(() => {
-    const totalSeconds = selectedSongs.reduce(
-      (acc, song) => acc + durationToSeconds(song.duration),
-      0
-    );
+    const totalSeconds = items.reduce((acc, item) => {
+      if (item.type === 'song') {
+        return acc + durationToSeconds(item.data.duration);
+      }
+      return acc;
+    }, 0);
     return secondsToFormattedDuration(totalSeconds);
-  }, [selectedSongs]);
+  }, [items]);
 
   const filteredAvailableSongs = useMemo(() => {
     return availableSongs.filter(
@@ -82,26 +95,52 @@ export function SetlistModal({
 
   if (!isOpen) return null;
 
+  // Ajouter une chanson
   const handleAddSong = (song: Song) => {
-    setSelectedSongs((prev) => [...prev, song]);
+    setItems((prev) => [
+      ...prev,
+      { type: 'song', data: song, id: `${song.id}-${Date.now()}` },
+    ]);
   };
 
-  const handleRemoveSong = (indexToRemove: number) => {
-    setSelectedSongs((prev) => prev.filter((_, index) => index !== indexToRemove));
+  // Ajouter une note
+  const handleAddNoteSubmit = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!noteText.trim()) return;
+
+    setItems((prev) => [
+      ...prev,
+      { type: 'note', content: noteText.trim(), id: `note-${Date.now()}` },
+    ]);
+    setNoteText('');
+    setIsAddingNote(false);
   };
 
+  // Raccourcis pour insérer des notes rapides
+  const handleQuickNote = (text: string) => {
+    setItems((prev) => [
+      ...prev,
+      { type: 'note', content: text, id: `note-${Date.now()}` },
+    ]);
+  };
+
+  const handleRemoveItem = (indexToRemove: number) => {
+    setItems((prev) => prev.filter((_, index) => index !== indexToRemove));
+  };
+
+  // Drag & drop
   const handleDragStart = (index: number) => setDraggedIndex(index);
 
   const handleDragOver = (e: React.DragEvent, index: number) => {
     e.preventDefault();
     if (draggedIndex === null || draggedIndex === index) return;
 
-    const updated = [...selectedSongs];
+    const updated = [...items];
     const [draggedItem] = updated.splice(draggedIndex, 1);
     updated.splice(index, 0, draggedItem);
 
     setDraggedIndex(index);
-    setSelectedSongs(updated);
+    setItems(updated);
   };
 
   const handleDragEnd = () => setDraggedIndex(null);
@@ -112,14 +151,17 @@ export function SetlistModal({
 
     onSave({
       title,
-      songs: selectedSongs,
+      items,
       totalDuration: totalDurationStr,
     });
 
     setTitle('');
-    setSelectedSongs([]);
+    setItems([]);
     onClose();
   };
+
+  // Compteur dynamique du nombre de morceaux réels
+  const songCount = items.filter((i) => i.type === 'song').length;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 p-0 sm:p-4 md:p-6 backdrop-blur-sm">
@@ -137,7 +179,7 @@ export function SetlistModal({
                   Créer une setlist
                 </h3>
                 <p className="hidden sm:block text-xs text-slate-500 dark:text-slate-400">
-                  Organise l'ordre et les enchaînements de ton concert.
+                  Organise les morceaux, intermèdes et notes de scène.
                 </p>
               </div>
             </div>
@@ -159,7 +201,7 @@ export function SetlistModal({
             </div>
           </div>
 
-          {/* SYSTEME D'ONGLETS POUR MOBILE ONLY */}
+          {/* ONGLET MOBILE */}
           <div className="mt-3 grid grid-cols-2 gap-1 rounded-xl bg-slate-100 p-1 md:hidden dark:bg-slate-800/80">
             <button
               type="button"
@@ -171,7 +213,7 @@ export function SetlistModal({
               }`}
             >
               <ListMusic className="h-3.5 w-3.5" />
-              <span>Setlist ({selectedSongs.length})</span>
+              <span>Setlist ({songCount})</span>
             </button>
 
             <button
@@ -189,16 +231,16 @@ export function SetlistModal({
           </div>
         </div>
 
-        {/* CORPS : SWAP DYNAMIQUE MOBILE vs 2 COLONNES DESKTOP */}
+        {/* CORPS DE LA MODALE */}
         <div className="flex flex-1 overflow-hidden divide-y md:divide-y-0 md:divide-x divide-slate-100 dark:divide-slate-800">
           
-          {/* COLONNE GAUCHE : SETLIST EN CONSTRUCTION */}
+          {/* COLONNE GAUCHE : SETLIST */}
           <div
             className={`flex flex-1 flex-col bg-slate-50/50 p-3 sm:p-4 dark:bg-slate-900/50 overflow-hidden ${
               activeTab === 'setlist' ? 'flex' : 'hidden md:flex'
             }`}
           >
-            <div className="mb-3">
+            <div className="mb-3 space-y-2">
               <Input
                 label="Nom de la setlist"
                 placeholder="Ex: Main Stage Festival..."
@@ -206,91 +248,195 @@ export function SetlistModal({
                 onChange={(e) => setTitle(e.target.value)}
                 required
               />
+
+              {/* BARRE D'ACTION NOTES & RACCOURCIS */}
+              <div className="flex flex-wrap items-center justify-between gap-1.5 pt-1">
+                <button
+                  type="button"
+                  onClick={() => setIsAddingNote(!isAddingNote)}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-blue-200 bg-blue-50/50 px-2.5 py-1 text-xs font-semibold text-blue-600 hover:bg-blue-100 dark:border-blue-900/40 dark:bg-blue-950/40 dark:text-blue-400 dark:hover:bg-blue-900/60 transition-colors"
+                >
+                  <MessageSquare className="h-3.5 w-3.5" />
+                  <span>+ Remarque / Note de scène</span>
+                </button>
+
+                {/* Quick notes en 1-click */}
+                <div className="hidden sm:flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => handleQuickNote('⚡ Enchaînement direct')}
+                    className="rounded-md bg-slate-200/60 px-2 py-0.5 text-[10px] font-medium text-slate-600 hover:bg-slate-300 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors"
+                  >
+                    ⚡ Enchaînement direct
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleQuickNote('🎤 Présentation / Discours')}
+                    className="rounded-md bg-slate-200/60 px-2 py-0.5 text-[10px] font-medium text-slate-600 hover:bg-slate-300 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors"
+                  >
+                    🎤 Speach public
+                  </button>
+                </div>
+              </div>
+
+              {/* CHAMP LIBRE POUR SAISIR UNE NOTE PERSO */}
+              {isAddingNote && (
+                <form
+                  onSubmit={handleAddNoteSubmit}
+                  className="flex items-center gap-2 pt-1"
+                >
+                  <input
+                    type="text"
+                    placeholder="Ex: Le chanteur parle au public pendant l'accordage..."
+                    value={noteText}
+                    onChange={(e) => setNoteText(e.target.value)}
+                    autoFocus
+                    className="flex-1 rounded-xl border border-blue-300 bg-white px-3 py-1.5 text-xs text-slate-900 focus:border-blue-500 focus:outline-none dark:border-blue-800 dark:bg-slate-900 dark:text-white"
+                  />
+                  <Button type="submit" className="py-1.5 px-3 text-xs shrink-0">
+                    Ajouter
+                  </Button>
+                </form>
+              )}
             </div>
 
+            {/* EN-TÊTE DE LA LISTE */}
             <div className="hidden md:flex items-center justify-between mb-2">
               <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
-                Ordre des morceaux ({selectedSongs.length})
+                Ordre du concert ({songCount} titres)
               </span>
             </div>
 
-            {/* LISTE DES MORCEAUX SELECTIONNÉS */}
+            {/* LISTE DES ÉLÉMENTS (CHANSONS + NOTES) */}
             <div className="flex-1 overflow-y-auto pr-1 space-y-2">
-              {selectedSongs.length === 0 ? (
+              {items.length === 0 ? (
                 <div className="flex h-full flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-200 p-6 text-center dark:border-slate-800">
                   <ListMusic className="h-8 w-8 text-slate-300 dark:text-slate-600 mb-2" />
                   <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
                     Ta setlist est encore vide.
                   </p>
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab('repertoire')}
-                    className="mt-2 text-xs font-bold text-blue-600 md:hidden dark:text-blue-400"
-                  >
-                    + Ajouter des morceaux depuis le répertoire
-                  </button>
+                  <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">
+                    Ajoute des morceaux depuis le répertoire ou crée une note.
+                  </p>
                 </div>
               ) : (
-                selectedSongs.map((song, index) => {
-                  const prevSong = index > 0 ? selectedSongs[index - 1] : null;
+                items.map((item, index) => {
+                  // Trouver la chanson précédente pour calculer l'accordage
+                  let prevSong: Song | null = null;
+                  if (item.type === 'song') {
+                    for (let i = index - 1; i >= 0; i--) {
+                      if (items[i].type === 'song') {
+                        prevSong = (items[i] as { type: 'song'; data: Song }).data;
+                        break;
+                      }
+                    }
+                  }
+
                   const hasTuningChange =
-                    prevSong && prevSong.tuning !== song.tuning;
+                    item.type === 'song' &&
+                    prevSong &&
+                    prevSong.tuning !== item.data.tuning;
 
                   return (
-                    <div key={`${song.id}-${index}`} className="space-y-2">
+                    <div key={item.id} className="space-y-2">
+                      {/* ACCORDAGE CHANGÉ AUTOMATIQUE */}
                       {hasTuningChange && (
                         <div className="flex items-center gap-2 rounded-lg bg-amber-500/10 px-3 py-1.5 text-[11px] italic font-medium text-amber-600 dark:bg-amber-500/20 dark:text-amber-400 my-1">
                           <AlertCircle className="h-3.5 w-3.5 shrink-0" />
                           <span>
-                            Changement d'accordage : <strong>{song.tuning}</strong>
+                            Changement d'accordage :{' '}
+                            <strong>{item.data.tuning}</strong>
                           </span>
                         </div>
                       )}
 
-                      <div
-                        draggable
-                        onDragStart={() => handleDragStart(index)}
-                        onDragOver={(e) => handleDragOver(e, index)}
-                        onDragEnd={handleDragEnd}
-                        className={`group flex items-center justify-between rounded-xl border border-slate-200 bg-white p-2.5 sm:p-3 shadow-xs transition-all dark:border-slate-800 dark:bg-slate-900 ${
-                          draggedIndex === index
-                            ? 'opacity-40 border-blue-500'
-                            : 'hover:border-slate-300 dark:hover:border-slate-700'
-                        }`}
-                      >
-                        <div className="flex items-center gap-2.5">
-                          <button
-                            type="button"
-                            className="cursor-grab text-slate-300 hover:text-slate-500 dark:text-slate-600 dark:hover:text-slate-400 active:cursor-grabbing"
-                          >
-                            <GripVertical className="h-4 w-4" />
-                          </button>
-                          <span className="w-4 font-mono text-xs font-bold text-slate-400">
-                            {index + 1}.
-                          </span>
-                          <div>
-                            <p className="text-xs font-bold text-slate-900 dark:text-white line-clamp-1">
-                              {song.title}
-                            </p>
-                            <span className="text-[10px] text-slate-400 font-mono">
-                              {song.tuning}
+                      {/* --- AFFICHAGE SI MORCEAU --- */}
+                      {item.type === 'song' ? (
+                        <div
+                          draggable
+                          onDragStart={() => handleDragStart(index)}
+                          onDragOver={(e) => handleDragOver(e, index)}
+                          onDragEnd={handleDragEnd}
+                          className={`group flex items-center justify-between rounded-xl border border-slate-200 bg-white p-2.5 sm:p-3 shadow-xs transition-all dark:border-slate-800 dark:bg-slate-900 ${
+                            draggedIndex === index
+                              ? 'opacity-40 border-blue-500'
+                              : 'hover:border-slate-300 dark:hover:border-slate-700'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2.5">
+                            <button
+                              type="button"
+                              className="cursor-grab text-slate-300 hover:text-slate-500 dark:text-slate-600 dark:hover:text-slate-400 active:cursor-grabbing"
+                            >
+                              <GripVertical className="h-4 w-4" />
+                            </button>
+                            <span className="w-4 font-mono text-xs font-bold text-slate-400">
+                              {/* Calcul du numéro du morceau uniquement */}
+                              {
+                                items
+                                  .slice(0, index + 1)
+                                  .filter((i) => i.type === 'song').length
+                              }
+                              .
                             </span>
+                            <div>
+                              <p className="text-xs font-bold text-slate-900 dark:text-white line-clamp-1">
+                                {item.data.title}
+                              </p>
+                              <span className="text-[10px] text-slate-400 font-mono">
+                                {item.data.tuning}
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-2.5">
+                            <span className="font-mono text-xs text-slate-500 dark:text-slate-400">
+                              {item.data.duration}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveItem(index)}
+                              className="text-slate-300 hover:text-rose-500 dark:text-slate-600 dark:hover:text-rose-400 transition-colors"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
                           </div>
                         </div>
+                      ) : (
+                        /* --- AFFICHAGE SI NOTE / REMARQUE DE SCÈNE --- */
+                        <div
+                          draggable
+                          onDragStart={() => handleDragStart(index)}
+                          onDragOver={(e) => handleDragOver(e, index)}
+                          onDragEnd={handleDragEnd}
+                          className={`group flex items-center justify-between rounded-xl border border-indigo-200/80 bg-indigo-50/50 p-2.5 shadow-xs transition-all dark:border-indigo-900/40 dark:bg-indigo-950/30 ${
+                            draggedIndex === index
+                              ? 'opacity-40 border-indigo-500'
+                              : 'hover:border-indigo-300 dark:hover:border-indigo-700'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2.5">
+                            <button
+                              type="button"
+                              className="cursor-grab text-indigo-300 hover:text-indigo-500 dark:text-indigo-700 dark:hover:text-indigo-500 active:cursor-grabbing"
+                            >
+                              <GripVertical className="h-4 w-4" />
+                            </button>
+                            <MessageSquare className="h-3.5 w-3.5 text-indigo-500 shrink-0" />
+                            <p className="text-xs font-medium italic text-indigo-950 dark:text-indigo-200 line-clamp-2">
+                              {item.content}
+                            </p>
+                          </div>
 
-                        <div className="flex items-center gap-2.5">
-                          <span className="font-mono text-xs text-slate-500 dark:text-slate-400">
-                            {song.duration}
-                          </span>
                           <button
                             type="button"
-                            onClick={() => handleRemoveSong(index)}
-                            className="text-slate-300 hover:text-rose-500 dark:text-slate-600 dark:hover:text-rose-400 transition-colors"
+                            onClick={() => handleRemoveItem(index)}
+                            className="text-indigo-300 hover:text-rose-500 dark:text-indigo-700 dark:hover:text-rose-400 transition-colors ml-2"
                           >
                             <Trash2 className="h-4 w-4" />
                           </button>
                         </div>
-                      </div>
+                      )}
                     </div>
                   );
                 })
@@ -298,7 +444,7 @@ export function SetlistModal({
             </div>
           </div>
 
-          {/* COLONNE DROITE : RÉPERTOIRE (ACCESSIBLE PAR ONGLET SUR MOBILE) */}
+          {/* COLONNE DROITE : RÉPERTOIRE */}
           <div
             className={`flex w-full flex-col bg-white p-3 sm:p-4 dark:bg-slate-900 overflow-hidden md:w-80 lg:w-96 ${
               activeTab === 'repertoire' ? 'flex' : 'hidden md:flex'
@@ -359,7 +505,7 @@ export function SetlistModal({
           <Button variant="outline" type="button" onClick={onClose} className="py-1.5 text-xs">
             Annuler
           </Button>
-          <Button onClick={handleSubmit} className="py-1.5 text-xs" disabled={!title || selectedSongs.length === 0}>
+          <Button onClick={handleSubmit} className="py-1.5 text-xs" disabled={!title || items.length === 0}>
             Enregistrer la setlist
           </Button>
         </div>
