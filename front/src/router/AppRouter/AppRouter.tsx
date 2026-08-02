@@ -10,6 +10,7 @@ import { ProtectedRoute } from '../ProtectedRoute';
 import { AppLayout } from '../../components/layout/AppLayout';
 import { SettingsPage } from '../../pages/SettingsPage';
 import { SongsPage } from '../../pages/SongsPage/SongsPage';
+import { SetlistsPage } from '../../pages/SetlistPage/SetlistsPage';
 
 const router = createBrowserRouter([
   {
@@ -37,6 +38,10 @@ const router = createBrowserRouter([
           {
             path: '/songs',
             element: <SongsPage />,
+          },
+          {
+            path: '/setlists',
+            element: <SetlistsPage />,
           },
         ],
       },
