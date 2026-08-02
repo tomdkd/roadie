@@ -4,10 +4,11 @@ import {
   RouterProvider,
 } from 'react-router-dom';
 import { LoginPage } from '../../pages/LoginPage';
-import { RegisterPage } from '../../pages/RegisterPage'; // 👈 Import de la nouvelle page
+import { RegisterPage } from '../../pages/RegisterPage';
 import { DashboardPage } from '../../pages/DashboardPage';
 import { ProtectedRoute } from '../ProtectedRoute';
 import { AppLayout } from '../../components/layout/AppLayout';
+import { SettingsPage } from '../../pages/SettingsPage';
 
 const router = createBrowserRouter([
   {
@@ -27,6 +28,10 @@ const router = createBrowserRouter([
           {
             path: '/dashboard',
             element: <DashboardPage />,
+          },
+          {
+            path: '/settings',
+            element: <SettingsPage />,
           },
         ],
       },

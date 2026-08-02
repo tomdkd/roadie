@@ -17,12 +17,7 @@ import {
   type RegisterStep3FormData,
 } from '../../features/auth/schemas/registerSchema';
 import logo from '../../assets/logo.png';
-import {
-  Camera,
-  User as UserIcon,
-  Link2,
-  Wand2,
-} from 'lucide-react';
+import { Camera, User as UserIcon, Link2, Wand2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { LanguageToggle } from '../../components/ui/LanguageToggle';
 import { Trans } from 'react-i18next';
@@ -64,7 +59,6 @@ const ACCOUNT_TYPES: AccountOption[] = [
     icon: '🏢',
   },
 ];
-
 
 export function RegisterPage() {
   const { t } = useTranslation();
@@ -120,11 +114,11 @@ export function RegisterPage() {
     setSelectedExistingProject(null);
     setCurrentStep(4);
   };
-  
+
   const onSubmitStep2: SubmitHandler<RegisterStep2FormData> = () => {
     setCurrentStep(3);
   };
- 
+
   const fillStep2MockData = () => {
     formStep2.setValue('firstName', 'Jimi');
     formStep2.setValue('lastName', 'Hendrix');
