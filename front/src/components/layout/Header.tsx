@@ -13,6 +13,8 @@ import {
   Plus,
   Menu,
 } from 'lucide-react';
+import { NewProjectModal } from '../modals/NewProjectModal';
+import { ProjectSelector } from '../ui/ProjectSelector';
 
 interface HeaderProps {
   onOpenMobileSidebar?: () => void;
@@ -21,6 +23,7 @@ interface HeaderProps {
 export function Header({ onOpenMobileSidebar }: HeaderProps) {
   const navigate = useNavigate();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isNewProjectModalOpen, setIsNewProjectModalOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -39,6 +42,7 @@ export function Header({ onOpenMobileSidebar }: HeaderProps) {
   };
 
   return (
+    <>
     <header className="flex relative z-30 h-16 w-full items-center justify-between border-b border-slate-200 bg-white/80 px-3 sm:px-6 backdrop-blur-md transition-colors dark:border-slate-800 dark:bg-slate-900/80">
       {/* 📱 Gauche : Bouton Burger (Mobile) + Sélecteur de Projet */}
       <div className="flex items-center gap-2">
@@ -53,29 +57,7 @@ export function Header({ onOpenMobileSidebar }: HeaderProps) {
         </button>
 
         {/* Sélecteur de Projet */}
-        <button
-          type="button"
-          className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-bold text-slate-800 hover:bg-slate-100 transition-colors dark:border-slate-800 dark:bg-slate-800/50 dark:text-slate-200 dark:hover:bg-slate-800"
-        >
-          <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-blue-600 text-xs font-bold text-white shrink-0">
-            N
-          </span>
-          {/* Nom masqué sur très petits écrans pour gagner de la place */}
-          <span className="max-w-[120px] sm:max-w-none truncate">
-            The Neon Monkeys
-          </span>
-          <ChevronDown className="h-3.5 w-3.5 text-slate-400 shrink-0" />
-        </button>
-
-        {/* ➕ Bouton Ajouter Un Projet */}
-        <button
-          type="button"
-          onClick={() => navigate('/register')}
-          className="flex h-8 w-8 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-600 hover:border-blue-500 hover:bg-blue-50 hover:text-blue-600 transition-all dark:border-slate-800 dark:bg-slate-800/50 dark:text-slate-400 dark:hover:border-blue-500 dark:hover:bg-blue-950/40 dark:hover:text-blue-400 shrink-0"
-          title="Ajouter ou rejoindre un projet"
-        >
-          <Plus className="h-4 w-4" />
-        </button>
+        <ProjectSelector onOpenNewProjectModal={() => setIsNewProjectModalOpen(true)} />
       </div>
 
       {/* 📱 Droite : Actions & Profil */}
@@ -190,5 +172,10 @@ export function Header({ onOpenMobileSidebar }: HeaderProps) {
         </div>
       </div>
     </header>
+    <NewProjectModal
+      isOpen={isNewProjectModalOpen}
+      onClose={() => setIsNewProjectModalOpen(false)}
+    />
+    </>
   );
 }
