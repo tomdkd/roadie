@@ -1,0 +1,100 @@
+{
+  "login": {
+    "welcome": "Welcome! Sign in to manage your project.",
+    "input": {
+      "email": "Email address",
+      "password": "Password",
+      "rememberMe": "Remember me"
+    },
+    "button": "Sign in",
+    "noAccount": "Don't have an account yet?",
+    "createAccount": "Create an account"
+  },
+  "register": {
+    "backToHome": "Back to home",
+    "alreadyHaveAccount": "Already have an account?",
+    "step1": {
+      "mainTitle": "Type",
+      "title": "Account type",
+      "description": "Select the type of account you want to create.",
+      "musician": {
+        "title": "Musician",
+        "description": "I am a musician and I want to manage my projects."
+      },
+      "booker": {
+        "title": "Booker",
+        "description": "I am a booker and I want to manage my artists' projects."
+      },
+      "label": {
+        "title": "Label",
+        "description": "I am a label and I want to manage my artists' projects."
+      }
+    },
+    "step2": {
+      "mainTitle": "Profile",
+      "title": "Tell us about yourself 👋",
+      "description": "A few personal details to set up your Roadie identity.",
+      "addAvatar": "Add your profile picture",
+      "error": {
+        "email": "Email address is required",
+        "invalidEmail": "Invalid email address",
+        "password": "Password is required",
+        "passwordMin": "Password must be at least 6 characters long",
+        "confirmPassword": "Passwords do not match",
+        "firstname": "First name is required",
+        "lastname": "Last name is required",
+        "city": "City is required"
+      }
+    },
+    "step3": {
+      "mainTitle": "Project",
+      "title": "Tell us about your project 🎸",
+      "description": "Create your artist profile or join an existing project.",
+      "projectExists": "My project already exists on Roadie (Join a band)"
+    },
+    "step4": {
+      "mainTitle": "Confirmation",
+      "waiting": {
+        "title": "Membership request sent!",
+        "successMessage": "Your account <0>{{email}}</0> has been successfully created.",
+        "waitingTitle": "Pending approval",
+        "waitingMessage": "A notification has been sent to the admin members of <0>{{projectName}}</0>. You will get access to setlists, show dates, and band documents as soon as they approve your request.",
+        "finish": "Got it, go to sign in"
+      },
+      "success": {
+        "title": "Welcome to Roadie!",
+        "description": "Your account and your project page for <0>{{projectName}}</0> are ready.",
+        "information": {
+          "title": "Your space is open 🚀",
+          "description": "You can now invite your musicians, add your upcoming gig dates, and organize your setlists."
+        },
+        "finish": "Go to sign in"
+      }
+    }
+  },
+  "projectTypes": {
+    "band": "Band / Group",
+    "artist": "Solo Artist",
+    "orchestra": "Orchestra",
+    "choir": "Choir",
+    "fanfare": "Brass Band",
+    "dj": "DJ / Producer",
+    "other": "Other"
+  },
+  "next": "Next",
+  "previous": "Previous",
+  "submit": "Save",
+  "firstname": "First name",
+  "lastname": "Last name",
+  "email": "Email address",
+  "password": "Password",
+  "confirmPassword": "Confirm password",
+  "phone": "Phone number",
+  "city": "City",
+  "country": "Country",
+  "projectName": "Project name",
+  "projectType": "Project type",
+  "musicStyles": "Music style(s)",
+  "finish": "Finish",
+  "language": "Language"
+}
