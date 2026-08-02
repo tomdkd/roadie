@@ -1,11 +1,10 @@
 import { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { useForm, type SubmitHandler, Controller } from 'react-hook-form';
+import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Stepper } from '../../components/ui/Stepper/Stepper';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
-import { MultiSelect } from '../../components/ui/MultiSelect/MultiSelect';
 import { ThemeToggle } from '../../components/ui/ThemeToggle';
 import {
   SearchProjectModal,
@@ -22,7 +21,6 @@ import {
   Camera,
   User as UserIcon,
   Link2,
-  ChevronDown,
   Wand2,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -67,30 +65,6 @@ const ACCOUNT_TYPES: AccountOption[] = [
   },
 ];
 
-const MUSIC_STYLES = [
-  'Rock',
-  'Pop',
-  'Hip-Hop / Rap',
-  'Metal',
-  'Electronic',
-  'Jazz',
-  'Blues',
-  'Reggae',
-  'Funk / Soul',
-  'Classical',
-  'Folk / Indie',
-  'Punk',
-];
-
-const PROJECT_TYPES = [
-  'band',
-  'artist',
-  'orchestra',
-  'choir',
-  'fanfare',
-  'dj',
-  'other',
-];
 
 export function RegisterPage() {
   const { t } = useTranslation();
@@ -142,19 +116,15 @@ export function RegisterPage() {
     setCurrentStep(4);
   };
 
-  const handleCreateNewProjectSubmit = (data: RegisterStep3FormData) => {
+  const handleCreateNewProjectSubmit = (_data: RegisterStep3FormData) => {
     setSelectedExistingProject(null);
     setCurrentStep(4);
   };
-
+  
   const onSubmitStep2: SubmitHandler<RegisterStep2FormData> = () => {
     setCurrentStep(3);
   };
-
-  const onSubmitStep3: SubmitHandler<RegisterStep3FormData> = (data) => {
-    setCurrentStep(4);
-  };
-
+ 
   const fillStep2MockData = () => {
     formStep2.setValue('firstName', 'Jimi');
     formStep2.setValue('lastName', 'Hendrix');
@@ -166,14 +136,6 @@ export function RegisterPage() {
     formStep2.setValue('city', 'Lille');
     formStep2.setValue('password', 'Password123!');
     formStep2.setValue('confirmPassword', 'Password123!');
-  };
-
-  const fillStep3MockData = () => {
-    formStep3.setValue('projectName', 'The Electric Experience');
-    formStep3.setValue('projectType', 'band');
-    formStep3.setValue('country', 'France');
-    formStep3.setValue('city', 'Paris');
-    formStep3.setValue('styles', ['Rock', 'Blues', 'Funk / Soul']);
   };
 
   return (

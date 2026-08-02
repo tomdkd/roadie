@@ -1,4 +1,3 @@
-import { useTranslation } from 'react-i18next';
 import {
   Zap,
   CalendarPlus,
@@ -9,8 +8,6 @@ import {
 } from 'lucide-react';
 
 export function QuickActionsWidget() {
-  const { t } = useTranslation();
-
   const handleDownloadPressKit = () => {
     console.log('Téléchargement du Press-kit...');
   };

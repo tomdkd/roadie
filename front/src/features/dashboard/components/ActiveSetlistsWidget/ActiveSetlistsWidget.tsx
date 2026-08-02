@@ -1,4 +1,3 @@
-import { useTranslation } from 'react-i18next';
 import { ListMusic, Music, Clock, ChevronRight, Plus } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -31,8 +30,6 @@ const DEFAULT_SETLISTS: Setlist[] = [
 ];
 
 export function ActiveSetlistsWidget() {
-  const { t } = useTranslation();
-
   return (
     <div className="relative flex flex-col justify-between overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-900">
       <div>

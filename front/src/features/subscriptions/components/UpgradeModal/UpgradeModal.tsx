@@ -13,7 +13,18 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
 
   if (!isOpen) return null;
 
-  const plans = [
+  interface Plan {
+    id: 'free' | 'pro' | 'ultimate';
+    name: string;
+    price: string;
+    period: string;
+    icon: typeof Zap;
+    popular?: boolean;
+    badgeColor: string;
+    features: string[];
+  }
+
+  const plans: Plan[] = [
     {
       id: 'free',
       name: 'Gratuit',
@@ -127,7 +138,7 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
             return (
               <div
                 key={plan.id}
-                onClick={() => setSelectedPlan(plan.id as any)}
+                onClick={() => setSelectedPlan(plan.id)}
                 className={`relative flex cursor-pointer flex-col justify-between rounded-2xl border p-5 transition-all ${
                   plan.popular
                     ? 'border-amber-500 bg-gradient-to-b from-amber-500/5 to-transparent shadow-lg shadow-amber-500/5 dark:from-amber-500/10'

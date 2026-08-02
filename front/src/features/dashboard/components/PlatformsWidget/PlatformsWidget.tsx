@@ -1,4 +1,3 @@
-import { useTranslation } from 'react-i18next';
 import { Activity, TrendingUp, TrendingDown } from 'lucide-react';
 
 interface PlatformStat {
@@ -54,8 +53,6 @@ const PLATFORM_STATS: PlatformStat[] = [
 ];
 
 export function PlatformsWidget() {
-  const { t } = useTranslation();
-
   return (
     <div className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-5 shadow-sm transition-colors sm:p-6 dark:border-slate-800 dark:bg-slate-900">
       {/* En-tête du Widget */}

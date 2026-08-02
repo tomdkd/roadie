@@ -1,4 +1,3 @@
-import { useTranslation } from 'react-i18next';
 import {
   Calendar,
   MapPin,
@@ -39,11 +38,7 @@ const DEFAULT_SHOW = {
 };
 
 export function NextShowWidget({ show = DEFAULT_SHOW }: NextShowProps) {
-  const { t } = useTranslation();
-
-  const handleDownloadSetlist = () => {
-    console.log(`Téléchargement de la setlist: ${show.setlistName}`);
-  };
+  const handleDownloadSetlist = () => {};
 
   const schedule = [
     {
