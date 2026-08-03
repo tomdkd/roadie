@@ -18,6 +18,13 @@ jobs:
     defaults:
       run:
         working-directory: ./back
+    env:
+      APP_SECRET: mysecret
+      DB_NAME: roadie
+      DB_USER: roadie_user
+      DB_PASSWORD: roadie_password
+      DB_PORT: 5432
+      DB_HOST: roadie-db
     steps:
       - uses: actions/checkout@v4
       - name: Setup PHP
@@ -39,7 +46,6 @@ jobs:
       - name: Install dependencies
         if: steps.cache-vendor.outputs.cache-hit != 'true'
         run: |
-          cp .env.dist .env
           composer install --no-progress --prefer-dist --optimize-autoloader
 
   back-lint:
