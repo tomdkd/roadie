@@ -9,7 +9,6 @@ ENV MESSENGER_TRANSPORT_DSN=doctrine://default?auto_setup=0
 ENV CORS_ALLOW_ORIGIN='^https?://(localhost|127\.0\.0\.1)(:[0-9]+)?$'
 ENV DB_HOST=roadie-db
 ENV DB_PORT=5432
-ENV DATABASE_URL="postgresql://$${DB_USER}:$${DB_PASSWORD}@$${DB_HOST}:$${DB_PORT}/$${DB_NAME}?serverVersion=16&charset=utf8"
 
 RUN apk add --no-cache acl fcgi file gettext git libpq-dev zip unzip nginx
 
