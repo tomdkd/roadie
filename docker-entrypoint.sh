@@ -2,7 +2,7 @@
 set -e
 
 # If DATABASE_URL is empty or contains unresolved placeholders, construct it from DB_* env vars.
-if [ -z "$DATABASE_URL" ] || echo "$DATABASE_URL" | grep -q '\${DB_USER}'; then
+if [ -z "$DATABASE_URL" ] || echo "$DATABASE_URL" | grep -qE '\$\{DB_USER\}|\{DB_USER\}|\$DB_USER'; then
 	: "${DB_NAME:?DB_NAME is required}"
 	: "${DB_USER:?DB_USER is required}"
 	: "${DB_PASSWORD:?DB_PASSWORD is required}"
