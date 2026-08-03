@@ -35,6 +35,7 @@ ENV APP_ENV=${APP_ENV}
 COPY back/composer.json back/composer.lock ./
 RUN composer install --no-dev --no-scripts --no-autoloader
 COPY back/. ./
+RUN cp .env.dist .env
 RUN if [ "$APP_ENV" = "prod" ]; then composer install --no-dev --optimize-autoloader; else composer install --optimize-autoloader; fi
 
 # --- STAGE 4: Final image ---
