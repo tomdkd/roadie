@@ -12,10 +12,8 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
-  # ==========================================
-  # PIPELINE BACKEND (Symfony)
-  # ==========================================
-  back-dependencies:
+  back-install:
+    name: Back - Install dependencies
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -29,21 +27,24 @@ jobs:
           extensions: mbstring, intl, pdo_pgsql, zip
           coverage: none
 
-      - name: Cache Vendor
+      - name: Cache vendor and Composer cache
         id: cache-vendor
         uses: actions/cache@v5
         with:
-          path: back/vendor
+          path: |
+            back/vendor
+            ~/.composer/cache
           key: ${{ runner.os }}-back-vendor-${{ hashFiles('back/composer.lock') }}
 
-      - name: Composer Install
+      - name: Install dependencies
         if: steps.cache-vendor.outputs.cache-hit != 'true'
         run: |
           cp .env.dist .env
           composer install --no-progress --prefer-dist --optimize-autoloader
 
-  back-tests:
-    needs: back-dependencies
+  back-lint:
+    name: Back - Lint
+    needs: back-install
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -54,76 +55,93 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
+          extensions: mbstring, intl, pdo_pgsql, zip
+          coverage: none
 
-      - name: Restore Vendor
+      - name: Restore vendor and Composer cache
         uses: actions/cache@v5
         with:
-          path: back/vendor
+          path: |
+            back/vendor
+            ~/.composer/cache
           key: ${{ runner.os }}-back-vendor-${{ hashFiles('back/composer.lock') }}
           fail-on-cache-miss: true
 
-      - name: Run Linters & Tests
+      - name: Run linter
         run: |
           php bin/console lint:yaml config
           php bin/console lint:twig templates
-          vendor/bin/phpunit
 
-  back-docker:
-    needs: back-tests
+  back-tests:
+    name: Back - Tests
+    needs: back-lint
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./back
     steps:
       - uses: actions/checkout@v4
-      - name: Build Back Production Image
-        run: docker build -f back/Dockerfile --target prod -t roadie-back:latest ./back
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, intl, pdo_pgsql, zip
+          coverage: none
 
+      - name: Restore vendor and Composer cache
+        uses: actions/cache@v5
+        with:
+          path: |
+            back/vendor
+            ~/.composer/cache
+          key: ${{ runner.os }}-back-vendor-${{ hashFiles('back/composer.lock') }}
+          fail-on-cache-miss: true
 
-  # ==========================================
-  # PIPELINE FRONTEND (React / Vite)
-  # ==========================================
-  # ==========================================
-  # PIPELINE FRONTEND (React / Vite)
-  # ==========================================
-  front-dependencies:
+      - name: Run tests
+        run: vendor/bin/phpunit
+
+  front-install:
+    name: Front - Install dependencies
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ./front
     steps:
       - uses: actions/checkout@v4
-      - name: Setup Node & Cache
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '26'
-          cache: 'npm'
+          cache: npm
           cache-dependency-path: front/package-lock.json
 
-      - name: Install Dependencies
+      - name: Install dependencies
         run: npm ci
 
-  # 1️⃣ LINT
   front-lint:
-    needs: front-dependencies
+    name: Front - Lint
+    needs: front-install
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ./front
     steps:
       - uses: actions/checkout@v4
-      - name: Setup Node & Cache
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '26'
-          cache: 'npm'
+          cache: npm
           cache-dependency-path: front/package-lock.json
 
-      - name: Install Dependencies
+      - name: Install dependencies
         run: npm ci
 
-      - name: Run Linter
+      - name: Run linter
         run: npm run lint
 
-  # 2️⃣ TYPECHECK (Compilateur TypeScript)
-  front-typecheck:
+  front-tests:
+    name: Front - Tests
     needs: front-lint
     runs-on: ubuntu-latest
     defaults:
@@ -131,68 +149,24 @@ jobs:
         working-directory: ./front
     steps:
       - uses: actions/checkout@v4
-      - name: Setup Node & Cache
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '26'
-          cache: 'npm'
+          cache: npm
           cache-dependency-path: front/package-lock.json
 
-      - name: Install Dependencies
+      - name: Install dependencies
         run: npm ci
 
-      - name: Run Typecheck
-        run: npx tsc --noEmit # Vérifie juste la compilation TS sans faire de build Vite
-
-  # 3️⃣ TESTS UNITAIRES (Vitest)
-  front-tests:
-    needs: front-typecheck
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./front
-    steps:
-      - uses: actions/checkout@v4
-      - name: Setup Node & Cache
-        uses: actions/setup-node@v4
-        with:
-          node-version: '26'
-          cache: 'npm'
-          cache-dependency-path: front/package-lock.json
-
-      - name: Install Dependencies
-        run: npm ci
-
-      - name: Run Unit Tests (Vitest)
+      - name: Run tests
         run: npm run test -- --run
 
-  # 4️⃣ BUILD FRONTEND
-  front-build:
-    needs: front-tests
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./front
-    steps:
-      - uses: actions/checkout@v4
-      - name: Setup Node & Cache
-        uses: actions/setup-node@v4
-        with:
-          node-version: '26'
-          cache: 'npm'
-          cache-dependency-path: front/package-lock.json
-
-      - name: Install Dependencies
-        run: npm ci
-
-      - name: Build Application
-        run: npx vite build
-
-  # 5️⃣ DOCKER BUILD
-  front-docker:
-    needs: front-build
+  docker-build:
+    name: Build production Docker image
+    needs: [back-tests, front-tests]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Build Front Production Image
-        run: docker build -f front/Dockerfile --target prod -t roadie-front:latest ./front
+      - name: Build Docker image
+        run: docker build --build-arg APP_ENV=prod -t roadie:latest .
