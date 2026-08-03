@@ -1,52 +1,42 @@
 services:
-  php-fpm:
+  roadie:
+    image: roadie:latest
+    container_name: roadie
     build:
-      context: ./back
-      target: base
-    env_file:
-      - ./back/.env.dist
+      context: .
+      dockerfile: Dockerfile
+      # args:
+      #   APP_ENV: ${APP_ENV:-prod}
     environment:
-      - DB_NAME=${DB_NAME:-roadie}
-      - DB_USER=${DB_USER:-app}
-      - DB_PASSWORD=${DB_PASSWORD:-!ChangeMe!}
-      - DB_PORT=${DB_PORT:-5432}
-      - DB_HOST=database
-      - APP_SECRET=${APP_SECRET}
-    networks:
-      - roadie-net
-
-  nginx:
-    image: nginx:alpine
+      # APP_ENV: ${APP_ENV:-prod}
+      APP_SECRET: mysecret
+      DB_NAME: roadie
+      DB_USER: roadie_user
+      DB_PASSWORD: roadie_password
+      DB_PORT: 5432
+      DB_HOST: ${DB_HOST:-roadie-db}
+    ports:
+      - "8080:80"
     depends_on:
-      - php-fpm
-    volumes:
-      - ./back:/app:ro
-      - ./back/docker/nginx/conf.d:/etc/nginx/conf.d:ro
+      - roadie-db
     networks:
       - roadie-net
 
-  frontend:
-    image: node:26-alpine
-    working_dir: /app
+  roadie-db:
+    image: postgres:16-alpine
+    container_name: roadie-db
+    environment:
+      POSTGRES_DB: roadie
+      POSTGRES_USER: roadie_user
+      POSTGRES_PASSWORD: roadie_password
     volumes:
-      - ./front:/app
-      - /app/node_modules
-    # ports:
-    #   - "5173:5173"
+      - database_data:/var/lib/postgresql/data
     networks:
       - roadie-net
-      - lefrigo-net
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.roadie.rule=Host(`roadie.le-frigo.fr`)
-      - traefik.http.routers.roadie.entrypoints=websecure
-      - traefik.http.routers.roadie.tls=true
-      - traefik.http.routers.roadie.tls.certresolver=myresolver
-      - traefik.http.routers.roadie.service=roadie-svc
-      - traefik.http.services.roadie-svc.loadbalancer.server.port=5173
 
 networks:
   roadie-net:
     name: roadie-net
-  lefrigo-net:
-    external: true
+
+volumes:
+  database_data:
