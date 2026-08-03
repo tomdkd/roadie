@@ -20,6 +20,7 @@ jobs:
         working-directory: ./back
     env:
       APP_SECRET: mysecret
+      APP_ENV: test
       DB_NAME: roadie
       DB_USER: roadie_user
       DB_PASSWORD: roadie_password
@@ -46,7 +47,7 @@ jobs:
       - name: Install dependencies
         if: steps.cache-vendor.outputs.cache-hit != 'true'
         run: |
-          composer install --no-progress --prefer-dist --optimize-autoloader
+          composer install --no-progress --prefer-dist --optimize-autoloader --no-scripts
 
   back-lint:
     name: Back - Lint
@@ -55,6 +56,14 @@ jobs:
     defaults:
       run:
         working-directory: ./back
+    env:
+      APP_SECRET: mysecret
+      APP_ENV: test
+      DB_NAME: roadie
+      DB_USER: roadie_user
+      DB_PASSWORD: roadie_password
+      DB_PORT: 5432
+      DB_HOST: roadie-db
     steps:
       - uses: actions/checkout@v4
       - name: Setup PHP
@@ -85,6 +94,14 @@ jobs:
     defaults:
       run:
         working-directory: ./back
+    env:
+      APP_SECRET: mysecret
+      APP_ENV: test
+      DB_NAME: roadie
+      DB_USER: roadie_user
+      DB_PASSWORD: roadie_password
+      DB_PORT: 5432
+      DB_HOST: roadie-db
     steps:
       - uses: actions/checkout@v4
       - name: Setup PHP
