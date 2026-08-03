@@ -44,6 +44,9 @@ jobs:
             ~/.composer/cache
           key: ${{ runner.os }}-back-vendor-${{ hashFiles('back/composer.lock') }}
 
+      - name: Prepare .env from .env.dist
+        run: cp .env.dist .env || true
+
       - name: Install dependencies
         if: steps.cache-vendor.outputs.cache-hit != 'true'
         run: |
@@ -82,24 +85,17 @@ jobs:
           key: ${{ runner.os }}-back-vendor-${{ hashFiles('back/composer.lock') }}
           fail-on-cache-miss: true
 
-      - name: Create temporary .env for lint
-        run: |
-          cat > .env <<'EOT'
-          APP_ENV=${APP_ENV}
-          APP_SECRET=${APP_SECRET}
-          DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?serverVersion=16&charset=utf8
-          EOT
+      - name: Prepare .env from .env.dist
+        run: cp .env.dist .env || true
 
       - name: Run linter
         run: |
           php bin/console lint:yaml config
           php bin/console lint:twig templates
 
-      - name: Remove temporary .env
+      - name: Cleanup .env
         if: always()
-        run: |
-          rm -f .env
-
+        run: rm -f .env || true
 
   back-tests:
     name: Back - Tests
@@ -134,21 +130,15 @@ jobs:
           key: ${{ runner.os }}-back-vendor-${{ hashFiles('back/composer.lock') }}
           fail-on-cache-miss: true
 
-      - name: Create temporary .env for tests
-        run: |
-          cat > .env <<'EOT'
-          APP_ENV=${APP_ENV}
-          APP_SECRET=${APP_SECRET}
-          DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?serverVersion=16&charset=utf8
-          EOT
+      - name: Prepare .env from .env.dist
+        run: cp .env.dist .env || true
 
       - name: Run tests
         run: vendor/bin/phpunit
 
-      - name: Remove temporary .env
+      - name: Cleanup .env
         if: always()
-        run: |
-          rm -f .env
+        run: rm -f .env || true
 
   front-install:
     name: Front - Install dependencies
