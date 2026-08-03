@@ -9,7 +9,9 @@ ENV MESSENGER_TRANSPORT_DSN=doctrine://default?auto_setup=0
 ENV CORS_ALLOW_ORIGIN='^https?://(localhost|127\.0\.0\.1)(:[0-9]+)?$'
 ENV DB_HOST=roadie-db
 ENV DB_PORT=5432
-ENV DATABASE_URL="postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?serverVersion=16&charset=utf8"
+# Keep a DATABASE_URL template (escaped) so build doesn't try to expand undefined vars.
+# It will be constructed at container start by the entrypoint script when needed.
+ENV DATABASE_URL="postgresql://$${DB_USER}:$${DB_PASSWORD}@$${DB_HOST}:$${DB_PORT}/$${DB_NAME}?serverVersion=16&charset=utf8"
 
 RUN apk add --no-cache acl fcgi file gettext git libpq-dev zip unzip nginx
 
@@ -49,6 +51,6 @@ COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 COPY back/docker/nginx/conf.d/default.conf /etc/nginx/http.d/default.conf
 RUN chown -R www-data:www-data /app/var /app/front/dist
-# ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 EXPOSE 80
 CMD ["sh", "-c", "php-fpm -D; nginx -g 'daemon off;' "]
