@@ -1,31 +1,23 @@
-name: CI Roadie Monorepo
+name: CI/CD Pipeline
 
 on:
-  push:
-    branches:
-      - '**'
   pull_request:
     branches:
-      - '**'
-
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+      - develop
+      - main
+  push:
+    branches:
+      - develop
+      - main
 
 jobs:
+  # --- BACKEND ---
   back-install:
-    name: Back - Install dependencies
+    name: Back - Install
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ./back
-    env:
-      APP_SECRET: mysecret
-      APP_ENV: test
-      DB_NAME: roadie
-      DB_USER: roadie_user
-      DB_PASSWORD: roadie_password
-      DB_PORT: 5432
-      DB_HOST: roadie-db
     steps:
       - uses: actions/checkout@v4
       - name: Setup PHP
@@ -44,13 +36,12 @@ jobs:
             ~/.composer/cache
           key: ${{ runner.os }}-back-vendor-${{ hashFiles('back/composer.lock') }}
 
-      - name: Prepare .env from .env.dist
+      - name: Prepare .env
         run: cp .env.dist .env || true
 
       - name: Install dependencies
         if: steps.cache-vendor.outputs.cache-hit != 'true'
-        run: |
-          composer install --no-progress --prefer-dist --optimize-autoloader --no-scripts
+        run: composer install --no-progress --prefer-dist --optimize-autoloader --no-scripts
 
   back-lint:
     name: Back - Lint
@@ -59,14 +50,6 @@ jobs:
     defaults:
       run:
         working-directory: ./back
-    env:
-      APP_SECRET: mysecret
-      APP_ENV: test
-      DB_NAME: roadie
-      DB_USER: roadie_user
-      DB_PASSWORD: roadie_password
-      DB_PORT: 5432
-      DB_HOST: roadie-db
     steps:
       - uses: actions/checkout@v4
       - name: Setup PHP
@@ -76,7 +59,7 @@ jobs:
           extensions: mbstring, intl, pdo_pgsql, zip
           coverage: none
 
-      - name: Restore vendor and Composer cache
+      - name: Restore vendor cache
         uses: actions/cache@v5
         with:
           path: |
@@ -85,17 +68,11 @@ jobs:
           key: ${{ runner.os }}-back-vendor-${{ hashFiles('back/composer.lock') }}
           fail-on-cache-miss: true
 
-      - name: Prepare .env from .env.dist
-        run: cp .env.dist .env || true
-
       - name: Run linter
         run: |
+          cp .env.dist .env || true
           php bin/console lint:yaml config
           php bin/console lint:twig templates
-
-      - name: Cleanup .env
-        if: always()
-        run: rm -f .env || true
 
   back-tests:
     name: Back - Tests
@@ -104,14 +81,6 @@ jobs:
     defaults:
       run:
         working-directory: ./back
-    env:
-      APP_SECRET: mysecret
-      APP_ENV: test
-      DB_NAME: roadie
-      DB_USER: roadie_user
-      DB_PASSWORD: roadie_password
-      DB_PORT: 5432
-      DB_HOST: roadie-db
     steps:
       - uses: actions/checkout@v4
       - name: Setup PHP
@@ -121,7 +90,7 @@ jobs:
           extensions: mbstring, intl, pdo_pgsql, zip
           coverage: none
 
-      - name: Restore vendor and Composer cache
+      - name: Restore vendor cache
         uses: actions/cache@v5
         with:
           path: |
@@ -130,18 +99,14 @@ jobs:
           key: ${{ runner.os }}-back-vendor-${{ hashFiles('back/composer.lock') }}
           fail-on-cache-miss: true
 
-      - name: Prepare .env from .env.dist
-        run: cp .env.dist .env || true
-
       - name: Run tests
-        run: vendor/bin/phpunit
+        run: |
+          cp .env.dist .env || true
+          vendor/bin/phpunit
 
-      - name: Cleanup .env
-        if: always()
-        run: rm -f .env || true
-
+  # --- FRONTEND ---
   front-install:
-    name: Front - Install dependencies
+    name: Front - Install
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -202,11 +167,112 @@ jobs:
       - name: Run tests
         run: npm run test -- --run
 
-  # docker-build:
-  #   name: Build production Docker image
-  #   needs: [back-tests, front-tests]
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - name: Build Docker image
-  #       run: docker build --build-arg APP_ENV=prod -t roadie:latest .
+  # --- DOCKER BUILD & RELEASE OPTIMISÉ ---
+  docker-release:
+    name: Build Docker & Manage Release
+    needs: [back-tests, front-tests]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+
+    steps:
+      # Checkout rapide sans historique lourd
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      # 1. Calcul des tags et des stratégies d'architecture
+      - name: Compute Tag and Release Type
+        id: vars
+        run: |
+          EVENT_NAME="${{ github.event_name }}"
+          PR_NUM="${{ github.event.number }}"
+
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            BRANCH="${{ github.base_ref }}"
+          else
+            BRANCH="${{ github.ref_name }}"
+          fi
+
+          BASE_VERSION=$(jq -r '.version // "1.0.0"' front/package.json)
+          IS_PRERELEASE="true"
+
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            if [ "$BRANCH" = "develop" ]; then
+              TAG="pr-rc-${PR_NUM}"
+            else
+              TAG="master-${BASE_VERSION}-rc.${PR_NUM}"
+            fi
+            # ⚡ Pour les PR : Build ultra rapide AMD64 (pas d'émulation QEMU)
+            PLATFORMS="linux/amd64"
+            NEEDS_QEMU="false"
+          else
+            if [ "$BRANCH" = "develop" ]; then
+              TAG="develop-${BASE_VERSION}-rc.${{ github.run_number }}"
+            else
+              IS_PRERELEASE="false"
+              TAG="v${BASE_VERSION}"
+            fi
+            # Multi-arch uniquement sur les merges
+            PLATFORMS="linux/amd64,linux/arm64"
+            NEEDS_QEMU="true"
+          fi
+
+          echo "tag=${TAG}" >> $GITHUB_OUTPUT
+          echo "is_prerelease=${IS_PRERELEASE}" >> $GITHUB_OUTPUT
+          echo "platforms=${PLATFORMS}" >> $GITHUB_OUTPUT
+          echo "needs_qemu=${NEEDS_QEMU}" >> $GITHUB_OUTPUT
+
+      # 2. Métadonnées Docker
+      - name: Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}
+          tags: |
+            type=raw,value=${{ steps.vars.outputs.tag }}
+            type=raw,value=latest,enable=${{ steps.vars.outputs.is_prerelease == 'false' }}
+
+      # 3. Charger QEMU UNIQUEMENT si du multi-arch est nécessaire
+      - name: Set up QEMU
+        if: steps.vars.outputs.needs_qemu == 'true'
+        uses: docker/setup-qemu-action@v3
+
+      # 4. Setup Docker Buildx avec moteur de cache activé
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # 5. Connexion GHCR
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # 6. Build & Push optimisé avec double cache GitHub Actions
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          platforms: ${{ steps.vars.outputs.platforms }}
+          build-args: |
+            APP_ENV=prod
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          # ⚡ Rétention et réutilisation des calques Docker
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # 7. Publication de la Release GitHub
+      - name: Create or Update GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.vars.outputs.tag }}
+          name: Release ${{ steps.vars.outputs.tag }}
+          prerelease: ${{ steps.vars.outputs.is_prerelease == 'true' }}
+          generate_release_notes: true
