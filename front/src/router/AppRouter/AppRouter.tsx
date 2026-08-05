@@ -12,6 +12,7 @@ import { SettingsPage } from '../../pages/SettingsPage';
 import { SongsPage } from '../../pages/SongsPage/SongsPage';
 import { SetlistsPage } from '../../pages/SetlistPage/SetlistsPage/SetlistsPage';
 import { MembersPage } from '../../pages/MembersPage';
+import { EventsPage } from '../../pages/EventsPage/EventsPage';
 
 const router = createBrowserRouter([
   {
@@ -48,6 +49,10 @@ const router = createBrowserRouter([
             path: '/members',
             element: <MembersPage />,
           },
+          {
+            path: '/events',
+            element: <EventsPage />,
+          }
         ],
       },
     ],
