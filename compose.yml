@@ -12,12 +12,21 @@ services:
       DB_PASSWORD: roadie_password
       DB_PORT: 5432
       DB_HOST: ${DB_HOST:-roadie-db}
-    ports:
-      - "8080:80"
+    # ports:
+    #   - "8080:80"
     depends_on:
       - roadie-db
     networks:
       - roadie-net
+      - lefrigo-net
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.roadie.rule=Host(`roadie.le-frigo.fr`)
+      - traefik.http.routers.roadie.entrypoints=websecure
+      - traefik.http.routers.roadie.tls=true
+      - traefik.http.routers.roadie.tls.certresolver=myresolver
+      - traefik.http.routers.roadie.service=roadie-svc
+      - traefik.http.services.roadie-svc.loadbalancer.server.port=80
 
   roadie-db:
     image: postgres:16-alpine
@@ -34,6 +43,8 @@ services:
 networks:
   roadie-net:
     name: roadie-net
+  lefrigo-net:
+    external: true
 
 volumes:
   database_data:
