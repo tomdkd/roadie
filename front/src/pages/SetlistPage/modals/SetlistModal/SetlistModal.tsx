@@ -9,10 +9,12 @@ import {
   AlertCircle,
   Plus,
   Music2,
-  MessageSquare
+  MessageSquare,
 } from 'lucide-react';
 import { Button } from '../../../../components/ui/Button';
 import { Input } from '../../../../components/ui/Input';
+import { Toast } from '../../../../components/ui/Toast';
+import type { ToastMessage } from '../../../../components/ui/Toast';
 
 export interface Song {
   id: string;
@@ -22,10 +24,10 @@ export interface Song {
   album?: string;
 }
 
-// Un élément de la setlist peut être soit un morceau, soit une note
+// Un élément de la setlist peut être soit un morceau, soit une note (avec une durée optionnelle)
 export type SetlistItem =
   | { type: 'song'; data: Song; id: string }
-  | { type: 'note'; content: string; id: string };
+  | { type: 'note'; content: string; duration?: string; id: string };
 
 interface SetlistModalProps {
   isOpen: boolean;
@@ -38,7 +40,7 @@ interface SetlistModalProps {
   availableSongs: Song[];
 }
 
-function durationToSeconds(durationStr: string): number {
+function durationToSeconds(durationStr?: string): number {
   if (!durationStr) return 0;
   const parts = durationStr.split(':').map(Number);
   if (parts.length === 2) return parts[0] * 60 + parts[1];
@@ -67,22 +69,29 @@ export function SetlistModal({
   const [searchQuery, setSearchQuery] = useState('');
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
-  // Gestion de la création de note
+  // Gestion de la création de note avec durée
   const [isAddingNote, setIsAddingNote] = useState(false);
   const [noteText, setNoteText] = useState('');
+  const [noteMinutes, setNoteMinutes] = useState('01');
+  const [noteSeconds, setNoteSeconds] = useState('00');
+
+  // Gestion du Toast interne
+  const [toast, setToast] = useState<ToastMessage | null>(null);
 
   // Onglet actif pour le mobile ('setlist' ou 'repertoire')
   const [activeTab, setActiveTab] = useState<'setlist' | 'repertoire'>('setlist');
 
-  // Calcul dynamique de la durée totale (basé uniquement sur les chansons)
+  // Calcul dynamique de la durée totale (Chansons + Durées des Notes de scène)
   const totalDurationStr = useMemo(() => {
-    const totalSeconds = items.reduce((acc, item) => {
+    const totalSecs = items.reduce((acc, item) => {
       if (item.type === 'song') {
         return acc + durationToSeconds(item.data.duration);
+      } else if (item.type === 'note') {
+        return acc + durationToSeconds(item.duration);
       }
       return acc;
     }, 0);
-    return secondsToFormattedDuration(totalSeconds);
+    return secondsToFormattedDuration(totalSecs);
   }, [items]);
 
   const filteredAvailableSongs = useMemo(() => {
@@ -95,32 +104,62 @@ export function SetlistModal({
 
   if (!isOpen) return null;
 
-  // Ajouter une chanson
+  // Ajouter une chanson (avec détection de doublon)
   const handleAddSong = (song: Song) => {
+    const isAlreadyAdded = items.some(
+      (item) => item.type === 'song' && item.data.id === song.id
+    );
+
+    if (isAlreadyAdded) {
+      setToast({
+        id: crypto.randomUUID(),
+        message: `Le morceau "${song.title}" est déjà présent dans la setlist.`,
+        type: 'warning',
+      });
+    }
+
     setItems((prev) => [
       ...prev,
-      { type: 'song', data: song, id: `${song.id}-${Date.now()}` },
+      { type: 'song', data: song, id: `${song.id}-${crypto.randomUUID()}` },
     ]);
   };
 
-  // Ajouter une note
+  // Soumission d'une note avec durée personnalisée
   const handleAddNoteSubmit = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if (!noteText.trim()) return;
 
+    const m = Math.max(0, parseInt(noteMinutes, 10) || 0);
+    const s = Math.min(59, Math.max(0, parseInt(noteSeconds, 10) || 0));
+    const pad = (num: number) => num.toString().padStart(2, '0');
+    const formattedNoteDuration = `${pad(m)}:${pad(s)}`;
+
     setItems((prev) => [
       ...prev,
-      { type: 'note', content: noteText.trim(), id: `note-${Date.now()}` },
+      {
+        type: 'note',
+        content: noteText.trim(),
+        duration: formattedNoteDuration !== '00:00' ? formattedNoteDuration : undefined,
+        id: `note-${crypto.randomUUID()}`,
+      },
     ]);
+
     setNoteText('');
+    setNoteMinutes('01');
+    setNoteSeconds('00');
     setIsAddingNote(false);
   };
 
-  // Raccourcis pour insérer des notes rapides
-  const handleQuickNote = (text: string) => {
+  // Raccourcis pour insérer des notes rapides avec durées estimées
+  const handleQuickNote = (text: string, defaultDuration?: string) => {
     setItems((prev) => [
       ...prev,
-      { type: 'note', content: text, id: `note-${Date.now()}` },
+      {
+        type: 'note',
+        content: text,
+        duration: defaultDuration,
+        id: `note-${crypto.randomUUID()}`,
+      },
     ]);
   };
 
@@ -145,6 +184,11 @@ export function SetlistModal({
 
   const handleDragEnd = () => setDraggedIndex(null);
 
+  const handleCloseModal = () => {
+    setToast(null);
+    onClose();
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) return;
@@ -157,15 +201,15 @@ export function SetlistModal({
 
     setTitle('');
     setItems([]);
+    setToast(null);
     onClose();
   };
 
-  // Compteur dynamique du nombre de morceaux réels
   const songCount = items.filter((i) => i.type === 'song').length;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 p-0 sm:p-4 md:p-6 backdrop-blur-sm">
-      <div className="flex h-full w-full max-w-5xl flex-col rounded-none sm:rounded-2xl border-0 sm:border border-slate-200 bg-white shadow-2xl dark:border-slate-800 dark:bg-slate-900 overflow-hidden">
+      <div className="relative flex h-full w-full max-w-5xl flex-col rounded-none sm:rounded-2xl border-0 sm:border border-slate-200 bg-white shadow-2xl dark:border-slate-800 dark:bg-slate-900 overflow-hidden">
         
         {/* HEADER RESPONSIVE */}
         <div className="flex flex-col border-b border-slate-100 p-3 sm:px-5 sm:py-3.5 dark:border-slate-800">
@@ -186,14 +230,14 @@ export function SetlistModal({
 
             {/* TIMER ET BOUTON FERMER */}
             <div className="flex items-center gap-2 sm:gap-4">
-              <div className="flex items-center gap-1.5 rounded-xl bg-slate-100 px-2.5 py-1 font-mono text-xs font-bold text-slate-800 dark:bg-slate-800 dark:text-slate-200">
+              <div className="flex items-center gap-1.5 rounded-xl bg-slate-100 px-2.5 py-1 font-mono text-xs font-bold text-slate-800 dark:bg-slate-800 dark:text-slate-200" title="Durée totale avec notes">
                 <Clock className="h-3.5 w-3.5 text-blue-500" />
                 <span>{totalDurationStr}</span>
               </div>
 
               <button
                 type="button"
-                onClick={onClose}
+                onClick={handleCloseModal}
                 className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-white"
               >
                 <X className="h-5 w-5" />
@@ -260,42 +304,66 @@ export function SetlistModal({
                   <span>+ Remarque / Note de scène</span>
                 </button>
 
-                {/* Quick notes en 1-click */}
+                {/* Quick notes avec durées estimées */}
                 <div className="hidden sm:flex items-center gap-1">
                   <button
                     type="button"
-                    onClick={() => handleQuickNote('⚡ Enchaînement direct')}
+                    onClick={() => handleQuickNote('⚡ Enchaînement direct', '00:15')}
                     className="rounded-md bg-slate-200/60 px-2 py-0.5 text-[10px] font-medium text-slate-600 hover:bg-slate-300 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors"
                   >
-                    ⚡ Enchaînement direct
+                    ⚡ Enchaînement direct (+15s)
                   </button>
                   <button
                     type="button"
-                    onClick={() => handleQuickNote('🎤 Présentation / Discours')}
+                    onClick={() => handleQuickNote('🎤 Présentation / Discours', '02:00')}
                     className="rounded-md bg-slate-200/60 px-2 py-0.5 text-[10px] font-medium text-slate-600 hover:bg-slate-300 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors"
                   >
-                    🎤 Speach public
+                    🎤 Speach public (+2m)
                   </button>
                 </div>
               </div>
 
-              {/* CHAMP LIBRE POUR SAISIR UNE NOTE PERSO */}
+              {/* FORMULAIRE DE CRÉATION DE NOTE AVEC DURÉE */}
               {isAddingNote && (
                 <form
                   onSubmit={handleAddNoteSubmit}
-                  className="flex items-center gap-2 pt-1"
+                  className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 rounded-xl border border-blue-200 bg-blue-50/30 p-2 dark:border-blue-900/40 dark:bg-blue-950/20"
                 >
                   <input
                     type="text"
-                    placeholder="Ex: Le chanteur parle au public pendant l'accordage..."
+                    placeholder="Ex: Speach du chanteur ou accordage..."
                     value={noteText}
                     onChange={(e) => setNoteText(e.target.value)}
                     autoFocus
-                    className="flex-1 rounded-xl border border-blue-300 bg-white px-3 py-1.5 text-xs text-slate-900 focus:border-blue-500 focus:outline-none dark:border-blue-800 dark:bg-slate-900 dark:text-white"
+                    className="flex-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs text-slate-900 focus:border-blue-500 focus:outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-white"
                   />
-                  <Button type="submit" className="py-1.5 px-3 text-xs shrink-0">
-                    Ajouter
-                  </Button>
+
+                  {/* Saisie de la durée (Min : Sec) */}
+                  <div className="flex items-center gap-1.5 self-end sm:self-auto">
+                    <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400">Durée:</span>
+                    <input
+                      type="number"
+                      min="0"
+                      max="59"
+                      value={noteMinutes}
+                      onChange={(e) => setNoteMinutes(e.target.value)}
+                      className="w-10 rounded-lg border border-slate-200 bg-white p-1 text-center font-mono text-xs text-slate-900 focus:border-blue-500 focus:outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-white"
+                      placeholder="mm"
+                    />
+                    <span className="text-xs font-bold text-slate-400">:</span>
+                    <input
+                      type="number"
+                      min="0"
+                      max="59"
+                      value={noteSeconds}
+                      onChange={(e) => setNoteSeconds(e.target.value)}
+                      className="w-10 rounded-lg border border-slate-200 bg-white p-1 text-center font-mono text-xs text-slate-900 focus:border-blue-500 focus:outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-white"
+                      placeholder="ss"
+                    />
+                    <Button type="submit" className="py-1 px-2.5 text-xs shrink-0 ml-1">
+                      Ajouter
+                    </Button>
+                  </div>
                 </form>
               )}
             </div>
@@ -321,7 +389,6 @@ export function SetlistModal({
                 </div>
               ) : (
                 items.map((item, index) => {
-                  // Trouver la chanson précédente pour calculer l'accordage
                   let prevSong: Song | null = null;
                   if (item.type === 'song') {
                     for (let i = index - 1; i >= 0; i--) {
@@ -339,7 +406,6 @@ export function SetlistModal({
 
                   return (
                     <div key={item.id} className="space-y-2">
-                      {/* ACCORDAGE CHANGÉ AUTOMATIQUE */}
                       {hasTuningChange && (
                         <div className="flex items-center gap-2 rounded-lg bg-amber-500/10 px-3 py-1.5 text-[11px] italic font-medium text-amber-600 dark:bg-amber-500/20 dark:text-amber-400 my-1">
                           <AlertCircle className="h-3.5 w-3.5 shrink-0" />
@@ -350,7 +416,6 @@ export function SetlistModal({
                         </div>
                       )}
 
-                      {/* --- AFFICHAGE SI MORCEAU --- */}
                       {item.type === 'song' ? (
                         <div
                           draggable
@@ -371,7 +436,6 @@ export function SetlistModal({
                               <GripVertical className="h-4 w-4" />
                             </button>
                             <span className="w-4 font-mono text-xs font-bold text-slate-400">
-                              {/* Calcul du numéro du morceau uniquement */}
                               {
                                 items
                                   .slice(0, index + 1)
@@ -403,7 +467,7 @@ export function SetlistModal({
                           </div>
                         </div>
                       ) : (
-                        /* --- AFFICHAGE SI NOTE / REMARQUE DE SCÈNE --- */
+                        /* AFFICHAGE NOTE AVEC SA DURÉE */
                         <div
                           draggable
                           onDragStart={() => handleDragStart(index)}
@@ -415,10 +479,10 @@ export function SetlistModal({
                               : 'hover:border-indigo-300 dark:hover:border-indigo-700'
                           }`}
                         >
-                          <div className="flex items-center gap-2.5">
+                          <div className="flex items-center gap-2.5 flex-1 pr-2">
                             <button
                               type="button"
-                              className="cursor-grab text-indigo-300 hover:text-indigo-500 dark:text-indigo-700 dark:hover:text-indigo-500 active:cursor-grabbing"
+                              className="cursor-grab text-indigo-300 hover:text-indigo-500 dark:text-indigo-700 dark:hover:text-indigo-500 active:cursor-grabbing shrink-0"
                             >
                               <GripVertical className="h-4 w-4" />
                             </button>
@@ -428,13 +492,20 @@ export function SetlistModal({
                             </p>
                           </div>
 
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveItem(index)}
-                            className="text-indigo-300 hover:text-rose-500 dark:text-indigo-700 dark:hover:text-rose-400 transition-colors ml-2"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
+                          <div className="flex items-center gap-2.5 shrink-0">
+                            {item.duration && (
+                              <span className="font-mono text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-100/60 dark:bg-indigo-900/40 px-1.5 py-0.5 rounded">
+                                +{item.duration}
+                              </span>
+                            )}
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveItem(index)}
+                              className="text-indigo-300 hover:text-rose-500 dark:text-indigo-700 dark:hover:text-rose-400 transition-colors ml-1"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </div>
                         </div>
                       )}
                     </div>
@@ -502,13 +573,16 @@ export function SetlistModal({
 
         {/* FOOTER ACTIONS */}
         <div className="flex items-center justify-end gap-2 border-t border-slate-100 bg-white p-3 sm:px-5 dark:border-slate-800 dark:bg-slate-900">
-          <Button variant="outline" type="button" onClick={onClose} className="py-1.5 text-xs">
+          <Button variant="outline" type="button" onClick={handleCloseModal} className="py-1.5 text-xs">
             Annuler
           </Button>
           <Button onClick={handleSubmit} className="py-1.5 text-xs" disabled={!title || items.length === 0}>
             Enregistrer la setlist
           </Button>
         </div>
+
+        {/* TOAST D'AVERTISSEMENT */}
+        <Toast key={toast?.id} toast={toast} onClose={() => setToast(null)} />
       </div>
     </div>
   );
