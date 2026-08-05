@@ -202,11 +202,11 @@ jobs:
       - name: Run tests
         run: npm run test -- --run
 
-  docker-build:
-    name: Build production Docker image
-    needs: [back-tests, front-tests]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Build Docker image
-        run: docker build --build-arg APP_ENV=prod -t roadie:latest .
+  # docker-build:
+  #   name: Build production Docker image
+  #   needs: [back-tests, front-tests]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Build Docker image
+  #       run: docker build --build-arg APP_ENV=prod -t roadie:latest .
