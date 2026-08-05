@@ -11,6 +11,7 @@ import { AppLayout } from '../../components/layout/AppLayout';
 import { SettingsPage } from '../../pages/SettingsPage';
 import { SongsPage } from '../../pages/SongsPage/SongsPage';
 import { SetlistsPage } from '../../pages/SetlistPage/SetlistsPage/SetlistsPage';
+import { MembersPage } from '../../pages/MembersPage';
 
 const router = createBrowserRouter([
   {
@@ -42,6 +43,10 @@ const router = createBrowserRouter([
           {
             path: '/setlists',
             element: <SetlistsPage />,
+          },
+          {
+            path: '/members',
+            element: <MembersPage />,
           },
         ],
       },
