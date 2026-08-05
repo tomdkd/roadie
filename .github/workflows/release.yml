@@ -80,16 +80,19 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # 4. Build et Push de l'image Docker
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
           file: ./Dockerfile
           push: true
+          platforms: linux/amd64,linux/arm64
           build-args: |
             APP_ENV=prod
-          tags: ${{ env.DOCKER_TAGS }}
+          tags: ${{ steps.vars.outputs.docker_tags }}
 
       # 5. Publication de la Release GitHub
       - name: Create or Update GitHub Release
