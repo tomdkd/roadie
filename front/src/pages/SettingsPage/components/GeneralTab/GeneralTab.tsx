@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { ChevronDown, Upload, Info } from 'lucide-react';
 import { Button } from '../../../../components/ui/Button';
 import { Input } from '../../../../components/ui/Input';
-import { MultiSelect } from '../../../../components/ui/MultiSelect/MultiSelect';
-import { MusicBrainzModal } from '../../modals/MusicBrainzModal/MusicBrainzModal';
+import { MultiSelect } from '../../../../components/ui/MultiSelect';
+import { MusicBrainzModal } from '../../modals/MusicBrainzModal';
 
 const PROJECT_TYPES = [
   { value: 'band', label: 'Groupe / Band' },
