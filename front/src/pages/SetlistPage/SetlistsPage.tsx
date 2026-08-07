@@ -16,11 +16,11 @@ import {
   FilterX,
   Send,
 } from 'lucide-react';
-import { Button } from '../../../components/ui/Button';
-import { Toast, type ToastMessage, type ToastType } from '../../../components/ui/Toast';
-import { SetlistModal } from '../modals/SetlistModal/SetlistModal';
-import type { Song } from '../modals/SetlistModal/SetlistModal';
-import type { SetlistItem } from '../modals/SetlistModal/SetlistModal';
+import { Button } from '../../components/ui/Button';
+import { Toast, type ToastMessage, type ToastType } from '../../components/ui/Toast';
+import { SetlistModal } from './modals/SetlistModal/SetlistModal';
+import type { Song } from './modals/SetlistModal/SetlistModal';
+import type { SetlistItem } from './modals/SetlistModal/SetlistModal';
 
 export interface Setlist {
   id: string;

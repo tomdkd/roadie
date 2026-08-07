@@ -10,9 +10,10 @@ import { ProtectedRoute } from '../ProtectedRoute';
 import { AppLayout } from '../../components/layout/AppLayout';
 import { SettingsPage } from '../../pages/SettingsPage';
 import { SongsPage } from '../../pages/SongsPage/SongsPage';
-import { SetlistsPage } from '../../pages/SetlistPage/SetlistsPage/SetlistsPage';
+import { SetlistsPage } from '../../pages/SetlistPage/SetlistsPage';
 import { MembersPage } from '../../pages/MembersPage';
-import { EventsPage } from '../../pages/EventsPage/EventsPage';
+import { EventsPage } from '../../pages/EventsPage';
+import { DocumentsPage } from '../../pages/DocumentsPage';
 
 const router = createBrowserRouter([
   {
@@ -52,6 +53,10 @@ const router = createBrowserRouter([
           {
             path: '/events',
             element: <EventsPage />,
+          },
+          {
+            path: '/documents',
+            element: <DocumentsPage />,
           }
         ],
       },
