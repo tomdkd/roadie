@@ -192,5 +192,57 @@
         "submit": "Importer le document"
       }
     }
+  },
+  "songsPage": {
+    "header": {
+      "title": "Répertoire",
+      "description": "{{count}} morceaux enregistrés."
+    },
+    "search": {
+      "placeholder": "Rechercher un titre, un album..."
+    },
+    "filters": {
+      "allStatus": "Tous les statuts"
+    },
+    "actions": {
+      "addSong": "Ajouter une chanson"
+    },
+    "status": {
+      "ready": "Prêt",
+      "rehearsal": "En cours",
+      "draft": "Brouillon"
+    },
+    "table": {
+      "title": "Titre",
+      "album": "Album / Single",
+      "status": "Statut",
+      "duration": "Durée",
+      "tempo": "Tempo (BPM)",
+      "key": "Tonalité",
+      "tuning": "Accordage",
+      "actions": "Actions"
+    },
+    "modals": {
+      "add": {
+        "title": "Ajouter une chanson",
+        "subtitle": "Enregistre un titre dans le répertoire du groupe.",
+        "fields": {
+          "title": "Titre de la chanson",
+          "titlePlaceholder": "Ex: Voodoo Child",
+          "album": "Album / Single",
+          "albumPlaceholder": "Sélectionner ou saisir...",
+          "duration": "Durée (MM:SS)",
+          "durationPlaceholder": "03:45",
+          "bpm": "BPM",
+          "bpmPlaceholder": "120",
+          "key": "Tonalité",
+          "keyPlaceholder": "Ex: Am",
+          "tuning": "Accordage",
+          "tuningPlaceholder": "Ex: Drop D",
+          "status": "Statut"
+        },
+        "submit": "Ajouter au répertoire"
+      }
+    }
   }
 }

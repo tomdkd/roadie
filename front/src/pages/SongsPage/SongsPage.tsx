@@ -8,6 +8,7 @@ import {
   Disc,
   Plus,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../../components/ui/Button';
 import { SongModal } from './modals/SongModal';
 import type { SongForm } from './modals/SongModal/SongModal';
@@ -77,6 +78,7 @@ const INITIAL_SONGS: Song[] = [
 ];
 
 export function SongsPage() {
+  const { t } = useTranslation();
   const [songs, setSongs] = useState<Song[]>(INITIAL_SONGS);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -110,19 +112,19 @@ export function SongsPage() {
       case 'ready':
         return (
           <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-2.5 py-1 text-[11px] font-bold text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400">
-            Prêt
+            {t('songsPage.status.ready')}
           </span>
         );
       case 'rehearsal':
         return (
           <span className="inline-flex items-center rounded-full bg-amber-500/10 px-2.5 py-1 text-[11px] font-bold text-amber-600 dark:bg-amber-500/20 dark:text-amber-400">
-            En cours
+            {t('songsPage.status.rehearsal')}
           </span>
         );
       case 'draft':
         return (
           <span className="inline-flex items-center rounded-full bg-slate-500/10 px-2.5 py-1 text-[11px] font-bold text-slate-500 dark:bg-slate-800 dark:text-slate-400">
-            Brouillon
+            {t('songsPage.status.draft')}
           </span>
         );
     }
@@ -133,10 +135,10 @@ export function SongsPage() {
       {/* EN-TÊTE */}
       <div className="shrink-0">
         <h1 className="flex items-center gap-2 text-xl font-black text-slate-900 sm:text-2xl dark:text-white">
-          Répertoire
+          {t('songsPage.header.title')}
         </h1>
         <p className="text-xs text-slate-500 sm:text-sm dark:text-slate-400">
-          {songs.length} morceaux enregistrés.
+          {t('songsPage.header.description', { count: songs.length })}
         </p>
       </div>
 
@@ -147,7 +149,7 @@ export function SongsPage() {
           <Search className="pointer-events-none absolute left-3.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
-            placeholder="Rechercher un titre, un album..."
+            placeholder={t('songsPage.search.placeholder')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full rounded-xl border border-slate-200 bg-white py-2 pl-9 pr-3 text-xs text-slate-900 focus:border-blue-500 focus:outline-none dark:border-slate-800 dark:bg-slate-900 dark:text-white"
@@ -163,10 +165,10 @@ export function SongsPage() {
               onChange={(e) => setStatusFilter(e.target.value)}
               className="w-full cursor-pointer appearance-none rounded-xl border border-slate-200 bg-white py-2 pl-3 pr-7 text-xs font-semibold text-slate-700 focus:border-blue-500 focus:outline-none dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 truncate"
             >
-              <option value="all">Tous les statuts</option>
-              <option value="ready">Prêt</option>
-              <option value="rehearsal">En cours</option>
-              <option value="draft">Brouillon</option>
+              <option value="all">{t('songsPage.filters.allStatus')}</option>
+              <option value="ready">{t('songsPage.status.ready')}</option>
+              <option value="rehearsal">{t('songsPage.status.rehearsal')}</option>
+              <option value="draft">{t('songsPage.status.draft')}</option>
             </select>
             <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
           </div>
@@ -177,7 +179,7 @@ export function SongsPage() {
             className="w-full sm:w-auto justify-center gap-1.5 py-2 px-3 text-xs whitespace-nowrap"
           >
             <Plus className="h-4 w-4 shrink-0" />
-            <span>Ajouter une chanson</span>
+            <span>{t('songsPage.actions.addSong')}</span>
           </Button>
         </div>
       </div>
@@ -188,14 +190,14 @@ export function SongsPage() {
           <table className="w-full text-xs text-slate-600 dark:text-slate-300">
             <thead className="border-b border-slate-100 bg-slate-50/50 text-[11px] uppercase tracking-wider text-slate-400 dark:border-slate-800 dark:bg-slate-800/40">
               <tr>
-                <th className="py-3 px-4 font-bold text-left">Titre</th>
-                <th className="py-3 px-4 font-bold text-center">Album / Single</th>
-                <th className="py-3 px-4 font-bold text-center">Statut</th>
-                <th className="py-3 px-4 font-bold text-center">Durée</th>
-                <th className="py-3 px-4 font-bold text-center">Tempo (BPM)</th>
-                <th className="py-3 px-4 font-bold text-center">Tonalité</th>
-                <th className="py-3 px-4 font-bold text-center">Accordage</th>
-                <th className="py-3 px-4 font-bold text-center">Actions</th>
+                <th className="py-3 px-4 font-bold text-left">{t('songsPage.table.title')}</th>
+                <th className="py-3 px-4 font-bold text-center">{t('songsPage.table.album')}</th>
+                <th className="py-3 px-4 font-bold text-center">{t('songsPage.table.status')}</th>
+                <th className="py-3 px-4 font-bold text-center">{t('songsPage.table.duration')}</th>
+                <th className="py-3 px-4 font-bold text-center">{t('songsPage.table.tempo')}</th>
+                <th className="py-3 px-4 font-bold text-center">{t('songsPage.table.key')}</th>
+                <th className="py-3 px-4 font-bold text-center">{t('songsPage.table.tuning')}</th>
+                <th className="py-3 px-4 font-bold text-center">{t('songsPage.table.actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
