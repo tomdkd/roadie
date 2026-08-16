@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Search,
   Clock,
@@ -12,77 +12,20 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '../../components/ui/Button';
 import { SongModal } from './modals/SongModal';
 import type { SongForm } from './modals/SongModal/SongModal';
+import { SongsProvider, type Song } from './providers/SongsProvider';
 
-export interface Song {
-  id: string;
-  title: string;
-  album: string;
-  duration: string;
-  bpm: number;
-  key: string;
-  tuning: string;
-  status: 'ready' | 'rehearsal' | 'draft';
-}
-
-const INITIAL_SONGS: Song[] = [
-  {
-    id: '1',
-    title: 'Neon Skyline',
-    album: 'City Lights (2025)',
-    duration: '04:15',
-    bpm: 124,
-    key: 'Am',
-    tuning: 'Standard (E)',
-    status: 'ready',
-  },
-  {
-    id: '2',
-    title: 'Midnight Run',
-    album: 'City Lights (2025)',
-    duration: '03:48',
-    bpm: 138,
-    key: 'Em',
-    tuning: 'Drop D',
-    status: 'ready',
-  },
-  {
-    id: '3',
-    title: 'Electric Velvet',
-    album: 'Electric Velvet - Expanded Edition', // > 20 caractères pour tester le tronquage
-    duration: '05:02',
-    bpm: 96,
-    key: 'C#m',
-    tuning: 'Standard (E)',
-    status: 'rehearsal',
-  },
-  {
-    id: '4',
-    title: 'Starlight Groove',
-    album: 'First Demo',
-    duration: '03:30',
-    bpm: 115,
-    key: 'G',
-    tuning: 'Standard (E)',
-    status: 'ready',
-  },
-  {
-    id: '5',
-    title: 'Unreleased Jam #4',
-    album: 'Inédit',
-    duration: '02:45',
-    bpm: 140,
-    key: 'Dm',
-    tuning: 'Standard (E)',
-    status: 'draft',
-  },
-];
+export type { Song };
 
 export function SongsPage() {
   const { t } = useTranslation();
-  const [songs, setSongs] = useState<Song[]>(INITIAL_SONGS);
+  const [songs, setSongs] = useState<Song[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
+  useEffect(() => {
+    SongsProvider.getSongs().then(setSongs);
+  }, []);
 
   // Filtrage
   const filteredSongs = songs.filter((song) => {
