@@ -244,5 +244,99 @@
         "submit": "Ajouter au répertoire"
       }
     }
+  },
+  "eventsPage": {
+    "header": {
+      "title": "Planning & Événements",
+      "description": "Concerts, répétitions et sessions d'enregistrement."
+    },
+    "actions": {
+      "createEvent": "Créer un événement"
+    },
+    "filters": {
+      "all": "Tous ({{count}})",
+      "concerts": "Concerts",
+      "rehearsals": "Répétitions",
+      "studio": "Studio"
+    },
+    "types": {
+      "concert": "Concert",
+      "rehearsal": "Répétition",
+      "studio": "Studio"
+    },
+    "toolbar": {
+      "today": "Aujourd'hui",
+      "month": "Mois",
+      "week": "Semaine",
+      "day": "Jour",
+      "agenda": "Agenda"
+    },
+    "toasts": {
+      "creationModal": "Modale de création d'événement à venir",
+      "selection": "Sélection : {{title}}",
+      "details": "Détails : {{title}}"
+    },
+    "calendar": {
+      "noEventsInRange": "Aucun événement prévu dans cette période."
+    }
+  },
+  "membersPage": {
+    "header": {
+      "title": "Membres du projet",
+      "description": "Gère l'équipe, les instruments et les niveaux d'accès au projet."
+    },
+    "actions": {
+      "inviteMember": "Inviter un membre"
+    },
+    "search": {
+      "placeholder": "Rechercher par nom, prénom, email..."
+    },
+    "filters": {
+      "allInstruments": "Tous les rôles / instruments",
+      "allRoles": "Tous les droits"
+    },
+    "roles": {
+      "admin": "Admin",
+      "editor": "Éditeur",
+      "viewer": "Lecteur"
+    },
+    "table": {
+      "member": "Membre",
+      "roleInstrument": "Rôle / Instrument",
+      "permissions": "Droits",
+      "actions": "Actions"
+    },
+    "tooltips": {
+      "edit": "Modifier les droits",
+      "exclude": "Exclure du projet"
+    },
+    "empty": {
+      "filtered": {
+        "title": "Aucun membre trouvé",
+        "description": "Aucun membre ne correspond à vos filtres de recherche actuels.",
+        "reset": "Réinitialiser les filtres"
+      },
+      "general": {
+        "title": "Aucun membre dans le projet",
+        "description": "Invite tes musiciens et techniciens pour démarrer la collaboration."
+      }
+    },
+    "removeModal": {
+      "title": "Exclure du projet ?",
+      "subtitle": "Cette action retirera les accès au membre.",
+      "confirmation": "Es-tu sûr de vouloir retirer <strong>{{name}}</strong> du projet ? Il/Elle ne pourra plus accéder aux setlists et événements.",
+      "cancel": "Annuler",
+      "confirm": "Exclure le membre"
+    },
+    "toasts": {
+      "removed": "{{name}} a été retiré(e) du projet.",
+      "edit": "Édition des accès de {{name}}"
+    }
+  },
+  "dashboardPage": {
+    "header": {
+      "title": "Tableau de bord",
+      "welcome": "Ravi de te revoir, Jimi !"
+    }
   }
 }

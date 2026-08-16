@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Search,
   UserPlus,
@@ -9,72 +9,15 @@ import {
   FilterX,
   Users,
 } from 'lucide-react';
+import { useTranslation, Trans } from 'react-i18next';
 import { Button } from '../../components/ui/Button';
 import { Toast } from '../../components/ui/Toast';
 import type { ToastMessage } from '../../components/ui/Toast';
-
-export type RolePermission = 'admin' | 'editor' | 'viewer';
-
-export interface ProjectMember {
-  id: string;
-  firstName: string;
-  lastName: string;
-  instrument: string;
-  role: RolePermission;
-  email: string;
-  avatarBg: string;
-}
-
-const INITIAL_MEMBERS: ProjectMember[] = [
-  {
-    id: '1',
-    firstName: 'Jimi',
-    lastName: 'Hendrix',
-    instrument: 'Guitariste Lead',
-    role: 'admin',
-    email: 'jimi.hendrix@roadie.music',
-    avatarBg: 'bg-purple-500/10 text-purple-600 dark:bg-purple-500/20 dark:text-purple-400',
-  },
-  {
-    id: '2',
-    firstName: 'Alex',
-    lastName: 'Turner',
-    instrument: 'Chanteur / Guitariste',
-    role: 'editor',
-    email: 'alex.turner@roadie.music',
-    avatarBg: 'bg-blue-500/10 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400',
-  },
-  {
-    id: '3',
-    firstName: 'Dave',
-    lastName: 'Grohl',
-    instrument: 'Batteur',
-    role: 'admin',
-    email: 'dave.grohl@roadie.music',
-    avatarBg: 'bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400',
-  },
-  {
-    id: '4',
-    firstName: 'Flea',
-    lastName: 'Balzary',
-    instrument: 'Bassiste',
-    role: 'editor',
-    email: 'flea@roadie.music',
-    avatarBg: 'bg-amber-500/10 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400',
-  },
-  {
-    id: '5',
-    firstName: 'Paul',
-    lastName: 'McCartney',
-    instrument: 'Guitariste Rythmique',
-    role: 'viewer',
-    email: 'paul.mccartney@roadie.music',
-    avatarBg: 'bg-slate-500/10 text-slate-600 dark:bg-slate-500/20 dark:text-slate-400',
-  },
-];
+import { MembersProvider, type ProjectMember, type RolePermission } from './providers/MembersProvider';
 
 export function MembersPage() {
-  const [members, setMembers] = useState<ProjectMember[]>(INITIAL_MEMBERS);
+  const { t } = useTranslation();
+  const [members, setMembers] = useState<ProjectMember[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [roleFilter, setRoleFilter] = useState<string>('all');
   const [instrumentFilter, setInstrumentFilter] = useState<string>('all');
@@ -84,6 +27,10 @@ export function MembersPage() {
 
   // Membre sélectionné pour exclusion
   const [memberToRemove, setMemberToRemove] = useState<ProjectMember | null>(null);
+
+  useEffect(() => {
+    MembersProvider.getMembers().then(setMembers);
+  }, []);
 
   const showToast = (message: string, type: ToastMessage['type'] = 'success') => {
     setToast({ id: crypto.randomUUID(), message, type });
@@ -115,7 +62,7 @@ export function MembersPage() {
     if (!memberToRemove) return;
     setMembers((prev) => prev.filter((m) => m.id !== memberToRemove.id));
     showToast(
-      `${memberToRemove.firstName} ${memberToRemove.lastName} a été retiré(e) du projet.`,
+      t('membersPage.toasts.removed', { name: `${memberToRemove.firstName} ${memberToRemove.lastName}` }),
       'info'
     );
     setMemberToRemove(null);
@@ -127,19 +74,19 @@ export function MembersPage() {
         return (
           <span className="inline-flex items-center gap-1 rounded-full bg-purple-500/10 px-2.5 py-1 text-[11px] font-bold text-purple-600 dark:bg-purple-500/20 dark:text-purple-400">
             <Shield className="h-3 w-3" />
-            Admin
+            {t('membersPage.roles.admin')}
           </span>
         );
       case 'editor':
         return (
           <span className="inline-flex items-center gap-1 rounded-full bg-blue-500/10 px-2.5 py-1 text-[11px] font-bold text-blue-600 dark:bg-blue-500/20 dark:text-blue-400">
-            Éditeur
+            {t('membersPage.roles.editor')}
           </span>
         );
       case 'viewer':
         return (
           <span className="inline-flex items-center gap-1 rounded-full bg-slate-500/10 px-2.5 py-1 text-[11px] font-bold text-slate-500 dark:bg-slate-800 dark:text-slate-400">
-            Lecteur
+            {t('membersPage.roles.viewer')}
           </span>
         );
     }
@@ -157,16 +104,16 @@ export function MembersPage() {
       <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between shrink-0">
         <div>
           <h1 className="flex items-center gap-2 text-xl font-black text-slate-900 sm:text-2xl dark:text-white">
-            Membres du projet
+            {t('membersPage.header.title')}
           </h1>
           <p className="text-xs text-slate-500 sm:text-sm dark:text-slate-400">
-            Gère l'équipe, les instruments et les niveaux d'accès au projet.
+            {t('membersPage.header.description')}
           </p>
         </div>
 
         <Button className="py-2 px-3 text-xs gap-1.5 self-start sm:self-auto">
           <UserPlus className="h-4 w-4 shrink-0" />
-          <span>Inviter un membre</span>
+          <span>{t('membersPage.actions.inviteMember')}</span>
         </Button>
       </div>
 
@@ -177,7 +124,7 @@ export function MembersPage() {
           <Search className="pointer-events-none absolute left-3.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
-            placeholder="Rechercher par nom, prénom, email..."
+            placeholder={t('membersPage.search.placeholder')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full rounded-xl border border-slate-200 bg-white py-2 pl-9 pr-3 text-xs text-slate-900 focus:border-blue-500 focus:outline-none dark:border-slate-800 dark:bg-slate-900 dark:text-white"
@@ -193,7 +140,7 @@ export function MembersPage() {
               onChange={(e) => setInstrumentFilter(e.target.value)}
               className="w-full cursor-pointer appearance-none rounded-xl border border-slate-200 bg-white py-2 pl-3 pr-7 text-xs font-semibold text-slate-700 focus:border-blue-500 focus:outline-none dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 truncate"
             >
-              <option value="all">Tous les rôles / instruments</option>
+              <option value="all">{t('membersPage.filters.allInstruments')}</option>
               {uniqueInstruments.map((inst) => (
                 <option key={inst} value={inst}>
                   {inst}
@@ -210,10 +157,10 @@ export function MembersPage() {
               onChange={(e) => setRoleFilter(e.target.value)}
               className="w-full cursor-pointer appearance-none rounded-xl border border-slate-200 bg-white py-2 pl-3 pr-7 text-xs font-semibold text-slate-700 focus:border-blue-500 focus:outline-none dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 truncate"
             >
-              <option value="all">Tous les droits</option>
-              <option value="admin">Admin</option>
-              <option value="editor">Éditeur</option>
-              <option value="viewer">Lecteur</option>
+              <option value="all">{t('membersPage.filters.allRoles')}</option>
+              <option value="admin">{t('membersPage.roles.admin')}</option>
+              <option value="editor">{t('membersPage.roles.editor')}</option>
+              <option value="viewer">{t('membersPage.roles.viewer')}</option>
             </select>
             <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
           </div>
@@ -228,10 +175,10 @@ export function MembersPage() {
               {/* EN-TÊTE DU TABLEAU */}
               <thead className="bg-slate-50/80 text-[11px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 dark:bg-slate-800/50 dark:border-slate-800 dark:text-slate-500">
                 <tr>
-                  <th scope="col" className="px-4 py-3">Membre</th>
-                  <th scope="col" className="px-4 py-3">Rôle / Instrument</th>
-                  <th scope="col" className="px-4 py-3">Droits</th>
-                  <th scope="col" className="px-4 py-3 text-right">Actions</th>
+                  <th scope="col" className="px-4 py-3">{t('membersPage.table.member')}</th>
+                  <th scope="col" className="px-4 py-3">{t('membersPage.table.roleInstrument')}</th>
+                  <th scope="col" className="px-4 py-3">{t('membersPage.table.permissions')}</th>
+                  <th scope="col" className="px-4 py-3 text-right">{t('membersPage.table.actions')}</th>
                 </tr>
               </thead>
 
@@ -279,11 +226,11 @@ export function MembersPage() {
                           type="button"
                           onClick={() =>
                             showToast(
-                              `Édition des accès de ${member.firstName} ${member.lastName}`,
+                              t('membersPage.toasts.edit', { name: `${member.firstName} ${member.lastName}` }),
                               'info'
                             )
                           }
-                          title="Modifier les droits"
+                          title={t('membersPage.tooltips.edit')}
                           className="p-1.5 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                         >
                           <Pencil className="h-4 w-4" />
@@ -292,7 +239,7 @@ export function MembersPage() {
                         <button
                           type="button"
                           onClick={() => setMemberToRemove(member)}
-                          title="Exclure du projet"
+                          title={t('membersPage.tooltips.exclude')}
                           className="p-1.5 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
                         >
                           <UserX className="h-4 w-4" />
@@ -315,10 +262,10 @@ export function MembersPage() {
               </div>
               <div className="space-y-1">
                 <h3 className="text-sm font-bold text-slate-900 dark:text-white">
-                  Aucun membre trouvé
+                  {t('membersPage.empty.filtered.title')}
                 </h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm">
-                  Aucun membre ne correspond à vos filtres de recherche actuels.
+                  {t('membersPage.empty.filtered.description')}
                 </p>
               </div>
               <Button
@@ -326,7 +273,7 @@ export function MembersPage() {
                 onClick={handleResetFilters}
                 className="py-1.5 px-3 text-xs mt-2"
               >
-                Réinitialiser les filtres
+                {t('membersPage.empty.filtered.reset')}
               </Button>
             </div>
           ) : (
@@ -336,10 +283,10 @@ export function MembersPage() {
               </div>
               <div className="space-y-1">
                 <h3 className="text-sm font-bold text-slate-900 dark:text-white">
-                  Aucun membre dans le projet
+                  {t('membersPage.empty.general.title')}
                 </h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm">
-                  Invite tes musiciens et techniciens pour démarrer la collaboration.
+                  {t('membersPage.empty.general.description')}
                 </p>
               </div>
             </div>
@@ -357,20 +304,22 @@ export function MembersPage() {
               </div>
               <div>
                 <h3 className="text-base font-bold text-slate-900 dark:text-white">
-                  Exclure du projet ?
+                  {t('membersPage.removeModal.title')}
                 </h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400">
-                  Cette action retirera les accès au membre.
+                  {t('membersPage.removeModal.subtitle')}
                 </p>
               </div>
             </div>
 
             <p className="text-xs text-slate-700 dark:text-slate-300">
-              Es-tu sûr de vouloir retirer{' '}
-              <strong>
-                {memberToRemove.firstName} {memberToRemove.lastName}
-              </strong>{' '}
-              du projet ? Il/Elle ne pourra plus accéder aux setlists et événements.
+              <Trans
+                i18nKey="membersPage.removeModal.confirmation"
+                values={{
+                  name: `${memberToRemove.firstName} ${memberToRemove.lastName}`,
+                }}
+                components={[<strong key="0" />]}
+              />
             </p>
 
             <div className="flex items-center justify-end gap-2 pt-2">
@@ -379,13 +328,13 @@ export function MembersPage() {
                 onClick={() => setMemberToRemove(null)}
                 className="py-1.5 text-xs"
               >
-                Annuler
+                {t('membersPage.removeModal.cancel')}
               </Button>
               <Button
                 onClick={confirmRemoveMember}
                 className="py-1.5 text-xs bg-rose-600 hover:bg-rose-700 text-white border-0"
               >
-                Exclure le membre
+                {t('membersPage.removeModal.confirm')}
               </Button>
             </div>
           </div>

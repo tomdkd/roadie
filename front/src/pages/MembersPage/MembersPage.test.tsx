@@ -20,19 +20,26 @@ describe('MembersPage', () => {
     };
   });
 
-  it('affiche correctement le titre et les 5 membres initiaux', () => {
+  it('affiche correctement le titre et les 5 membres initiaux', async () => {
     render(<MembersPage />);
 
     expect(screen.getByText('Membres du projet')).toBeInTheDocument();
-    expect(screen.getByText('Jimi Hendrix')).toBeInTheDocument();
-    expect(screen.getByText('Alex Turner')).toBeInTheDocument();
-    expect(screen.getByText('Dave Grohl')).toBeInTheDocument();
-    expect(screen.getByText('Flea Balzary')).toBeInTheDocument();
-    expect(screen.getByText('Paul McCartney')).toBeInTheDocument();
+    
+    await waitFor(() => {
+      expect(screen.getByText('Jimi Hendrix')).toBeInTheDocument();
+      expect(screen.getByText('Alex Turner')).toBeInTheDocument();
+      expect(screen.getByText('Dave Grohl')).toBeInTheDocument();
+      expect(screen.getByText('Flea Balzary')).toBeInTheDocument();
+      expect(screen.getByText('Paul McCartney')).toBeInTheDocument();
+    });
   });
 
-  it('filtre les membres via la barre de recherche textuelle', () => {
+  it('filtre les membres via la barre de recherche textuelle', async () => {
     render(<MembersPage />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Dave Grohl')).toBeInTheDocument();
+    });
 
     const searchInput = screen.getByPlaceholderText(
       'Rechercher par nom, prénom, email...'
@@ -45,8 +52,12 @@ describe('MembersPage', () => {
     expect(screen.queryByText('Alex Turner')).not.toBeInTheDocument();
   });
 
-  it('filtre la liste des membres par niveau de droits (Admin)', () => {
+  it('filtre la liste des membres par niveau de droits (Admin)', async () => {
     render(<MembersPage />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Jimi Hendrix')).toBeInTheDocument();
+    });
 
     // Sélectionne le menu déroulant qui contient l'option "Tous les droits"
     const roleSelect = screen.getByDisplayValue('Tous les droits');
@@ -60,8 +71,12 @@ describe('MembersPage', () => {
     expect(screen.queryByText('Paul McCartney')).not.toBeInTheDocument();
   });
 
-  it("affiche un message d'état vide quand aucun membre ne correspond aux filtres", () => {
+  it("affiche un message d'état vide quand aucun membre ne correspond aux filtres", async () => {
     render(<MembersPage />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Jimi Hendrix')).toBeInTheDocument();
+    });
 
     const searchInput = screen.getByPlaceholderText(
       'Rechercher par nom, prénom, email...'
@@ -77,6 +92,10 @@ describe('MembersPage', () => {
 
   it('ouvre la modale de confirmation et exclut un membre', async () => {
     render(<MembersPage />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Jimi Hendrix')).toBeInTheDocument();
+    });
 
     // 1. Cliquer sur le bouton d'exclusion
     const excludeButtons = screen.getAllByTitle('Exclure du projet');

@@ -1,7 +1,8 @@
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Calendar as BigCalendar, dateFnsLocalizer } from 'react-big-calendar';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { fr } from 'date-fns/locale/fr';
+import { useTranslation } from 'react-i18next';
 import {
   Calendar as CalendarIcon,
   Plus,
@@ -18,6 +19,7 @@ import { Button } from '../../components/ui/Button';
 import { Toast } from '../../components/ui/Toast';
 import type { ToastMessage } from '../../components/ui/Toast';
 import type { ToolbarProps, View } from 'react-big-calendar';
+import { EventsProvider, type CalendarEvent, type EventType } from './providers/EventsProvider';
 
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 
@@ -31,54 +33,9 @@ const localizer = dateFnsLocalizer({
   locales,
 });
 
-export type EventType = 'concert' | 'rehearsal' | 'studio';
-
-export interface CalendarEvent {
-  id: string;
-  title: string;
-  start: Date;
-  end: Date;
-  location?: string;
-  type: EventType;
-}
-
-const INITIAL_EVENTS: CalendarEvent[] = [
-  {
-    id: '1',
-    title: 'Concert - Le Zénith',
-    start: new Date(2026, 7, 15, 20, 30),
-    end: new Date(2026, 7, 15, 23, 0),
-    location: 'Zénith de Paris',
-    type: 'concert',
-  },
-  {
-    id: '2',
-    title: 'Balance & Soundcheck',
-    start: new Date(2026, 7, 15, 16, 0),
-    end: new Date(2026, 7, 15, 18, 0),
-    location: 'Zénith de Paris',
-    type: 'concert',
-  },
-  {
-    id: '3',
-    title: 'Répétition Générale',
-    start: new Date(2026, 7, 12, 14, 0),
-    end: new Date(2026, 7, 12, 18, 0),
-    location: 'Studio Luna Rossa',
-    type: 'rehearsal',
-  },
-  {
-    id: '4',
-    title: 'Session Studio Enregistrement',
-    start: new Date(2026, 7, 22, 10, 0),
-    end: new Date(2026, 7, 22, 19, 0),
-    location: 'Studio Guillaume Tell',
-    type: 'studio',
-  },
-];
-
 // BARRE D'OUTILS ET DE NAVIGATION CUSTOM (Light + Dark Mode)
 function CustomToolbar({ label, onView, view, onNavigate }: ToolbarProps<CalendarEvent>) {
+  const { t } = useTranslation();
   return (
     <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
       {/* Navigation (Aujourd'hui, Précédent, Suivant) */}
@@ -88,7 +45,7 @@ function CustomToolbar({ label, onView, view, onNavigate }: ToolbarProps<Calenda
           onClick={() => onNavigate('TODAY')}
           className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 transition-colors hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
         >
-          Aujourd'hui
+          {t('eventsPage.toolbar.today')}
         </button>
         <button
           type="button"
@@ -115,10 +72,10 @@ function CustomToolbar({ label, onView, view, onNavigate }: ToolbarProps<Calenda
       <div className="flex items-center gap-1 rounded-xl bg-slate-100 p-1 dark:bg-slate-800">
         {(['month', 'week', 'day', 'agenda'] as View[]).map((v) => {
           const labels: Record<string, string> = {
-            month: 'Mois',
-            week: 'Semaine',
-            day: 'Jour',
-            agenda: 'Agenda',
+            month: t('eventsPage.toolbar.month'),
+            week: t('eventsPage.toolbar.week'),
+            day: t('eventsPage.toolbar.day'),
+            agenda: t('eventsPage.toolbar.agenda'),
           };
           const isActive = view === v;
           return (
@@ -142,10 +99,15 @@ function CustomToolbar({ label, onView, view, onNavigate }: ToolbarProps<Calenda
 }
 
 export function EventsPage() {
-  const [events] = useState<CalendarEvent[]>(INITIAL_EVENTS);
+  const { t } = useTranslation();
+  const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [selectedType, setSelectedType] = useState<string>('all');
   const [currentView, setCurrentView] = useState<View>('month');
   const [toast, setToast] = useState<ToastMessage | null>(null);
+
+  useEffect(() => {
+    EventsProvider.getEvents().then(setEvents);
+  }, []);
 
   const showToast = (message: string, type: ToastMessage['type'] = 'info') => {
     setToast({ id: crypto.randomUUID(), message, type });
@@ -161,19 +123,19 @@ export function EventsPage() {
       case 'concert':
         return (
           <span className="inline-flex items-center gap-1 rounded-full bg-purple-500/10 px-2 py-0.5 text-[10px] font-bold text-purple-600 dark:bg-purple-500/20 dark:text-purple-400">
-            <Music className="h-3 w-3" /> Concert
+            <Music className="h-3 w-3" /> {t('eventsPage.types.concert')}
           </span>
         );
       case 'rehearsal':
         return (
           <span className="inline-flex items-center gap-1 rounded-full bg-blue-500/10 px-2 py-0.5 text-[10px] font-bold text-blue-600 dark:bg-blue-500/20 dark:text-blue-400">
-            <Mic2 className="h-3 w-3" /> Répétition
+            <Mic2 className="h-3 w-3" /> {t('eventsPage.types.rehearsal')}
           </span>
         );
       case 'studio':
         return (
           <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2 py-0.5 text-[10px] font-bold text-amber-600 dark:bg-amber-500/20 dark:text-amber-400">
-            <Radio className="h-3 w-3" /> Studio
+            <Radio className="h-3 w-3" /> {t('eventsPage.types.studio')}
           </span>
         );
     }
@@ -206,19 +168,19 @@ export function EventsPage() {
         <div>
           <h1 className="flex items-center gap-2 text-xl font-black text-slate-900 sm:text-2xl dark:text-white">
             <CalendarIcon className="h-6 w-6 text-blue-500" />
-            <span>Planning & Événements</span>
+            <span>{t('eventsPage.header.title')}</span>
           </h1>
           <p className="text-xs text-slate-500 sm:text-sm dark:text-slate-400">
-            Concerts, répétitions et sessions d'enregistrement.
+            {t('eventsPage.header.description')}
           </p>
         </div>
 
         <Button
-          onClick={() => showToast('Modale de création d\'événement à venir', 'info')}
+          onClick={() => showToast(t('eventsPage.toasts.creationModal'), 'info')}
           className="py-2 px-3 text-xs gap-1.5 self-start sm:self-auto"
         >
           <Plus className="h-4 w-4 shrink-0" />
-          <span>Créer un événement</span>
+          <span>{t('eventsPage.actions.createEvent')}</span>
         </Button>
       </div>
 
@@ -235,7 +197,7 @@ export function EventsPage() {
                 : 'text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800'
             }`}
           >
-            Tous ({events.length})
+            {t('eventsPage.filters.all', { count: events.length })}
           </button>
           <button
             type="button"
@@ -246,7 +208,7 @@ export function EventsPage() {
                 : 'text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800'
             }`}
           >
-            Concerts
+            {t('eventsPage.filters.concerts')}
           </button>
           <button
             type="button"
@@ -257,7 +219,7 @@ export function EventsPage() {
                 : 'text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800'
             }`}
           >
-            Répétitions
+            {t('eventsPage.filters.rehearsals')}
           </button>
           <button
             type="button"
@@ -268,7 +230,7 @@ export function EventsPage() {
                 : 'text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800'
             }`}
           >
-            Studio
+            {t('eventsPage.filters.studio')}
           </button>
         </div>
       </div>
@@ -278,7 +240,7 @@ export function EventsPage() {
         {filteredEvents.map((evt) => (
           <div
             key={evt.id}
-            onClick={() => showToast(`Sélection : ${evt.title}`)}
+            onClick={() => showToast(t('eventsPage.toasts.selection', { title: evt.title }))}
             className="flex flex-col gap-2 rounded-2xl border border-slate-200 bg-white p-4 shadow-xs transition-all active:scale-[0.98] dark:border-slate-800 dark:bg-slate-900"
           >
             <div className="flex items-start justify-between gap-2">
@@ -366,12 +328,12 @@ export function EventsPage() {
           view={currentView}
           onView={(newView) => setCurrentView(newView)}
           eventPropGetter={eventStyleGetter}
-          onSelectEvent={(evt) => showToast(`Détails : ${evt.title}`)}
+          onSelectEvent={(evt) => showToast(t('eventsPage.toasts.details', { title: evt.title }))}
           components={{
             toolbar: CustomToolbar,
           }}
           messages={{
-            noEventsInRange: 'Aucun événement prévu dans cette période.',
+            noEventsInRange: t('eventsPage.calendar.noEventsInRange'),
           }}
         />
       </div>

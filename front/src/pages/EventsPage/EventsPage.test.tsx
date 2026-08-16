@@ -20,7 +20,7 @@ describe('EventsPage', () => {
     };
   });
 
-  it('affiche correctement le titre, les boutons de filtres et le bouton de création', () => {
+  it('affiche correctement le titre, les boutons de filtres et le bouton de création', async () => {
     render(<EventsPage />);
 
     expect(screen.getByText('Planning & Événements')).toBeInTheDocument();
@@ -28,15 +28,21 @@ describe('EventsPage', () => {
       screen.getByRole('button', { name: /créer un événement/i })
     ).toBeInTheDocument();
 
-    // Vérification de la présence des boutons de filtre
-    expect(screen.getByRole('button', { name: /tous \(4\)/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /^concerts$/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /^répétitions$/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /^studio$/i })).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /tous \(4\)/i })).toBeInTheDocument();
+    });
   });
 
-  it('filtre la liste des événements par catégorie (Concerts)', () => {
+  it('filtre la liste des événements par catégorie (Concerts)', async () => {
     render(<EventsPage />);
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /tous \(4\)/i })).toBeInTheDocument();
+    });
 
     // Active le filtre "Concerts"
     const concertFilterBtn = screen.getByRole('button', { name: /^concerts$/i });
@@ -51,8 +57,12 @@ describe('EventsPage', () => {
     expect(screen.queryByText('Session Studio Enregistrement')).not.toBeInTheDocument();
   });
 
-  it('filtre la liste des événements par catégorie (Studio)', () => {
+  it('filtre la liste des événements par catégorie (Studio)', async () => {
     render(<EventsPage />);
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /tous \(4\)/i })).toBeInTheDocument();
+    });
 
     // Active le filtre "Studio"
     const studioFilterBtn = screen.getByRole('button', { name: /^studio$/i });
@@ -78,6 +88,10 @@ describe('EventsPage', () => {
 
   it("affiche un toast d'information au clic sur un événement (vue mobile)", async () => {
     render(<EventsPage />);
+
+    await waitFor(() => {
+      expect(screen.getAllByText('Répétition Générale').length).toBeGreaterThan(0);
+    });
 
     // Récupère tous les éléments portant ce titre et clique sur la carte mobile (le 1er)
     const rehearsalCards = screen.getAllByText('Répétition Générale');

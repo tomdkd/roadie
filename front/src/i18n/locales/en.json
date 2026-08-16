@@ -242,5 +242,99 @@
         "submit": "Add to repertoire"
       }
     }
+  },
+  "eventsPage": {
+    "header": {
+      "title": "Schedule & Events",
+      "description": "Concerts, rehearsals and recording sessions."
+    },
+    "actions": {
+      "createEvent": "Create an event"
+    },
+    "filters": {
+      "all": "All ({{count}})",
+      "concerts": "Concerts",
+      "rehearsals": "Rehearsals",
+      "studio": "Studio"
+    },
+    "types": {
+      "concert": "Concert",
+      "rehearsal": "Rehearsal",
+      "studio": "Studio"
+    },
+    "toolbar": {
+      "today": "Today",
+      "month": "Month",
+      "week": "Week",
+      "day": "Day",
+      "agenda": "Agenda"
+    },
+    "toasts": {
+      "creationModal": "Event creation modal coming soon",
+      "selection": "Selection: {{title}}",
+      "details": "Details: {{title}}"
+    },
+    "calendar": {
+      "noEventsInRange": "No events scheduled in this period."
+    }
+  },
+  "membersPage": {
+    "header": {
+      "title": "Project Members",
+      "description": "Manage the team, instruments and project access levels."
+    },
+    "actions": {
+      "inviteMember": "Invite a member"
+    },
+    "search": {
+      "placeholder": "Search by name, email..."
+    },
+    "filters": {
+      "allInstruments": "All roles / instruments",
+      "allRoles": "All permissions"
+    },
+    "roles": {
+      "admin": "Admin",
+      "editor": "Editor",
+      "viewer": "Viewer"
+    },
+    "table": {
+      "member": "Member",
+      "roleInstrument": "Role / Instrument",
+      "permissions": "Permissions",
+      "actions": "Actions"
+    },
+    "tooltips": {
+      "edit": "Edit permissions",
+      "exclude": "Remove from project"
+    },
+    "empty": {
+      "filtered": {
+        "title": "No members found",
+        "description": "No members match your current search filters.",
+        "reset": "Reset filters"
+      },
+      "general": {
+        "title": "No members in the project",
+        "description": "Invite your musicians and technicians to start collaborating."
+      }
+    },
+    "removeModal": {
+      "title": "Remove from project?",
+      "subtitle": "This action will revoke the member's access.",
+      "confirmation": "Are you sure you want to remove <strong>{{name}}</strong> from the project? They will no longer be able to access setlists and events.",
+      "cancel": "Cancel",
+      "confirm": "Remove member"
+    },
+    "toasts": {
+      "removed": "{{name}} has been removed from the project.",
+      "edit": "Editing access for {{name}}"
+    }
+  },
+  "dashboardPage": {
+    "header": {
+      "title": "Dashboard",
+      "welcome": "Great to see you again, Jimi!"
+    }
   }
 }

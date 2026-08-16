@@ -242,5 +242,99 @@
         "submit": "Zum Repertoire hinzufügen"
       }
     }
+  },
+  "eventsPage": {
+    "header": {
+      "title": "Kalender & Veranstaltungen",
+      "description": "Konzerte, Proben und Aufnahmesessions."
+    },
+    "actions": {
+      "createEvent": "Veranstaltung erstellen"
+    },
+    "filters": {
+      "all": "Alle ({{count}})",
+      "concerts": "Konzerte",
+      "rehearsals": "Proben",
+      "studio": "Studio"
+    },
+    "types": {
+      "concert": "Konzert",
+      "rehearsal": "Probe",
+      "studio": "Studio"
+    },
+    "toolbar": {
+      "today": "Heute",
+      "month": "Monat",
+      "week": "Woche",
+      "day": "Tag",
+      "agenda": "Agenda"
+    },
+    "toasts": {
+      "creationModal": "Modal zum Erstellen von Veranstaltungen folgt in Kürze",
+      "selection": "Auswahl: {{title}}",
+      "details": "Details: {{title}}"
+    },
+    "calendar": {
+      "noEventsInRange": "Keine Veranstaltungen in diesem Zeitraum geplant."
+    }
+  },
+  "membersPage": {
+    "header": {
+      "title": "Projektmitglieder",
+      "description": "Verwalte das Team, Instrumente und Projektzugriffsrechte."
+    },
+    "actions": {
+      "inviteMember": "Mitglied einladen"
+    },
+    "search": {
+      "placeholder": "Nach Name, E-Mail suchen..."
+    },
+    "filters": {
+      "allInstruments": "Alle Rollen / Instrumente",
+      "allRoles": "Alle Berechtigungen"
+    },
+    "roles": {
+      "admin": "Admin",
+      "editor": "Redakteur",
+      "viewer": "Betrachter"
+    },
+    "table": {
+      "member": "Mitglied",
+      "roleInstrument": "Rolle / Instrument",
+      "permissions": "Berechtigungen",
+      "actions": "Aktionen"
+    },
+    "tooltips": {
+      "edit": "Berechtigungen bearbeiten",
+      "exclude": "Aus Projekt entfernen"
+    },
+    "empty": {
+      "filtered": {
+        "title": "Keine Mitglieder gefunden",
+        "description": "Keine Mitglieder entsprechen deinen aktuellen Filtern.",
+        "reset": "Filter zurücksetzen"
+      },
+      "general": {
+        "title": "Keine Mitglieder im Projekt",
+        "description": "Lade Musiker und Techniker ein, um mit der Zusammenarbeit zu beginnen."
+      }
+    },
+    "removeModal": {
+      "title": "Aus Projekt entfernen?",
+      "subtitle": "Diese Aktion entzieht dem Mitglied den Zugriff.",
+      "confirmation": "Möchtest du <strong>{{name}}</strong> wirklich aus dem Projekt entfernen? Er/Sie wird keinen Zugriff mehr auf Setlists und Events haben.",
+      "cancel": "Abbrechen",
+      "confirm": "Mitglied entfernen"
+    },
+    "toasts": {
+      "removed": "{{name}} wurde aus dem Projekt entfernt.",
+      "edit": "Zugriff für {{name}} bearbeiten"
+    }
+  },
+  "dashboardPage": {
+    "header": {
+      "title": "Dashboard",
+      "welcome": "Schön dich wiederzusehen, Jimi!"
+    }
   }
 }
