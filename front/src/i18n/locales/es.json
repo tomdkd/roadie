@@ -96,5 +96,99 @@
   "projectType": "Tipo de proyecto",
   "musicStyles": "Estilo(s) musical(es)",
   "finish": "Finalizar",
-  "language": "Idioma"
+  "language": "Idioma",
+  "common": {
+    "actions": {
+      "cancel": "Cancelar"
+    }
+  },
+  "documentsPage": {
+    "header": {
+      "title": "Documentos del grupo",
+      "description": "Repositorio de riders técnicos, EPK y dossiers de prensa."
+    },
+    "actions": {
+      "upload": "Subir",
+      "createEpk": "Crear nuevo EPK",
+      "createTechRider": "Crear nuevo rider técnico"
+    },
+    "search": {
+      "placeholder": "Buscar un documento..."
+    },
+    "filters": {
+      "type": "Tipo",
+      "filterByType": "Filtrar por tipo",
+      "clear": "Borrar",
+      "format": "Formato",
+      "filterByFormat": "Filtrar por formato"
+    },
+    "types": {
+      "rider": "Rider",
+      "epk": "EPK",
+      "document": "Documento",
+      "techRider": "Rider técnico",
+      "hospitalityRider": "Rider de hospitalidad"
+    },
+    "empty": {
+      "title": "No se encontraron documentos",
+      "description": "Intenta modificar la búsqueda o restablecer los filtros seleccionados."
+    },
+    "toast": {
+      "deleted": "El documento \"{{name}}\" ha sido eliminado.",
+      "preview": "Vista previa de \"{{name}}\"...",
+      "download": "Descargando \"{{name}}.{{format}}\"...",
+      "uploaded": "¡El documento \"{{name}}\" se ha subido con éxito!",
+      "epkPage": "Página de creación de EPK",
+      "techRiderPage": "Página de creación de rider técnico"
+    },
+    "item": {
+      "createdAt": "Creado el {{date}}",
+      "preview": "Vista previa del documento",
+      "download": "Descargar documento",
+      "delete": "Eliminar documento",
+      "optionsAria": "Opciones para {{name}}",
+      "historyTitle": "Historial de versiones y opciones"
+    },
+    "history": {
+      "title": "Historial de versiones",
+      "current": "Actual"
+    },
+    "modals": {
+      "epk": {
+        "title": "¿Qué es un EPK?",
+        "subtitle": "Electronic Press Kit",
+        "startLabel": "Comenzar",
+        "description": "Un <0>EPK</0> es la tarjeta de presentación digital profesional de tu grupo. Reúne en un solo lugar todo lo que los promotores de festivales, salas de conciertos, periodistas y sellos discográficos necesitan para descubrirte.",
+        "bioPhotosTitle": "Bio y fotos HD",
+        "bioPhotosDesc": "Tu historia, miembros y recursos de prensa descargables.",
+        "audioClipsTitle": "Audios y videoclips",
+        "audioClipsDesc": "Tus mejores canciones y actuaciones en directo integradas.",
+        "shareTitle": "Compartir en 1 clic",
+        "shareDesc": "Un enlace interactivo único listo para enviar a los profesionales.",
+        "bannerTitle": "Acompañamiento Roadie",
+        "bannerDesc": "Para ponértelo fácil, <0>Roadie</0> te guía y aconseja paso a paso durante toda la creación. ¡Dispones de una <1>herramienta interactiva inteligente</1> para diseñar un dossier impactante sin complicaciones!"
+      },
+      "techRider": {
+        "title": "¿Qué es un Rider Técnico?",
+        "subtitle": "Technical Rider & Stage Plan",
+        "startLabel": "Crear el rider",
+        "description": "El <0>rider técnico</0> enumera todas las necesidades materiales y logísticas de tu grupo en el escenario. Es el documento indispensable que se envía a los técnicos y operadores de sonido de las salas para garantizar un sonido perfecto el día del concierto.",
+        "patchTitle": "Patch Line y micros",
+        "patchDesc": "Lista detallada de entradas de mesa, micrófonos deseados y monitores.",
+        "stagePlanTitle": "Plano de escenario (Stage Plan)",
+        "stagePlanDesc": "Disposición visual exacta de músicos, amplis y tomas de corriente.",
+        "bannerTitle": "Asistencia inteligente Roadie",
+        "bannerDesc": "¡No hace falta ser ingeniero de sonido! <0>Roadie</0> te acompaña paso a paso para construir tu patch line y generar un <1>plano de escenario interactivo</1> claro y conforme a los estándares profesionales."
+      },
+      "upload": {
+        "title": "Subir un documento",
+        "subtitle": "Importa un archivo existente desde tu dispositivo",
+        "errorSize": "El tamaño del archivo supera el límite permitido de 2 MB.",
+        "dropzone": "Arrastra y suelta tu archivo aquí, o <0>explora</0>",
+        "dropzoneHint": "No más de 2 MB por archivo (PDF, DOCX, XLSX, CSV)",
+        "fileSize": "{{size}} MB",
+        "submit": "Importar documento"
+      }
+    }
+  }
 }

@@ -96,5 +96,99 @@
   "projectType": "Project type",
   "musicStyles": "Music style(s)",
   "finish": "Finish",
-  "language": "Language"
+  "language": "Language",
+  "common": {
+    "actions": {
+      "cancel": "Cancel"
+    }
+  },
+  "documentsPage": {
+    "header": {
+      "title": "Group Documents",
+      "description": "Repository for technical riders, EPKs, and press kits."
+    },
+    "actions": {
+      "upload": "Upload",
+      "createEpk": "Create new EPK",
+      "createTechRider": "Create new technical rider"
+    },
+    "search": {
+      "placeholder": "Search for a document..."
+    },
+    "filters": {
+      "type": "Type",
+      "filterByType": "Filter by type",
+      "clear": "Clear",
+      "format": "Format",
+      "filterByFormat": "Filter by format"
+    },
+    "types": {
+      "rider": "Rider",
+      "epk": "EPK",
+      "document": "Document",
+      "techRider": "Technical rider",
+      "hospitalityRider": "Hospitality rider"
+    },
+    "empty": {
+      "title": "No documents found",
+      "description": "Try modifying your search or resetting selected filters."
+    },
+    "toast": {
+      "deleted": "The document \"{{name}}\" has been deleted.",
+      "preview": "Previewing \"{{name}}\"...",
+      "download": "Downloading \"{{name}}.{{format}}\"...",
+      "uploaded": "The document \"{{name}}\" has been successfully uploaded!",
+      "epkPage": "EPK creation page",
+      "techRiderPage": "Technical rider creation page"
+    },
+    "item": {
+      "createdAt": "Created on {{date}}",
+      "preview": "Preview document",
+      "download": "Download document",
+      "delete": "Delete document",
+      "optionsAria": "Options for {{name}}",
+      "historyTitle": "Version history & options"
+    },
+    "history": {
+      "title": "Version history",
+      "current": "Current"
+    },
+    "modals": {
+      "epk": {
+        "title": "What is an EPK?",
+        "subtitle": "Electronic Press Kit",
+        "startLabel": "Get started",
+        "description": "An <0>EPK</0> is your band's professional digital business card. It gathers everything festival bookers, concert venues, journalists, and labels need to discover you in one place.",
+        "bioPhotosTitle": "Bio & HD Photos",
+        "bioPhotosDesc": "Your story, members, and downloadable press visuals.",
+        "audioClipsTitle": "Audio & Video Clips",
+        "audioClipsDesc": "Your best tracks and integrated live performances.",
+        "shareTitle": "1-Click Sharing",
+        "shareDesc": "A unique interactive link ready to be sent to professionals.",
+        "bannerTitle": "Roadie Support",
+        "bannerDesc": "To make things easier, <0>Roadie</0> guides and advises you step by step throughout creation. An <1>intelligent interactive tool</1> is at your disposal to design an impactful press kit effortlessly!"
+      },
+      "techRider": {
+        "title": "What is a Technical Rider?",
+        "subtitle": "Technical Rider & Stage Plan",
+        "startLabel": "Create rider",
+        "description": "The <0>technical rider</0> lists all your band's equipment and logistical needs on stage. It is the essential document sent to venue sound engineers and technicians to ensure a perfect sound on show day.",
+        "patchTitle": "Patch Line & Mics",
+        "patchDesc": "Detailed list of your console inputs, desired microphones, and monitors.",
+        "stagePlanTitle": "Stage Plan",
+        "stagePlanDesc": "Exact visual layout of musicians, amplifiers, and power outlets.",
+        "bannerTitle": "Roadie Intelligent Assistance",
+        "bannerDesc": "No need to be a sound engineer! <0>Roadie</0> accompanies you step by step to build your patch line and generate a clear <1>interactive stage plan</1> complying with professional standards."
+      },
+      "upload": {
+        "title": "Upload a document",
+        "subtitle": "Import an existing file from your device",
+        "errorSize": "File size exceeds the 2 MB limit allowed.",
+        "dropzone": "Drag and drop your file here, or <0>browse</0>",
+        "dropzoneHint": "No more than 2 MB per file (PDF, DOCX, XLSX, CSV)",
+        "fileSize": "{{size}} MB",
+        "submit": "Import document"
+      }
+    }
+  }
 }

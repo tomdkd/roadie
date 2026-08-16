@@ -1,4 +1,36 @@
 {
+  "common": {
+    "actions": {
+      "next": "Suivant",
+      "previous": "Précédent",
+      "submit": "Enregistrer",
+      "finish": "Terminer",
+      "cancel": "Annuler"
+    },
+    "fields": {
+      "firstname": "Prénom",
+      "lastname": "Nom",
+      "email": "Adresse e-mail",
+      "password": "Mot de passe",
+      "confirmPassword": "Confirmer le mot de passe",
+      "phone": "Téléphone",
+      "city": "Ville",
+      "country": "Pays",
+      "projectName": "Nom du projet",
+      "projectType": "Type de projet",
+      "musicStyles": "Style(s) musical(aux)",
+      "language": "Langue"
+    }
+  },
+  "projectTypes": {
+    "band": "Groupe de musique",
+    "artist": "Artiste solo",
+    "orchestra": "Orchestre",
+    "choir": "Chorale",
+    "fanfare": "Fanfare",
+    "dj": "DJ / Producteur",
+    "other": "Autre"
+  },
   "login": {
     "welcome": "Bienvenue ! Connecte-toi pour gérer ton projet.",
     "input": {
@@ -72,29 +104,93 @@
       }
     }
   },
-  "projectTypes": {
-    "band": "Groupe de musique",
-    "artist": "Artiste solo",
-    "orchestra": "Orchestre",
-    "choir": "Chorale",
-    "fanfare": "Fanfare",
-    "dj": "DJ / Producteur",
-    "other": "Autre"
-  },
-  "next": "Suivant",
-  "previous": "Précédent",
-  "submit": "Enregistrer",
-  "firstname": "Prénom",
-  "lastname": "Nom",
-  "email": "Adresse e-mail",
-  "password": "Mot de passe",
-  "confirmPassword": "Confirmer le mot de passe",
-  "phone": "Téléphone",
-  "city": "Ville",
-  "country": "Pays",
-  "projectName": "Nom du projet",
-  "projectType": "Type de projet",
-  "musicStyles": "Style(s) musical(aux)",
-  "finish": "Terminer",
-  "language": "Langue"
+  "documentsPage": {
+    "header": {
+      "title": "Documents du groupe",
+      "description": "Référentiel des fiches techniques, EPK et dossiers de presse."
+    },
+    "actions": {
+      "upload": "Téléverser",
+      "createEpk": "Créer un nouvel EPK",
+      "createTechRider": "Créer une nouvelle fiche technique"
+    },
+    "search": {
+      "placeholder": "Rechercher un document..."
+    },
+    "filters": {
+      "type": "Type",
+      "filterByType": "Filtrer par type",
+      "clear": "Effacer",
+      "format": "Format",
+      "filterByFormat": "Filtrer par format"
+    },
+    "types": {
+      "rider": "Rider",
+      "epk": "EPK",
+      "document": "Document",
+      "techRider": "Fiche technique",
+      "hospitalityRider": "Rider d'accueil"
+    },
+    "empty": {
+      "title": "Aucun document trouvé",
+      "description": "Essaye de modifier la recherche ou de réinitialiser les filtres sélectionnés."
+    },
+    "toast": {
+      "deleted": "Le document \"{{name}}\" a été supprimé.",
+      "preview": "Aperçu de \"{{name}}\"...",
+      "download": "Téléchargement de \"{{name}}.{{format}}\"...",
+      "uploaded": "Le document \"{{name}}\" a été téléversé avec succès !",
+      "epkPage": "Page de création d'un EPK",
+      "techRiderPage": "Page de création de la fiche technique"
+    },
+    "item": {
+      "createdAt": "Créé le {{date}}",
+      "preview": "Prévisualiser le document",
+      "download": "Télécharger le document",
+      "delete": "Supprimer le document",
+      "optionsAria": "Options pour {{name}}",
+      "historyTitle": "Historique des versions & options"
+    },
+    "history": {
+      "title": "Historique des versions",
+      "current": "Actuelle"
+    },
+    "modals": {
+      "epk": {
+        "title": "Qu'est-ce qu'un EPK ?",
+        "subtitle": "Electronic Press Kit",
+        "startLabel": "Commencer",
+        "description": "Un <0>EPK</0> est la carte de visite numérique professionnelle de votre groupe. Il rassemble au même endroit tout ce dont les programmateurs de festivals, salles de concert, journalistes et labels ont besoin pour vous découvrir.",
+        "bioPhotosTitle": "Bio & Photos HD",
+        "bioPhotosDesc": "Votre histoire, vos membres et vos visuels de presse téléchargeables.",
+        "audioClipsTitle": "Audios & Clips vidéo",
+        "audioClipsDesc": "Vos meilleurs morceaux et prestations live intégrés.",
+        "shareTitle": "Partage en 1 clic",
+        "shareDesc": "Un lien interactif unique prêt à être envoyé aux professionnels.",
+        "bannerTitle": "L'accompagnement Roadie",
+        "bannerDesc": "Pour vous faciliter la tâche, <0>Roadie</0> vous guide et vous conseille pas à pas tout au long de la création. Un <1>outil interactif intelligent</1> est mis à votre disposition pour concevoir un dossier percutant sans prise de tête !"
+      },
+      "techRider": {
+        "title": "Qu'est-ce qu'une Fiche Technique ?",
+        "subtitle": "Technical Rider & Stage Plan",
+        "startLabel": "Créer la fiche",
+        "description": "La <0>fiche technique</0> répertorie tous les besoins matériels et logistiques de votre groupe sur scène. C'est le document indispensable transmis aux régisseurs et techniciens des salles pour garantir un son parfait le jour J.",
+        "patchTitle": "Patch Line & Micros",
+        "patchDesc": "Liste détaillée de vos entrées console, micros souhaités et retours.",
+        "stagePlanTitle": "Plan de Scène (Stage Plan)",
+        "stagePlanDesc": "Disposition visuelle exacte des musiciens, amplis et prises électriques.",
+        "bannerTitle": "L'assistance intelligente Roadie",
+        "bannerDesc": "Pas besoin d'être ingénieur du son ! <0>Roadie</0> vous accompagne pas à pas pour construire votre patch line et générer un <1>plan de scène interactif</1> clair et conforme aux standards professionnels."
+      },
+      "upload": {
+        "title": "Téléverser un document",
+        "subtitle": "Importez un fichier existant depuis votre appareil",
+        "errorSize": "La taille du fichier dépasse la limite autorisée de 2 Mo.",
+        "dropzone": "Glissez-déposez votre fichier ici, ou <0>parcourez</0>",
+        "dropzoneHint": "Pas plus de 2 Mo par fichier (PDF, DOCX, XLSX, CSV)",
+        "fileSize": "{{size}} Mo",
+        "submit": "Importer le document"
+      }
+    }
+  }
 }

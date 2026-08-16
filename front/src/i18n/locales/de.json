@@ -96,5 +96,99 @@
   "projectType": "Projekttyp",
   "musicStyles": "Musikrichtung(en)",
   "finish": "Fertigstellen",
-  "language": "Sprache"
+  "language": "Sprache",
+  "common": {
+    "actions": {
+      "cancel": "Abbrechen"
+    }
+  },
+  "documentsPage": {
+    "header": {
+      "title": "Gruppendokumente",
+      "description": "Repository für technische Rider, EPKs und Pressemappen."
+    },
+    "actions": {
+      "upload": "Hochladen",
+      "createEpk": "Neues EPK erstellen",
+      "createTechRider": "Neuen technischen Rider erstellen"
+    },
+    "search": {
+      "placeholder": "Dokument suchen..."
+    },
+    "filters": {
+      "type": "Typ",
+      "filterByType": "Nach Typ filtern",
+      "clear": "Zurücksetzen",
+      "format": "Format",
+      "filterByFormat": "Nach Format filtern"
+    },
+    "types": {
+      "rider": "Rider",
+      "epk": "EPK",
+      "document": "Dokument",
+      "techRider": "Technischer Rider",
+      "hospitalityRider": "Hospitality Rider"
+    },
+    "empty": {
+      "title": "Keine Dokumente gefunden",
+      "description": "Versuche die Suche zu ändern oder die ausgewählten Filter zurückzusetzen."
+    },
+    "toast": {
+      "deleted": "Das Dokument \"{{name}}\" wurde gelöscht.",
+      "preview": "Vorschau von \"{{name}}\"...",
+      "download": "Wird heruntergeladen \"{{name}}.{{format}}\"...",
+      "uploaded": "Das Dokument \"{{name}}\" wurde erfolgreich hochgeladen!",
+      "epkPage": "EPK-Erstellungsseite",
+      "techRiderPage": "Erstellungsseite für den technischen Rider"
+    },
+    "item": {
+      "createdAt": "Erstellt am {{date}}",
+      "preview": "Dokument in Vorschau anzeigen",
+      "download": "Dokument herunterladen",
+      "delete": "Dokument löschen",
+      "optionsAria": "Optionen für {{name}}",
+      "historyTitle": "Versionsverlauf & Optionen"
+    },
+    "history": {
+      "title": "Versionsverlauf",
+      "current": "Aktuell"
+    },
+    "modals": {
+      "epk": {
+        "title": "Was ist ein EPK?",
+        "subtitle": "Electronic Press Kit",
+        "startLabel": "Loslegen",
+        "description": "Ein <0>EPK</0> ist die professionelle digitale Visitenkarte deiner Band. Es vereint an einem Ort alles, was Festival-Booker, Veranstaltungsorte, Journalisten und Labels brauchen, um euch zu entdecken.",
+        "bioPhotosTitle": "Bio & HD-Fotos",
+        "bioPhotosDesc": "Deine Geschichte, Bandmitglieder und herunterladbare Pressebilder.",
+        "audioClipsTitle": "Audio- & Videoclips",
+        "audioClipsDesc": "Deine besten Titel und integrierte Live-Auftritte.",
+        "shareTitle": "1-Klick-Freigabe",
+        "shareDesc": "Ein einzigartiger interaktiver Link, bereit zum Versenden an Profis.",
+        "bannerTitle": "Roadie-Unterstützung",
+        "bannerDesc": "Um dir die Arbeit zu erleichtern, begleitet und berät dich <0>Roadie</0> Schritt für Schritt bei der Erstellung. Ein <1>intelligentes interaktives Tool</1> steht dir zur Verfügung, um mühelos eine aussagekräftige Mappe zu gestalten!"
+      },
+      "techRider": {
+        "title": "Was ist ein technischer Rider?",
+        "subtitle": "Technical Rider & Stage Plan",
+        "startLabel": "Rider erstellen",
+        "description": "Der <0>technische Rider</0> listet den gesamten Material- und Logistikbedarf deiner Band auf der Bühne auf. Es ist das unverzichtbare Dokument, das an Tontechniker und Veranstaltungsorte übermittelt wird, um am Tag des Konzerts einen perfekten Sound zu garantieren.",
+        "patchTitle": "Patch-Line & Mikrofone",
+        "patchDesc": "Detaillierte Liste deiner Konsoleneingänge, gewünschten Mikrofone und Monitorwege.",
+        "stagePlanTitle": "Bühnenplan (Stage Plan)",
+        "stagePlanDesc": "Genaue visuelle Anordnung von Musikern, Verstärkern und Steckdosen.",
+        "bannerTitle": "Die intelligente Unterstützung von Roadie",
+        "bannerDesc": "Kein Toningenieur nötig! <0>Roadie</0> begleitet dich Schritt für Schritt beim Erstellen deiner Patch-Line und generiert einen klaren, <1>interaktiven Bühnenplan</1> nach professionellen Standards."
+      },
+      "upload": {
+        "title": "Dokument hochladen",
+        "subtitle": "Importiere eine bestehende Datei von deinem Gerät",
+        "errorSize": "Die Dateigröße überschreitet das zulässige Limit von 2 MB.",
+        "dropzone": "Ziehe deine Datei hierher oder <0>durchsuche</0>",
+        "dropzoneHint": "Maximal 2 MB pro Datei (PDF, DOCX, XLSX, CSV)",
+        "fileSize": "{{size}} MB",
+        "submit": "Dokument importieren"
+      }
+    }
+  }
 }
