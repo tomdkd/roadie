@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import { UploadCloud, X, FileText, CheckCircle2, AlertCircle } from 'lucide-react';
+import { useTranslation, Trans } from 'react-i18next';
 import { Button } from '../../../../components/ui/Button';
 
 interface UploadDocumentModalProps {
@@ -13,6 +14,7 @@ export function UploadDocumentModal({
   onClose,
   onUpload,
 }: UploadDocumentModalProps) {
+  const { t } = useTranslation();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -26,7 +28,7 @@ export function UploadDocumentModal({
 
     // Vérification de la taille (Max 2 Mo)
     if (file.size > 2 * 1024 * 1024) {
-      setError('La taille du fichier dépasse la limite autorisée de 2 Mo.');
+      setError(t('documentsPage.modals.upload.errorSize'));
       setSelectedFile(null);
       return;
     }
@@ -83,10 +85,10 @@ export function UploadDocumentModal({
           </div>
           <div>
             <h2 className="text-lg font-black text-slate-900 dark:text-white">
-              Téléverser un document
+              {t('documentsPage.modals.upload.title')}
             </h2>
             <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-              Importez un fichier existant depuis votre appareil
+              {t('documentsPage.modals.upload.subtitle')}
             </p>
           </div>
         </div>
@@ -123,7 +125,7 @@ export function UploadDocumentModal({
                       {selectedFile.name}
                     </p>
                     <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                      {(selectedFile.size / (1024 * 1024)).toFixed(2)} Mo
+                      {t('documentsPage.modals.upload.fileSize', { size: (selectedFile.size / (1024 * 1024)).toFixed(2) })}
                     </p>
                   </div>
                 </div>
@@ -142,13 +144,15 @@ export function UploadDocumentModal({
               <>
                 <UploadCloud className="h-10 w-10 text-slate-400 mb-2" />
                 <p className="text-xs font-bold text-slate-800 dark:text-slate-200">
-                  Glissez-déposez votre fichier ici, ou{' '}
-                  <span className="text-emerald-600 dark:text-emerald-400 underline">
-                    parcourez
-                  </span>
+                  <Trans
+                    i18nKey="documentsPage.modals.upload.dropzone"
+                    components={[
+                      <span key="0" className="text-emerald-600 dark:text-emerald-400 underline" />
+                    ]}
+                  />
                 </p>
                 <p className="mt-1 text-[11px] text-slate-400">
-                  Pas plus de 2 Mo par fichier (PDF, DOCX, XLSX, CSV)
+                  {t('documentsPage.modals.upload.dropzoneHint')}
                 </p>
               </>
             )}
@@ -170,7 +174,7 @@ export function UploadDocumentModal({
             onClick={handleModalClose}
             className="text-xs py-2 px-3"
           >
-            Annuler
+            {t('common.actions.cancel')}
           </Button>
 
           <Button
@@ -180,7 +184,7 @@ export function UploadDocumentModal({
             className="py-2 px-4 text-xs gap-1.5 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 dark:disabled:bg-slate-800 text-white border-none font-bold"
           >
             <CheckCircle2 className="h-4 w-4" />
-            <span>Importer le document</span>
+            <span>{t('documentsPage.modals.upload.submit')}</span>
           </Button>
         </div>
       </div>

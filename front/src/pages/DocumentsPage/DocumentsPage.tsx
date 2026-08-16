@@ -7,6 +7,7 @@ import {
   ChevronDown,
   UploadCloud,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../../components/ui/Button';
 import { Toast } from '../../components/ui/Toast';
 import { Switch } from '../../components/ui/Switch';
@@ -16,12 +17,7 @@ import { CreateTechRiderModal } from './modals/CreateTechRiderModal';
 import { UploadDocumentModal } from './modals/UploadDocumentModal';
 import { DocumentListItem } from './components/DocumentListItem';
 import { DocumentsProvider, type GroupDocument, type DocumentFormat } from './providers/DocumentsProvider';
-
-const TYPE_OPTIONS = [
-  { id: 'rider', label: 'Rider' },
-  { id: 'epk', label: 'EPK' },
-  { id: 'document', label: 'Document' },
-];
+export type { GroupDocument, DocumentFormat, DocumentType, DocumentVersion } from './providers/DocumentsProvider';
 
 const FORMAT_OPTIONS: { id: DocumentFormat; label: string }[] = [
   { id: 'pdf', label: 'PDF' },
@@ -31,8 +27,18 @@ const FORMAT_OPTIONS: { id: DocumentFormat; label: string }[] = [
 ];
 
 export function DocumentsPage() {
+  const { t } = useTranslation();
   const [documents, setDocuments] = useState<GroupDocument[]>([]);
   const [search, setSearch] = useState('');
+
+  const TYPE_OPTIONS = useMemo(
+    () => [
+      { id: 'rider', label: t('documentsPage.types.rider') },
+      { id: 'epk', label: t('documentsPage.types.epk') },
+      { id: 'document', label: t('documentsPage.types.document') },
+    ],
+    [t]
+  );
 
   useEffect(() => {
     DocumentsProvider.getDocuments().then(setDocuments);
@@ -115,15 +121,15 @@ export function DocumentsPage() {
   const handleDeleteDocument = (doc: GroupDocument) => {
     setDocuments((prev) => prev.filter((d) => d.id !== doc.id));
     setActiveMenuId(null);
-    showToast(`Le document "${doc.name}" a été supprimé.`, 'success');
+    showToast(t('documentsPage.toast.deleted', { name: doc.name }), 'success');
   };
 
   const handlePreviewDocument = (doc: GroupDocument) => {
-    showToast(`Aperçu de "${doc.name}"...`, 'info');
+    showToast(t('documentsPage.toast.preview', { name: doc.name }), 'info');
   };
 
   const handleDownloadDocument = (doc: GroupDocument) => {
-    showToast(`Téléchargement de "${doc.name}.${doc.format}"...`, 'success');
+    showToast(t('documentsPage.toast.download', { name: doc.name, format: doc.format }), 'success');
   };
 
   const handleUploadDocumentSubmit = (file: File) => {
@@ -148,17 +154,17 @@ export function DocumentsPage() {
     };
 
     setDocuments((prev) => [newDoc, ...prev]);
-    showToast(`Le document "${file.name}" a été téléversé avec succès !`, 'success');
+    showToast(t('documentsPage.toast.uploaded', { name: file.name }), 'success');
   };
 
   const handleEpkModalStart = () => {
     setIsEpkModalOpen(false);
-    showToast('Page de création d\'un EPK', 'info');
+    showToast(t('documentsPage.toast.epkPage'), 'info');
   };
 
   const handleTechRiderModalStart = () => {
     setIsTechRiderModalOpen(false);
-    showToast('Page de création de la fiche technique', 'info');
+    showToast(t('documentsPage.toast.techRiderPage'), 'info');
   };
 
   return (
@@ -168,10 +174,10 @@ export function DocumentsPage() {
         <div>
           <h1 className="flex items-center gap-2 text-xl font-black text-slate-900 sm:text-2xl dark:text-white">
             <FileText className="h-6 w-6 text-blue-500" />
-            <span>Documents du groupe</span>
+            <span>{t('documentsPage.header.title')}</span>
           </h1>
           <p className="text-xs text-slate-500 sm:text-sm dark:text-slate-400">
-            Référentiel des fiches techniques, EPK et dossiers de presse.
+            {t('documentsPage.header.description')}
           </p>
         </div>
 
@@ -182,7 +188,7 @@ export function DocumentsPage() {
             className="w-full sm:w-auto justify-center py-2 px-3 text-xs gap-1.5 bg-slate-100 text-slate-800 hover:bg-slate-200 border border-slate-300 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-700 dark:hover:bg-slate-700"
           >
             <UploadCloud className="h-4 w-4 shrink-0 text-emerald-500" />
-            <span>Téléverser</span>
+            <span>{t('documentsPage.actions.upload')}</span>
           </Button>
 
           <Button
@@ -190,7 +196,7 @@ export function DocumentsPage() {
             className="w-full sm:w-auto justify-center py-2 px-3 text-xs gap-1.5 bg-purple-600 hover:bg-purple-700 text-white border-none"
           >
             <Sparkles className="h-4 w-4 shrink-0" />
-            <span>Créer un nouvel EPK</span>
+            <span>{t('documentsPage.actions.createEpk')}</span>
           </Button>
 
           <Button
@@ -198,7 +204,7 @@ export function DocumentsPage() {
             className="w-full sm:w-auto justify-center py-2 px-3 text-xs gap-1.5"
           >
             <Plus className="h-4 w-4 shrink-0" />
-            <span>Créer une nouvelle fiche technique</span>
+            <span>{t('documentsPage.actions.createTechRider')}</span>
           </Button>
         </div>
       </div>
@@ -209,7 +215,7 @@ export function DocumentsPage() {
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
-            placeholder="Rechercher un document..."
+            placeholder={t('documentsPage.search.placeholder')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full rounded-lg bg-slate-50 pl-9 pr-3 py-1.5 text-xs font-medium text-slate-900 placeholder-slate-400 focus:outline-hidden dark:bg-slate-800/60 dark:text-white dark:placeholder-slate-500"
@@ -232,7 +238,7 @@ export function DocumentsPage() {
                   : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800'
               }`}
             >
-              <span>Type</span>
+              <span>{t('documentsPage.filters.type')}</span>
               {selectedTypes.length > 0 && (
                 <span className="flex h-4 w-4 items-center justify-center rounded-full bg-blue-600 text-[10px] font-bold text-white">
                   {selectedTypes.length}
@@ -245,14 +251,14 @@ export function DocumentsPage() {
             {isTypeFilterOpen && (
               <div className="absolute right-0 top-10 z-30 w-56 rounded-2xl border border-slate-200 bg-white/95 p-2 shadow-2xl backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/95 animate-in fade-in zoom-in-95">
                 <div className="flex items-center justify-between pb-2 mb-1.5 border-b border-slate-100 dark:border-slate-800 px-2 pt-1">
-                  <span className="text-[11px] font-bold text-slate-400">Filtrer par type</span>
+                  <span className="text-[11px] font-bold text-slate-400">{t('documentsPage.filters.filterByType')}</span>
                   {selectedTypes.length > 0 && (
                     <button
                       type="button"
                       onClick={() => setSelectedTypes([])}
                       className="text-[10px] font-semibold text-rose-500 hover:underline"
                     >
-                      Effacer
+                      {t('documentsPage.filters.clear')}
                     </button>
                   )}
                 </div>
@@ -290,7 +296,7 @@ export function DocumentsPage() {
                   : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800'
               }`}
             >
-              <span>Format</span>
+              <span>{t('documentsPage.filters.format')}</span>
               {selectedFormats.length > 0 && (
                 <span className="flex h-4 w-4 items-center justify-center rounded-full bg-indigo-600 text-[10px] font-bold text-white">
                   {selectedFormats.length}
@@ -303,14 +309,14 @@ export function DocumentsPage() {
             {isFormatFilterOpen && (
               <div className="absolute right-0 top-10 z-30 w-56 rounded-2xl border border-slate-200 bg-white/95 p-2 shadow-2xl backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/95 animate-in fade-in zoom-in-95">
                 <div className="flex items-center justify-between pb-2 mb-1.5 border-b border-slate-100 dark:border-slate-800 px-2 pt-1">
-                  <span className="text-[11px] font-bold text-slate-400">Filtrer par format</span>
+                  <span className="text-[11px] font-bold text-slate-400">{t('documentsPage.filters.filterByFormat')}</span>
                   {selectedFormats.length > 0 && (
                     <button
                       type="button"
                       onClick={() => setSelectedFormats([])}
                       className="text-[10px] font-semibold text-rose-500 hover:underline"
                     >
-                      Effacer
+                      {t('documentsPage.filters.clear')}
                     </button>
                   )}
                 </div>
@@ -341,10 +347,10 @@ export function DocumentsPage() {
           <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-300 py-12 text-center dark:border-slate-800">
             <FileText className="h-10 w-10 text-slate-300 dark:text-slate-600" />
             <p className="mt-2 text-sm font-bold text-slate-700 dark:text-slate-300">
-              Aucun document trouvé
+              {t('documentsPage.empty.title')}
             </p>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-              Essaye de modifier la recherche ou de réinitialiser les filtres sélectionnés.
+              {t('documentsPage.empty.description')}
             </p>
           </div>
         ) : (

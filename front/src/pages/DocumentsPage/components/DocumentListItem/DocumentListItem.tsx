@@ -1,5 +1,6 @@
 import { FileText, FileSpreadsheet, File, Eye, Download, Trash2, MoreVertical, History, X, User } from 'lucide-react';
-import type { GroupDocument, DocumentFormat } from '../../DocumentsPage';
+import { useTranslation } from 'react-i18next';
+import type { GroupDocument, DocumentFormat, DocumentVersion } from '../../DocumentsPage';
 import { DocumentTypeBadge } from '../DocumentTypeBadge';
 import { DocumentFormatBadge } from '../DocumentFormatBadge';
 
@@ -24,6 +25,8 @@ export function DocumentListItem({
   onDownload,
   onDelete,
 }: DocumentListItemProps) {
+  const { t } = useTranslation();
+
   const getFormatIcon = (format: DocumentFormat) => {
     switch (format) {
       case 'pdf':
@@ -57,7 +60,7 @@ export function DocumentListItem({
           </div>
 
           <div className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">
-            <span>Créé le {new Date(doc.createdAt).toLocaleDateString('fr-FR')}</span>
+            <span>{t('documentsPage.item.createdAt', { date: new Date(doc.createdAt).toLocaleDateString('fr-FR') })}</span>
           </div>
         </div>
       </div>
@@ -66,7 +69,7 @@ export function DocumentListItem({
       <div className="flex items-center gap-1 shrink-0">
         <button
           type="button"
-          title="Prévisualiser le document"
+          title={t('documentsPage.item.preview')}
           onClick={onPreview}
           className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition-colors hover:bg-slate-100 dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800"
         >
@@ -75,7 +78,7 @@ export function DocumentListItem({
 
         <button
           type="button"
-          title="Télécharger le document"
+          title={t('documentsPage.item.download')}
           onClick={onDownload}
           className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition-colors hover:bg-slate-100 dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800"
         >
@@ -84,7 +87,7 @@ export function DocumentListItem({
 
         <button
           type="button"
-          title="Supprimer le document"
+          title={t('documentsPage.item.delete')}
           onClick={onDelete}
           className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-slate-500 transition-colors hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600 dark:border-slate-800 dark:text-slate-400 dark:hover:border-rose-900/50 dark:hover:bg-rose-950/30 dark:hover:text-rose-400"
         >
@@ -93,8 +96,8 @@ export function DocumentListItem({
 
         <button
           type="button"
-          aria-label={`Options pour ${doc.name}`}
-          title="Historique des versions & options"
+          aria-label={t('documentsPage.item.optionsAria', { name: doc.name })}
+          title={t('documentsPage.item.historyTitle')}
           onClick={onToggleMenu}
           className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition-colors hover:bg-slate-100 dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800"
         >
@@ -111,7 +114,7 @@ export function DocumentListItem({
           <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
             <div className="flex items-center gap-1.5 text-xs font-bold text-slate-900 dark:text-white">
               <History className="h-3.5 w-3.5 text-blue-500" />
-              <span>Historique des versions</span>
+              <span>{t('documentsPage.history.title')}</span>
             </div>
             <button
               type="button"
@@ -123,7 +126,7 @@ export function DocumentListItem({
           </div>
 
           <div className="mt-2 space-y-1.5 max-h-48 overflow-y-auto pr-1">
-            {doc.history.map((ver, idx) => (
+            {doc.history.map((ver: DocumentVersion, idx: number) => (
               <div
                 key={ver.id}
                 className="flex items-center justify-between gap-2 rounded-lg bg-slate-50 px-2.5 py-1.5 text-[11px] dark:bg-slate-800/60"
@@ -134,7 +137,7 @@ export function DocumentListItem({
                   </span>
                   {idx === 0 && (
                     <span className="rounded bg-blue-500/10 px-1 py-0.2 text-[9px] font-bold text-blue-600 dark:bg-blue-500/20 dark:text-blue-400 shrink-0">
-                      Actuelle
+                      {t('documentsPage.history.current')}
                     </span>
                   )}
                 </div>

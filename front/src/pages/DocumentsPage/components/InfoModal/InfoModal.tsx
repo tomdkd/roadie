@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { X, ArrowRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../../../../components/ui/Button';
 
 export interface InfoModalProps {
@@ -29,6 +30,8 @@ export function InfoModal({
   startBtnClassName,
   children,
 }: InfoModalProps) {
+  const { t } = useTranslation();
+
   if (!isOpen) return null;
 
   return (
@@ -71,7 +74,7 @@ export function InfoModal({
             onClick={onClose}
             className="text-xs py-2 px-3"
           >
-            Annuler
+            {t('common.actions.cancel')}
           </Button>
 
           <Button
