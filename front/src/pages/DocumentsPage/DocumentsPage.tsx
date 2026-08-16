@@ -15,77 +15,7 @@ import { CreateEpkModal } from './modals/CreateEpkModal';
 import { CreateTechRiderModal } from './modals/CreateTechRiderModal';
 import { UploadDocumentModal } from './modals/UploadDocumentModal';
 import { DocumentListItem } from './components/DocumentListItem';
-
-export type DocumentType = 'tech_rider' | 'epk' | 'hospitality_rider' | 'other';
-export type DocumentFormat = 'pdf' | 'docx' | 'xlsx' | 'csv';
-
-export interface DocumentVersion {
-  id: string;
-  date: string;
-  author: string;
-}
-
-export interface GroupDocument {
-  id: string;
-  name: string;
-  type: DocumentType;
-  format: DocumentFormat;
-  createdAt: string;
-  history: DocumentVersion[];
-}
-
-const INITIAL_DOCUMENTS: GroupDocument[] = [
-  {
-    id: '1',
-    name: 'Fiche Technique Tournée 2026',
-    type: 'tech_rider',
-    format: 'pdf',
-    createdAt: '2026-06-15',
-    history: [
-      { id: 'v1-3', date: '2026-06-15', author: 'Jimi Hendrix' },
-      { id: 'v1-2', date: '2026-04-10', author: 'Dave Grohl' },
-      { id: 'v1-1', date: '2026-01-05', author: 'Jimi Hendrix' },
-    ],
-  },
-  {
-    id: '2',
-    name: 'EPK Presse & Festivités - The Neon Monkeys',
-    type: 'epk',
-    format: 'pdf',
-    createdAt: '2026-07-02',
-    history: [{ id: 'v2-1', date: '2026-07-02', author: 'Alex Turner' }],
-  },
-  {
-    id: '3',
-    name: 'Rider d\'Accueil & Catering',
-    type: 'hospitality_rider',
-    format: 'docx',
-    createdAt: '2026-05-10',
-    history: [
-      { id: 'v3-2', date: '2026-05-10', author: 'Paul McCartney' },
-      { id: 'v3-1', date: '2026-02-18', author: 'Paul McCartney' },
-    ],
-  },
-  {
-    id: '4',
-    name: 'Plan de Scène & Patch Line',
-    type: 'tech_rider',
-    format: 'pdf',
-    createdAt: '2026-07-28',
-    history: [
-      { id: 'v4-2', date: '2026-07-28', author: 'Dave Grohl' },
-      { id: 'v4-1', date: '2026-05-14', author: 'Jimi Hendrix' },
-    ],
-  },
-  {
-    id: '5',
-    name: 'Exports SACEM & Streamings 2026',
-    type: 'other',
-    format: 'csv',
-    createdAt: '2026-08-01',
-    history: [{ id: 'v5-1', date: '2026-08-01', author: 'Alex Turner' }],
-  },
-];
+import { DocumentsProvider, type GroupDocument, type DocumentFormat } from './providers/DocumentsProvider';
 
 const TYPE_OPTIONS = [
   { id: 'rider', label: 'Rider' },
@@ -101,8 +31,12 @@ const FORMAT_OPTIONS: { id: DocumentFormat; label: string }[] = [
 ];
 
 export function DocumentsPage() {
-  const [documents, setDocuments] = useState<GroupDocument[]>(INITIAL_DOCUMENTS);
+  const [documents, setDocuments] = useState<GroupDocument[]>([]);
   const [search, setSearch] = useState('');
+
+  useEffect(() => {
+    DocumentsProvider.getDocuments().then(setDocuments);
+  }, []);
 
   // Multiselect states
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
@@ -402,7 +336,6 @@ export function DocumentsPage() {
         </div>
       </div>
 
-      {/* SEULE LA LISTE EST SCROLLABLE (flex-1 overflow-y-auto) */}
       <div className="flex-1 overflow-y-auto pr-1">
         {filteredDocuments.length === 0 ? (
           <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-300 py-12 text-center dark:border-slate-800">
