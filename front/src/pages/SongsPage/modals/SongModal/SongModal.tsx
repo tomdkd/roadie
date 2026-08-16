@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { X, Music, ChevronDown } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../../../../components/ui/Button';
 import { Input } from '../../../../components/ui/Input';
 
@@ -20,6 +21,7 @@ interface SongModalProps {
 }
 
 export function SongModal({ isOpen, onClose, onSave }: SongModalProps) {
+  const { t } = useTranslation();
   // Liste des albums pré-enregistrés
   const [albums] = useState<string[]>([
     'Inédit / Hors album',
@@ -67,10 +69,10 @@ export function SongModal({ isOpen, onClose, onSave }: SongModalProps) {
             </div>
             <div>
               <h3 className="text-sm font-bold text-slate-900 dark:text-white">
-                Ajouter une chanson
+                {t('songsPage.modals.add.title')}
               </h3>
               <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                Enregistre un titre dans le répertoire du groupe.
+                {t('songsPage.modals.add.subtitle')}
               </p>
             </div>
           </div>
@@ -88,8 +90,8 @@ export function SongModal({ isOpen, onClose, onSave }: SongModalProps) {
           {/* LIGNE 1 : TITRE & ALBUM */}
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Input
-              label="Titre de la chanson"
-              placeholder="Ex: Voodoo Child"
+              label={t('songsPage.modals.add.fields.title')}
+              placeholder={t('songsPage.modals.add.fields.titlePlaceholder')}
               value={formData.title}
               onChange={(e) =>
                 setFormData({ ...formData, title: e.target.value })
@@ -100,8 +102,8 @@ export function SongModal({ isOpen, onClose, onSave }: SongModalProps) {
             {/* ALBUM AVEC DATALIST (LISTE DÉROULANTE + MÊME COMPOSANT INPUT) */}
             <div>
               <Input
-                label="Album / Single"
-                placeholder="Sélectionner ou saisir..."
+                label={t('songsPage.modals.add.fields.album')}
+                placeholder={t('songsPage.modals.add.fields.albumPlaceholder')}
                 value={formData.album}
                 onChange={(e) =>
                   setFormData({ ...formData, album: e.target.value })
@@ -119,8 +121,8 @@ export function SongModal({ isOpen, onClose, onSave }: SongModalProps) {
           {/* LIGNE 2 : DURÉE, BPM, TONALITÉ, ACCORDAGE */}
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             <Input
-              label="Durée (MM:SS)"
-              placeholder="03:45"
+              label={t('songsPage.modals.add.fields.duration')}
+              placeholder={t('songsPage.modals.add.fields.durationPlaceholder')}
               maxLength={5}
               value={formData.duration}
               onChange={handleDurationChange}
@@ -129,11 +131,11 @@ export function SongModal({ isOpen, onClose, onSave }: SongModalProps) {
             />
 
             <Input
-              label="BPM"
+              label={t('songsPage.modals.add.fields.bpm')}
               type="number"
               min={30}
               max={300}
-              placeholder="120"
+              placeholder={t('songsPage.modals.add.fields.bpmPlaceholder')}
               value={formData.bpm}
               onChange={(e) =>
                 setFormData({ ...formData, bpm: e.target.value })
@@ -143,8 +145,8 @@ export function SongModal({ isOpen, onClose, onSave }: SongModalProps) {
             />
 
             <Input
-              label="Tonalité"
-              placeholder="Ex: Am"
+              label={t('songsPage.modals.add.fields.key')}
+              placeholder={t('songsPage.modals.add.fields.keyPlaceholder')}
               value={formData.key}
               onChange={(e) =>
                 setFormData({ ...formData, key: e.target.value })
@@ -152,8 +154,8 @@ export function SongModal({ isOpen, onClose, onSave }: SongModalProps) {
             />
 
             <Input
-              label="Accordage"
-              placeholder="Ex: Drop D"
+              label={t('songsPage.modals.add.fields.tuning')}
+              placeholder={t('songsPage.modals.add.fields.tuningPlaceholder')}
               value={formData.tuning}
               onChange={(e) =>
                 setFormData({ ...formData, tuning: e.target.value })
@@ -164,7 +166,7 @@ export function SongModal({ isOpen, onClose, onSave }: SongModalProps) {
           {/* LIGNE 3 : STATUT */}
           <div className="space-y-1 text-left">
             <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
-              Statut
+              {t('songsPage.modals.add.fields.status')}
             </label>
             <div className="relative">
               <select
@@ -174,9 +176,9 @@ export function SongModal({ isOpen, onClose, onSave }: SongModalProps) {
                 }
                 className="w-full cursor-pointer appearance-none rounded-xl border border-slate-300 bg-white py-2 pl-3.5 pr-10 text-xs text-slate-900 focus:border-blue-500 focus:outline-none dark:border-slate-800 dark:bg-slate-900 dark:text-white"
               >
-                <option value="ready">Prêt</option>
-                <option value="rehearsal">En cours</option>
-                <option value="draft">Brouillon</option>
+                <option value="ready">{t('songsPage.status.ready')}</option>
+                <option value="rehearsal">{t('songsPage.status.rehearsal')}</option>
+                <option value="draft">{t('songsPage.status.draft')}</option>
               </select>
               <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
             </div>
@@ -190,10 +192,10 @@ export function SongModal({ isOpen, onClose, onSave }: SongModalProps) {
               onClick={onClose}
               className="py-1.5 text-xs"
             >
-              Annuler
+              {t('common.actions.cancel')}
             </Button>
             <Button type="submit" className="py-1.5 text-xs">
-              Ajouter au répertoire
+              {t('songsPage.modals.add.submit')}
             </Button>
           </div>
         </form>

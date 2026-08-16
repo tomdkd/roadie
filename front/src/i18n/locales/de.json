@@ -190,5 +190,57 @@
         "submit": "Dokument importieren"
       }
     }
+  },
+  "songsPage": {
+    "header": {
+      "title": "Repertoire",
+      "description": "{{count}} Songs gespeichert."
+    },
+    "search": {
+      "placeholder": "Nach einem Titel, einem Album suchen..."
+    },
+    "filters": {
+      "allStatus": "Alle Status"
+    },
+    "actions": {
+      "addSong": "Song hinzufügen"
+    },
+    "status": {
+      "ready": "Bereit",
+      "rehearsal": "In Arbeit",
+      "draft": "Entwurf"
+    },
+    "table": {
+      "title": "Titel",
+      "album": "Album / Single",
+      "status": "Status",
+      "duration": "Dauer",
+      "tempo": "Tempo (BPM)",
+      "key": "Tonart",
+      "tuning": "Stimmung",
+      "actions": "Aktionen"
+    },
+    "modals": {
+      "add": {
+        "title": "Song hinzufügen",
+        "subtitle": "Einen Titel zum Repertoire der Band hinzufügen.",
+        "fields": {
+          "title": "Songtitel",
+          "titlePlaceholder": "Bsp: Voodoo Child",
+          "album": "Album / Single",
+          "albumPlaceholder": "Auswählen oder eingeben...",
+          "duration": "Dauer (MM:SS)",
+          "durationPlaceholder": "03:45",
+          "bpm": "BPM",
+          "bpmPlaceholder": "120",
+          "key": "Tonart",
+          "keyPlaceholder": "Bsp: Am",
+          "tuning": "Stimmung",
+          "tuningPlaceholder": "Bsp: Drop D",
+          "status": "Status"
+        },
+        "submit": "Zum Repertoire hinzufügen"
+      }
+    }
   }
 }

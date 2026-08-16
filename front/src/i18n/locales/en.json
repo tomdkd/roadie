@@ -190,5 +190,57 @@
         "submit": "Import document"
       }
     }
+  },
+  "songsPage": {
+    "header": {
+      "title": "Repertoire",
+      "description": "{{count}} songs recorded."
+    },
+    "search": {
+      "placeholder": "Search for a song, an album..."
+    },
+    "filters": {
+      "allStatus": "All statuses"
+    },
+    "actions": {
+      "addSong": "Add a song"
+    },
+    "status": {
+      "ready": "Ready",
+      "rehearsal": "In progress",
+      "draft": "Draft"
+    },
+    "table": {
+      "title": "Title",
+      "album": "Album / Single",
+      "status": "Status",
+      "duration": "Duration",
+      "tempo": "Tempo (BPM)",
+      "key": "Key",
+      "tuning": "Tuning",
+      "actions": "Actions"
+    },
+    "modals": {
+      "add": {
+        "title": "Add a song",
+        "subtitle": "Record a track in the band's repertoire.",
+        "fields": {
+          "title": "Song title",
+          "titlePlaceholder": "Ex: Voodoo Child",
+          "album": "Album / Single",
+          "albumPlaceholder": "Select or enter...",
+          "duration": "Duration (MM:SS)",
+          "durationPlaceholder": "03:45",
+          "bpm": "BPM",
+          "bpmPlaceholder": "120",
+          "key": "Key",
+          "keyPlaceholder": "Ex: Am",
+          "tuning": "Tuning",
+          "tuningPlaceholder": "Ex: Drop D",
+          "status": "Status"
+        },
+        "submit": "Add to repertoire"
+      }
+    }
   }
 }

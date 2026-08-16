@@ -190,5 +190,57 @@
         "submit": "Importar documento"
       }
     }
+  },
+  "songsPage": {
+    "header": {
+      "title": "Repertorio",
+      "description": "{{count}} canciones guardadas."
+    },
+    "search": {
+      "placeholder": "Buscar un título, un álbum..."
+    },
+    "filters": {
+      "allStatus": "Todos los estados"
+    },
+    "actions": {
+      "addSong": "Añadir una canción"
+    },
+    "status": {
+      "ready": "Listo",
+      "rehearsal": "En curso",
+      "draft": "Borrador"
+    },
+    "table": {
+      "title": "Título",
+      "album": "Álbum / Sencillo",
+      "status": "Estado",
+      "duration": "Duración",
+      "tempo": "Tempo (BPM)",
+      "key": "Tonalidad",
+      "tuning": "Afinación",
+      "actions": "Acciones"
+    },
+    "modals": {
+      "add": {
+        "title": "Añadir una canción",
+        "subtitle": "Registra un tema en el repertorio del grupo.",
+        "fields": {
+          "title": "Título de la canción",
+          "titlePlaceholder": "Ej: Voodoo Child",
+          "album": "Álbum / Sencillo",
+          "albumPlaceholder": "Seleccionar o introducir...",
+          "duration": "Duración (MM:SS)",
+          "durationPlaceholder": "03:45",
+          "bpm": "BPM",
+          "bpmPlaceholder": "120",
+          "key": "Tonalidad",
+          "keyPlaceholder": "Ej: Am",
+          "tuning": "Afinación",
+          "tuningPlaceholder": "Ej: Drop D",
+          "status": "Estado"
+        },
+        "submit": "Añadir al repertorio"
+      }
+    }
   }
 }
